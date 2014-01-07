@@ -8,6 +8,10 @@
 # 3) Set SITE_ID below to the resulting output (hint: 2L just means 2)
 SITE_ID = 0
 
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
+
 DEBUG = False
 
 TIME_ZONE = 'Iceland'
