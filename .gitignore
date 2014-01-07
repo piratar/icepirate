@@ -1,0 +1,3 @@
+*.swp
+/icepirate/local_settings.py
+*.pyc
