@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from django.views.generic.simple import redirect_to
+from django.views.generic.base import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -21,5 +21,5 @@ urlpatterns = patterns('',
 
 	url(r'^member/', include('member.urls')),
 
-    url(r'^$', redirect_to, { 'url': '/member/list/' }),
+    url(r'^$', RedirectView(url='/member/list/')),
 )
