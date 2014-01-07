@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<script language="javascript" type="text/javascript">
+
+$(function() {
+    $('#id_kennitala').focus();
+
+});
+
+</script>
+
+<form action="/member/add/" method="POST">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="formbuttons">
+    <button type="submit">{% trans 'Add Member' %}</button>
+    <button type="button" href="/member/list">{% trans 'Cancel' %}</button>
+</div>
+</form>
+
+{% endblock %}
+

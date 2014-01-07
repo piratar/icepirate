@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/accounts/logout/" method="POST">
+{% csrf_token %}
+<input type="hidden" name="next" value="/accounts/login/" />
+<button type="submit">{% trans "Logout" %}</button>
+</form>
+
+{% endblock content %}
+

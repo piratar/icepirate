@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/member/edit/{{ member.kennitala }}" method="POST">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="hidden" name="next" value="/member/view/{{ member.kennitala }}" />
+<div class="formbuttons">
+    <button type="submit">{% trans 'Save' %}</button>
+    <button type="button" href="/member/view/{{ member.kennitala }}">{% trans 'Cancel' %}</button>
+</div>
+</form>
+
+{% endblock content %}
+

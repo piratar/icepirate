@@ -1,0 +1,32 @@
+{% load staticfiles %}
+{% load i18n %}
+<html>
+<head>
+<link rel="stylesheet" href="{% static "css/icepirate.css" %}" />
+<script language="javascript" type="text/javascript" src="{% static "js/jquery/jquery-1.10.2.js" %}"></script>
+<script language="javascript" type="text/javascript" src="{% static "js/icepirate.js" %}"></script>
+</head>
+<body>
+
+<div class="main-nav-container">
+    <div class="main-nav" style="width: 100%;">
+        <ul class="control">
+            <li><a href="/member/list">{% trans 'Member List' %}</a></li>
+            <li><a href="/member/add">{% trans 'Add Member' %}</a></li>
+        </ul>
+        {% block control %}{% endblock %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <ul class="control-control">
+            <li><a href="/accounts/logout/">{% trans 'Logout' %}</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="stage-container">
+    <div class="stage">
+        {% block content %}[ Content section ]{% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

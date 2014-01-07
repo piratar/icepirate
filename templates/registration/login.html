@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function() {
+    $('#id_username').focus()
+});
+</script>
+
+<form action="/accounts/login/" method="POST">
+{% csrf_token %}
+<input type="hidden" name="next" value="/member/list" />
+
+{{ form.as_p }}
+
+<div class="formbuttons">
+    <button type="submit">{% trans "Log in" %}</button>
+    <button type="button" href="/accounts/register/">{% trans "Sign up" %}</button>
+    <button id="button" type="button" href="/accounts/password/reset/">{% trans "Password reset" %}</button>
+</div>
+
+</form>
+
+{% endblock %}

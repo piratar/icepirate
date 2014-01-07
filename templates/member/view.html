@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+
+<form action="/member/view/{{ member.kennitala }}" method="POST">
+
+<div class="formbuttons">
+    <button type="button" style="float: right; padding-top: 0px; margin-top: 0px;" href="/member/delete/{{ member.kennitala }}">{% trans 'Delete' %}</button>
+</div>
+
+<div style="display: inline-block; padding-top: 8px; padding-bottom: 8px;">
+{% include 'member/stubs/infosheet.html' %}
+</div>
+
+<div class="formbuttons">
+    <button type="button" href="/member/edit/{{ member.kennitala }}">{% trans 'Edit' %}</button>
+</div>
+
+</form>
+
+{% endblock content %}
