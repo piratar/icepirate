@@ -6,6 +6,12 @@ try:
 except:
     raise Exception('You need to set up local_settings.py (see local_settings.py-example)')
 
+try:
+    if SITE_ID == 0:
+        raise Exception('You must set SITE_ID (see local_settings.py-example)')
+except:
+    raise Exception('SITE_ID must be defined (see local_settings.py-example)')
+
 # Django settings for icepirate project.
 
 TEMPLATE_DEBUG = DEBUG
@@ -25,8 +31,6 @@ TIME_ZONE = 'Iceland'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
-
-SITE_ID = 2
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
