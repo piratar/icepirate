@@ -21,6 +21,9 @@ urlpatterns = patterns('',
     url(r'^delete/(?P<kennitala>[^/]+)', 'member.views.delete', name='delete'),
     url(r'^view/(?P<kennitala>[^/]+)', 'member.views.view', name='view'),
 
+    # CSV
+    url(r'^csv/list/', 'member.views_csv.list', name='csv_list'),
+
     # API pages (JSON)
 	url(r'^api/list/', 'member.views_api.list', name='api_list'),
 	url(r'^api/filter/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.filter', name='api_filter'),

@@ -44,6 +44,7 @@ label { float: left; min-width: 100px; text-align: right; padding-right: 8px; }
 /* General controls */
 div.formbuttons { text-align: center; width: 100%; padding: 0px 0px 0px 0px; }
 div.formbuttons button { margin-top: 8px; margin-bottom: 8px; }
+div.list-top-buttons button { margin-top: 8px; margin-bottom: 8px; }
 
 /* Errors */
 ul.errorlist { margin-bottom: 0px; margin-top: 0px; padding-left: 0px; }
