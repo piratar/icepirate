@@ -3,14 +3,13 @@
 
 {% block content %}
 
-
 <form action="/member/view/{{ member.kennitala }}" method="POST">
 
-<div class="formbuttons">
-    <button type="button" style="float: right; padding-top: 0px; margin-top: 0px;" href="/member/delete/{{ member.kennitala }}">{% trans 'Delete' %}</button>
+<div class="formbuttons-top">
+    <button type="button" href="/member/delete/{{ member.kennitala }}">{% trans 'Delete' %}</button>
 </div>
 
-<div style="display: inline-block; padding-top: 8px; padding-bottom: 8px;">
+<div class="infosheet-container">
 {% include 'member/stubs/infosheet.html' %}
 </div>
 
