@@ -34,9 +34,7 @@ def add(request):
     return render_to_response('member/add.html', { 'form': form }, context_instance=RequestContext(request))
 
 @login_required
-def edit(request, **kwargs):
-
-    kennitala = kwargs['kennitala']
+def edit(request, kennitala):
 
     member = get_object_or_404(Member, kennitala=kennitala)
 
@@ -53,9 +51,7 @@ def edit(request, **kwargs):
     return render_to_response('member/edit.html', { 'form': form, 'member': member }, context_instance=RequestContext(request))
 
 @login_required
-def delete(request, **kwargs):
-
-    kennitala = kwargs['kennitala']
+def delete(request, kennitala):
 
     member = get_object_or_404(Member, kennitala=kennitala)
 
@@ -66,9 +62,9 @@ def delete(request, **kwargs):
     return render_to_response('member/delete.html', { 'member': member }, context_instance=RequestContext(request))
 
 @login_required
-def view(request, **kwargs):
+def view(request, kennitala):
 
-    member = get_object_or_404(Member, kennitala=kwargs['kennitala'])
+    member = get_object_or_404(Member, kennitala=kennitala)
 
     return render_to_response('member/view.html', { 'member': member }, context_instance=RequestContext(request))
 
