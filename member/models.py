@@ -12,3 +12,6 @@ class Member(models.Model):
     mailing = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return self.name
+
