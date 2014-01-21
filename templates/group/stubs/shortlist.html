@@ -1,0 +1,4 @@
+{% for group in member.groups.all %}
+    <span class="group"><a href="/group/view/{{ group.techname }}" target="_blank">{{ group }}</a></span>{% if not forloop.last %},{% endif %}<br />
+{% endfor %}
+

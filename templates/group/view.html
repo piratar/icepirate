@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/group/view/{{ group.techname }}" method="POST">
+
+<div class="formbuttons-top">
+    <button type="button" href="/group/delete/{{ group.techname }}">{% trans 'Delete' %}</button>
+</div>
+
+<div class="infosheet-container">
+{% include 'group/stubs/infosheet.html' %}
+</div>
+
+<div class="formbuttons">
+    <button type="button" href="/group/edit/{{ group.techname }}">{% trans 'Edit' %}</button>
+</div>
+
+</form>
+
+{% endblock %}
+

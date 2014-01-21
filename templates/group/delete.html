@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/group/delete/{{ group.techname }}" method="POST">
+{% csrf_token %}
+
+<p class="warning" style="width: 330px;">{% trans 'Are you absolutely certain that you wish to delete the following group?' %}</p>
+<p class="warning"><strong>{% trans 'This action cannot be undone.' %}</strong></p>
+
+<div class="infosheet-container">
+{% include 'group/stubs/infosheet.html' %}
+</div>
+
+<div class="formbuttons">
+    <button type="sumbit">{% trans 'DELETE FOREVER!' %}</button>
+    <button type="button" href="/group/view/{{ group.techname }}">{% trans 'Cancel' %}</button>
+</div>
+
+<form>
+
+{% endblock %}
+

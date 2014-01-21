@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('registration.urls')),
 
 	url(r'^member/', include('member.urls')),
+    url(r'^group/', include('group.urls')),
 
     url(r'^$', RedirectView.as_view(url='/member/list/')),
 )

@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
+from group.models import Group
 from member.models import Member
 from member.forms import MemberForm
 
@@ -39,6 +40,7 @@ def edit(request, kennitala):
     member = get_object_or_404(Member, kennitala=kennitala)
 
     if request.method == 'POST':
+        member.groups = request.POST.getlist('groups')
         form = MemberForm(request.POST, instance=member)
 
         if form.is_valid():

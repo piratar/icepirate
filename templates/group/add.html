@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function() {
+    $('#id_name').focus();
+});
+</script>
+
+<form action="/group/add/" method="POST">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="formbuttons">
+    <button type="submit">{% trans 'Add Group' %}</button>
+    <button type="button" href="/group/list/">{% trans 'Cancel' %}</button>
+</div>
+</form>
+
+{% endblock %}
+

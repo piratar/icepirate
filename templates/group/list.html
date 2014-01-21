@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<table>
+	<thead>
+		<tr>
+			<th>{% trans 'Group Name' %}</th>
+			<th>{% trans 'Techname' %}</th>
+			<th>{% trans 'Added' %}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for group in groups %}
+		<tr>
+			<td><a href="/group/view/{{ group.techname }}">{{ group.name }}</a></td>
+            <td>{{ group.techname }}</td>
+			<td>{{ group.added }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

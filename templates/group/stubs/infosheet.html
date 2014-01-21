@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div class="infosheet">
+    <div class="header">
+        {{ group.name }}
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Name' %}:</p>
+        <p class="value">{{ group.name }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Technical name' %}:</p>
+        <p class="value">{{ group.techname }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Added' %}:</p>
+        <p class="value">{{ group.added }}</p>
+    </div>
+    {% if group.member_set.count %}
+    <div class="line">
+        <p class="label">{% trans 'Members' %}:</p>
+        <p class="value">
+            {% include 'member/stubs/shortlist.html' with members=group.member_set.all %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
