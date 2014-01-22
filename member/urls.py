@@ -15,14 +15,14 @@ urlpatterns = patterns('',
     # ------------------------------------------------------------------#
 
     # General stuff.
-	url(r'^list/', 'member.views.list', name='list'),
+	url(r'^list/(?P<group_techname>.*)', 'member.views.list', name='list'),
     url(r'^add/', 'member.views.add', name='add'),
     url(r'^edit/(?P<kennitala>[^/]+)', 'member.views.edit', name='edit'),
     url(r'^delete/(?P<kennitala>[^/]+)', 'member.views.delete', name='delete'),
     url(r'^view/(?P<kennitala>[^/]+)', 'member.views.view', name='view'),
 
     # CSV
-    url(r'^csv/list/', 'member.views_csv.list', name='csv_list'),
+    url(r'^csv/list/(?P<group_techname>.*)', 'member.views_csv.list', name='csv_list'),
 
     # API pages (JSON)
 	url(r'^api/list/', 'member.views_api.list', name='api_list'),

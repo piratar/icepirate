@@ -7,8 +7,11 @@ from django.contrib.auth.decorators import login_required
 from member.models import Member
 
 @login_required
-def list(request):
-    members = Member.objects.all()
+def list(request, group_techname):
+    if group_techname:
+        members = Member.objects.filter(groups__techname=group_techname)
+    else:
+        members = Member.objects.all()
     
     # NOTE: Apparently concatinating lists of strings is really efficient.
     lines = []
@@ -18,7 +21,10 @@ def list(request):
         line = '"%s","%s","%s","%s","%s","%s"' % (m.kennitala, m.name, m.username, m.email, m.phone, m.added)
         lines.append(line)
 
-    filename = 'Piratar-members-%s.csv' % datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
+    if group_techname:
+        filename = 'Members.%s.%s.csv' % (group_techname, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
+    else:
+        filename = 'Members.%s.csv' % datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
 
     response = HttpResponse("\n".join(lines), content_type='text/css; charset: utf-8')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename

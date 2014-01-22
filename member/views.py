@@ -13,11 +13,21 @@ from member.forms import MemberForm
 from member import kennitala
 
 @login_required
-def list(request):
+def list(request, group_techname):
 
-    members = Member.objects.all()
+    if group_techname:
+        members = Member.objects.filter(groups__techname=group_techname)
+    else:
+        members = Member.objects.all()
 
-    return render_to_response('member/list.html', { 'members': members })
+    groups = Group.objects.all()
+
+    context = {
+        'members': members,
+        'groups': groups,
+        'group_techname': group_techname,
+    }
+    return render_to_response('member/list.html', context)
 
 @login_required
 def add(request):

@@ -3,8 +3,31 @@
 
 {% block content %}
 
+<script language="javascript" type="text/javascript">
+$(document).ready(function() {
+
+    $('#export-csv').click(function() {
+        location.href = '/member/csv/list/' + $('#group-techname').val();
+    });
+
+    // Group selection drop-down list
+    $('#group-techname').change(function() {
+        location.href = '/member/list/' + $(this).val();
+    });
+
+});
+</script>
+
 <div class="list-top-buttons">
-    <button type="button" href="/member/csv/list/">{% trans 'Export to CSV' %}</button>
+    <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
+    {% if groups.count %}
+    <select id="group-techname">
+        <option value="">{% trans '- All Groups -' %}</option>
+        {% for group in groups %}
+            <option value="{{ group.techname }}" {% if group.techname == group_techname %}selected="1"{% endif %}>{{ group }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
 </div>
 
 <table>
