@@ -15,7 +15,7 @@ from member import kennitala
 @login_required
 def list(request):
 
-    members = Member.objects.all().order_by('added')
+    members = Member.objects.all()
 
     return render_to_response('member/list.html', { 'members': members })
 

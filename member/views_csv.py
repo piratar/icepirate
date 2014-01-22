@@ -8,7 +8,7 @@ from member.models import Member
 
 @login_required
 def list(request):
-    members = Member.objects.all().order_by('added')
+    members = Member.objects.all()
     
     # NOTE: Apparently concatinating lists of strings is really efficient.
     lines = []

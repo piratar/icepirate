@@ -15,5 +15,8 @@ class Member(models.Model):
 
     groups = models.ManyToManyField(Group)
 
+    class Meta:
+        ordering = ['added']
+
     def __unicode__(self):
         return self.name
