@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+from django.core.mail import send_mail
+from django.utils.translation import ugettext as _
+
 import re
 
 def techify(input_string):
@@ -23,3 +27,14 @@ def techify(input_string):
     result = re.sub('[^\-a-z0-9+]', '', result)
 
     return result
+
+def email(to, subject, body):
+
+    send_mail(
+        "[%s] %s" % (settings.EMAIL_SUBJECT_PREFIX, _(subject)),
+        body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[to,],
+        fail_silently=False
+    )
+
