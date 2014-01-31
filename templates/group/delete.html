@@ -6,7 +6,7 @@
 <form action="/group/delete/{{ group.techname }}" method="POST">
 {% csrf_token %}
 
-<p class="warning" style="width: 330px;">{% trans 'Are you absolutely certain that you wish to delete the following group?' %}</p>
+<p class="warning">{% trans 'Are you absolutely certain that you wish to delete the following group?' %}</p>
 <p class="warning"><strong>{% trans 'This action cannot be undone.' %}</strong></p>
 
 <div class="infosheet-container">

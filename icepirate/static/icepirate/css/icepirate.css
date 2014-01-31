@@ -56,6 +56,6 @@ div.formbuttons-top button { float: right; padding-top: 0px; margin-top: 0px; }
 div.list-top-buttons button { margin-top: 8px; margin-bottom: 8px; }
 
 /* Errors */
-ul.errorlist { margin-bottom: 0px; margin-top: 0px; padding-left: 0px; }
-ul.errorlist li { color: #ff0000; list-style: none; text-align: right; }
+ul.errorlist { margin-bottom: 0px; margin-top: 0px; padding-left: 0px; max-width: 100% !important; width: 100%; }
+ul.errorlist li { color: #ff0000; list-style: none; text-align: right; float: right; }
 
