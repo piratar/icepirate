@@ -21,7 +21,7 @@ class Command(BaseCommand):
             body.append(_('These are the member statistics for the group "%s"') % group.name)
             body.append(_('Member count: %d') % group.member_set.count())
 
-            sys.stdout.write('Sending email to address "%s" with subject "%s"...' % (group.email, subject))
+            sys.stdout.write('Sending member statistics for group \'%s\'...' % group.techname)
             email(group.email, subject, '\n'.join(body))
             sys.stdout.write(' done\n')
 
