@@ -2,3 +2,4 @@
 /icepirate/local_settings.py
 *.pyc
 .env-icepirate
+/static
