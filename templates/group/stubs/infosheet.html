@@ -13,6 +13,10 @@
         <p class="value">{{ group.techname }}</p>
     </div>
     <div class="line">
+        <p class="label">{% trans 'Email' %}:</p>
+        <p class="value"><a href="mailto:{{ group.email }}">{{ group.email }}</a></p>
+    </div>
+    <div class="line">
         <p class="label">{% trans 'Added' %}:</p>
         <p class="value">{{ group.added }}</p>
     </div>

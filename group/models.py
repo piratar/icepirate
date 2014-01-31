@@ -4,6 +4,7 @@ from datetime import datetime
 class Group(models.Model):
     name = models.CharField(max_length=50, unique=True)
     techname = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=True)
     added = models.DateTimeField(default=datetime.now)
 
     class Meta:
