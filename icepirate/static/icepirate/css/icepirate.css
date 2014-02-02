@@ -54,6 +54,7 @@ div.formbuttons { text-align: center; float: left; width: 100%; padding: 0px 0px
 div.formbuttons button { margin-top: 8px; margin-bottom: 8px; }
 div.formbuttons-top button { float: right; padding-top: 0px; margin-top: 0px; }
 div.list-top-buttons button { margin-top: 8px; margin-bottom: 8px; }
+div.list-top-stats { margin-bottom: 6px; }
 
 /* Errors */
 ul.errorlist { margin-bottom: 0px; margin-top: 0px; padding-left: 0px; max-width: 100% !important; width: 100%; }

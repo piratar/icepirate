@@ -30,6 +30,13 @@ $(document).ready(function() {
     {% endif %}
 </div>
 
+<div class="list-top-stats">
+    <span class="stats-field">
+        <span class="stats-label">{% trans 'Count' %}:</span>
+        <span class="stats-value">{{ members.count }}</span>
+    </span>
+</div>
+
 <table>
 	<thead>
 		<tr>
