@@ -28,10 +28,14 @@ def techify(input_string):
 
     return result
 
-def email(to, subject, body):
+def email(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_prefix=settings.EMAIL_SUBJECT_PREFIX):
+
+    real_subject = subject
+    if subject_prefix:
+        real_subject = u'[%s] %s' % (subject_prefix.decode('utf-8'), real_subject)
 
     send_mail(
-        "[%s] %s" % (settings.EMAIL_SUBJECT_PREFIX, _(subject)),
+        real_subject,
         body,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to,],
