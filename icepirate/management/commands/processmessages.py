@@ -61,6 +61,7 @@ class Command(BaseCommand):
                     subject=message.subject,
                     body=message.body,
                     from_email=message.from_address,
+                    subject_prefix=None
                 )
 
                 delivery.timing_end = timezone.now()
