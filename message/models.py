@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from group.models import Group
 from member.models import Member
@@ -17,7 +16,7 @@ class Message(models.Model):
     groups = models.ManyToManyField(Group)
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
-    sent_to = models.ManyToManyField(Member, related_name='sent_to') # Members already sent to
+    deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
     author = models.ForeignKey(User) # User, not Member
 
     ready_to_send = models.BooleanField(default=False) # Should this message be processed?
@@ -25,8 +24,14 @@ class Message(models.Model):
     sending_started = models.DateTimeField(null=True) # Marked when processing beings
     sending_complete = models.DateTimeField(null=True) # Marked when processing ends
 
-    added = models.DateTimeField(default=datetime.now) # Automatic, un-editable field
+    added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
 
     class Meta:
         ordering = ['added']
+
+class MessageDelivery(models.Model):
+    message = models.ForeignKey(Message)
+    member = models.ForeignKey(Member)
+    timing_start = models.DateTimeField(default=timezone.now)
+    timing_end = models.DateTimeField(null=True)
 
