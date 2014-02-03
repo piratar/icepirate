@@ -1,4 +1,4 @@
 {% for member in members %}
-    <span class="member"><a href="/member/view/{{ member.kennitala }}" target="_blank">{{ member }}</a></span>{% if not forloop.last %},{% endif %}<br />
+    <span class="member"><a href="/member/view/{{ member.kennitala }}">{{ member }}</a></span>{% if not forloop.last %},{% endif %}<br />
 {% endfor %}
 
