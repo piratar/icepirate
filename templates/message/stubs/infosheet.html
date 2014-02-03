@@ -1,0 +1,49 @@
+{% load i18n %}
+{% load printadmin %}
+
+<div class="infosheet">
+    <div class="header">
+        {% trans 'Message added at' %} {{ message.added }}
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Added' %}:</p>
+        <p class="value">{{ message.added }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Subject' %}:</p>
+        <p class="value">{{ message.subject }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Body' %}:</p>
+        <p class="value">
+            <div class="mailbody">{{ message.body|linebreaks }}</div>
+        </p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Ready' %}:</p>
+        <p class="value"><strong>{{ message.ready_to_send|yesno|capfirst }}</strong></p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Send Start' %}:</p>
+        <p class="value">{% if message.sending_started %}{{ message.sending_started }}{% endif %}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Send Complete' %}:</p>
+        <p class="value">{% if message.sending_complete %}{{ message.sending_complete }}{% endif %}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Targets' %}:</p>
+        <p class="value">
+            {% if message.send_to_all %}
+                {% trans 'Everyone' %}
+            {% else %}
+                {% include 'group/stubs/shortlist.html' with groups=message.groups.all %}
+            {% endif %}
+        </p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Author' %}:</p>
+        <p class="value">{{ message.author|printadmin }}</p>
+    </div>
+</div>
+

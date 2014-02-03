@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<script language="javascript" type="text/javascript">
+
+function check_send_to_all() {
+    var checked = $('#id_send_to_all').is(':checked');
+
+    $boxes = $('#id_groups input[type="checkbox"]')
+
+    if (!checked) {
+        $boxes.removeAttr('disabled');
+    }
+    else {
+        $boxes.attr('checked', false);
+        $boxes.attr('disabled', true);
+    }
+}
+
+$(function() {
+    $('#id_send_to_all').click(function() {
+        check_send_to_all();
+    });
+
+    check_send_to_all();
+
+    $('#id_subject').focusEnd();
+});
+
+</script>
+
+<form action="/message/add/" method="POST" class="bigform">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="formbuttons">
+    <button type="submit">{% trans 'Add Message' %}</button>
+    <label for="id_ready_to_send">
+        <input type="checkbox" id="id_ready_to_send" name="ready_to_send" />
+        {% trans 'Ready to send' %}
+    </label>
+    <button type="button" href="/message/list">{% trans 'Cancel' %}</button>
+</div>
+</form>
+
+{% endblock %}
+

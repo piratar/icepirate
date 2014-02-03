@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/message/delete/{{ message.id }}/" method="POST">
+{% csrf_token %}
+
+<p class="warning">{% trans 'Are you absolutely certain that you wish to delete the following message?' %}</p>
+<p class="warning"><strong>{% trans 'This action cannot be undone.' %}</strong></p>
+
+<div class="infosheet-container">
+{% include 'message/stubs/infosheet.html' %}
+</div>
+
+<div class="formbuttons">
+    <button type="sumbit">{% trans 'DELETE FOREVER!' %}</button>
+    <button type="button" href="/message/view/{{ message.id }}">{% trans 'Cancel' %}</button>
+</div>
+
+<form>
+
+{% endblock %}
+

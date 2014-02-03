@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load printadmin %}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>{% trans 'Added' %}</th>
+            <th>{% trans 'Subject' %}</th>
+            <th class="center">{% trans 'Ready' %}</th>
+            <th>{% trans 'Send Start' %}</th>
+            <th>{% trans 'Send Complete' %}</th>
+            <th>{% trans 'Targets' %}</th>
+            <th>{% trans 'Author' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for message in messages %}
+        <tr>
+            <td>{{ message.added }}</td>
+            <td><a href="/message/view/{{ message.id }}/">{{ message.subject }}</a></td>
+            <td class="center"><strong>{{ message.ready_to_send|yesno|capfirst }}</strong></td>
+            <td>{% if message.sending_started %}{{ message.sending_started }}{% endif %}</td>
+            <td>{% if message.sending_complete %}{{ message.sending_complete }}{% endif %}</td>
+            <td>
+                {% if message.send_to_all %}
+                    {% trans 'Everyone' %}
+                {% else %}
+                    {% include 'group/stubs/shortlist.html' with groups=message.groups.all nolinebr=True %}
+                {% endif %}
+            </td>
+            <td>{{ message.author|printadmin }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

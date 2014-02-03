@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'icepirate',
 	'member',
     'group',
+    'message',
 
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
