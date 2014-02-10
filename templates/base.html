@@ -9,6 +9,7 @@
 </head>
 <body>
 
+{% if not user.is_anonymous %}
 <div class="main-nav-container">
     <div class="main-nav" style="width: 100%;">
         <ul class="control">
@@ -30,6 +31,7 @@
         </ul>
     </div>
 </div>
+{% endif %}
 
 <div class="stage-container">
     <div class="stage">
