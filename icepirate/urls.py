@@ -19,6 +19,7 @@ urlpatterns = patterns('',
 
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', { 'next_page': '/accounts/login' }),
     url(r'^accounts/', include('registration.urls')),
+    url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
 
 	url(r'^member/', include('member.urls')),
     url(r'^group/', include('group.urls')),
