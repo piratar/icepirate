@@ -1,3 +1,5 @@
 Django
 MySQL-python
 django-registration
+lxml
+suds

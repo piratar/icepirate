@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+{% if member %}
+
+    {% include 'member/stubs/infosheet.html' %}
+
+{% else %}
+
+    {% trans 'You are currently not a member. Please note that by signing up, you are becoming a member of Pirate Party Iceland.' %}
+
+{% endif %}
+
+{% endblock %}
+

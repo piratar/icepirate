@@ -111,6 +111,7 @@ INSTALLED_APPS = (
 	'member',
     'group',
     'message',
+    'icekey',
 
 	'django.contrib.auth',
 	'django.contrib.contenttypes',

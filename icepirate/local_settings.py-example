@@ -12,6 +12,14 @@ SITE_ID = 0
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
+# Authentication URL (Icekey)
+AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
+AUTH_ISLAND = {
+    'wsdl': 'https://egov.webservice.is/sst/runtime.asvc/com.actional.soapstation.eGOVDKM_AuthConsumer.AccessPoint?WSDL',
+    'login': 'some_username',
+    'password': 'some_password',
+}
+
 DEBUG = False
 
 TIME_ZONE = 'Iceland'

@@ -1,8 +1,12 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
+from django.shortcuts import redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
@@ -11,6 +15,8 @@ from member.models import Member
 from member.forms import MemberForm
 
 from member import kennitala
+
+from icekey.utils import authenticate
 
 @login_required
 def list(request, group_techname):
@@ -79,4 +85,28 @@ def view(request, kennitala):
     member = get_object_or_404(Member, kennitala=kennitala)
 
     return render_to_response('member/view.html', { 'member': member }, context_instance=RequestContext(request))
+
+def verify(request):
+
+    member = None
+
+    kennitala = request.session.get('kennitala', None)
+    if kennitala:
+        member = Member.objects.get(kennitala=kennitala)
+
+    if member is None:
+        auth = authenticate(request, settings.AUTH_URL)
+        try:
+            member = Member.objects.get(kennitala=auth['kennitala'])
+            member.verified = True
+            member.auth_token = request.GET['token']
+            member.auth_timing = datetime.now()
+            member.save()
+
+            request.session['kennitala'] = member.kennitala
+            return redirect('/member/verify/')
+        except:
+            pass
+
+    return render_to_response('member/verify.html', { 'member': member, }, context_instance=RequestContext(request))
 

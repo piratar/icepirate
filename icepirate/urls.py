@@ -24,5 +24,5 @@ urlpatterns = patterns('',
     url(r'^group/', include('group.urls')),
     url(r'^message/', include('message.urls')),
 
-    url(r'^$', RedirectView.as_view(url='/member/list/')),
+    url(r'^$', RedirectView.as_view(url='/member/verify-start/')),
 )

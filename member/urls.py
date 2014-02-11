@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.utils.http import urlencode
 
 urlpatterns = patterns('',
 	# Examples:
@@ -20,6 +23,10 @@ urlpatterns = patterns('',
     url(r'^edit/(?P<kennitala>[^/]+)', 'member.views.edit', name='edit'),
     url(r'^delete/(?P<kennitala>[^/]+)', 'member.views.delete', name='delete'),
     url(r'^view/(?P<kennitala>[^/]+)', 'member.views.view', name='view'),
+
+    # Verification
+    url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
+    url(r'^verify/', 'member.views.verify', name='verify'),
 
     # CSV
     url(r'^csv/list/(?P<group_techname>.*)', 'member.views_csv.list', name='csv_list'),

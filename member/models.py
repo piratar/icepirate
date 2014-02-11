@@ -12,6 +12,8 @@ class Member(models.Model):
     added = models.DateTimeField(default=datetime.now)
     mailing = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
+    auth_token = models.CharField(max_length=100, unique=True, null=True)
+    auth_timing = models.DateTimeField(null=True)
 
     groups = models.ManyToManyField(Group)
 
