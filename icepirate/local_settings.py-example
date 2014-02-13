@@ -20,6 +20,9 @@ AUTH_ISLAND = {
     'password': 'some_password',
 }
 
+# For example: https://some-site/member/api/get/kennitala/1234567890/?json_api_key=some-random-string
+JSON_API_KEY = 'some-random-string'
+
 DEBUG = False
 
 TIME_ZONE = 'Iceland'

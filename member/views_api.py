@@ -1,12 +1,16 @@
 import json
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.http import Http404
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from member.models import Member
 from group.models import Group
+
+def require_login_or_key(request):
+    return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
 
 def member_to_dict(member):
     result = {
@@ -69,8 +73,11 @@ def filter(request, field, searchstring):
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
-@login_required
 def get(request, field, searchstring):
+
+    if not require_login_or_key(request):
+        return redirect('/')
+
     if field == 'name':
         member = get_object_or_404(Member, name=searchstring)
     elif field == 'username':
