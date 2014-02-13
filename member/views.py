@@ -16,7 +16,7 @@ from member.forms import MemberForm
 
 from member import kennitala
 
-from icekey.utils import authenticate
+from icepirate.saml import authenticate
 
 @login_required
 def list(request, group_techname):
