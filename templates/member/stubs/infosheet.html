@@ -14,7 +14,7 @@
     </div>
     <div class="line">
         <p class="label">{% trans 'Username' %}:</p>
-        <p class="value">{{ member.username }}</p>
+        <p class="value">{% if member.username %}{{ member.username }}{% endif %}</p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Email' %}:</p>

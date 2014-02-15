@@ -11,3 +11,8 @@ class MemberForm(ModelForm):
         model = Member
         fields = ['kennitala', 'name', 'username', 'email', 'phone', 'added', 'groups']
 
+    def clean_username(self):
+        # Usernames are unique but not required, and forms return empty strings which can't then be unique
+        # So we turn empty strings into None so that we can retain both optionality and uniqueness.
+        return self.cleaned_data['username'] or None
+

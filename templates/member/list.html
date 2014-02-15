@@ -53,7 +53,7 @@ $(document).ready(function() {
 		<tr>
 			<td><a href="/member/view/{{ member.kennitala }}">{{ member.kennitala }}</a></td>
 			<td>{{ member.name }}</td>
-			<td>{{ member.username }}</td>
+			<td>{% if member.username %}{{ member.username }}{% endif %}</td>
             <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
             <td>{{ member.phone }}</td>
 			<td>{{ member.added }}</td>
