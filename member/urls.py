@@ -35,5 +35,6 @@ urlpatterns = patterns('',
     url(r'^api/list/', 'member.views_api.list', name='api_list'),
     url(r'^api/filter/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.filter', name='api_filter'),
     url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.get', name='api_get'),
+    url(r'^api/add/$', 'member.views_api.add', name='api_add'),
 
 )

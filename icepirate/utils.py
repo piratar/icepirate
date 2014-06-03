@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import json
+
 from django.conf import settings
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 
 import re
@@ -41,4 +44,12 @@ def email(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_pre
         recipient_list=[to,],
         fail_silently=False
     )
+
+def json_error(exception):
+    response_data = {
+        'success': False,
+        'error': exception.__str__()
+    }
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 

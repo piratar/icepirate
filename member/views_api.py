@@ -1,10 +1,14 @@
 import json
+import time
 
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+
+from icepirate.utils import json_error
 
 from member.models import Member
 from group.models import Group
@@ -13,6 +17,7 @@ def require_login_or_key(request):
     return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
 
 def member_to_dict(member):
+
     result = {
         'kennitala': member.kennitala,
         'name': member.name,
@@ -25,6 +30,7 @@ def member_to_dict(member):
         'verified': member.verified,
         'groups': []
     }
+
     result['groups'] = [g.techname for g in member.groups.all()]
     return result
 
@@ -86,6 +92,37 @@ def get(request, field, searchstring):
         member = get_object_or_404(Member, kennitala=searchstring)
     else:
         raise Http404
+
+    response_data = {
+        'success': True,
+        'data': member_to_dict(member)
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+def add(request):
+
+    if not require_login_or_key(request):
+        return redirect('/')
+
+    kennitala = request.GET.get('kennitala')
+    username = request.GET.get('username')
+    name = request.GET.get('name')
+    email = request.GET.get('email')
+    added = request.GET.get('added', '')
+
+    member = Member()
+    member.kennitala = kennitala
+    member.username = username
+    member.name = name
+    member.email = email
+    member.added = added
+
+    try:
+        member.save()
+        member = Member.objects.get(id=member.id)
+    except IntegrityError as e:
+        return json_error(e)
 
     response_data = {
         'success': True,
