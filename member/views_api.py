@@ -84,14 +84,15 @@ def get(request, field, searchstring):
     if not require_login_or_key(request):
         return redirect('/')
 
-    if field == 'name':
-        member = get_object_or_404(Member, name=searchstring)
-    elif field == 'username':
-        member = get_object_or_404(Member, username=searchstring)
-    elif field == 'kennitala':
-        member = get_object_or_404(Member, kennitala=searchstring)
-    else:
-        raise Http404
+    try:
+        if field == 'name':
+            member = Member.objects.get(name=searchstring)
+        elif field == 'username':
+            member = Member.objects.get(username=searchstring)
+        elif field == 'kennitala':
+            member = Member.objects.get(kennitala=searchstring)
+    except Member.DoesNotExist as e:
+        return json_error('No such member')
 
     response_data = {
         'success': True,
