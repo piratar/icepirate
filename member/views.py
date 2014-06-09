@@ -61,7 +61,7 @@ def edit(request, kennitala):
 
         if form.is_valid():
             member = form.save()
-            return HttpResponseRedirect('/member/view/%s/' % kennitala)
+            return HttpResponseRedirect('/member/view/%s/' % member.kennitala)
 
     else:
         form = MemberForm(instance=member)
