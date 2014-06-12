@@ -1,5 +1,8 @@
-from django.forms import ModelForm, EmailField, ModelMultipleChoiceField, CheckboxSelectMultiple
-from django.forms import EmailField
+from django.forms import CharField
+from django.forms import CheckboxSelectMultiple
+from django.forms import ModelForm
+from django.forms import ModelMultipleChoiceField
+from django.forms import TextInput
 
 from member.models import Member
 from group.models import Group
@@ -9,10 +12,5 @@ class MemberForm(ModelForm):
 
     class Meta:
         model = Member
-        fields = ['kennitala', 'name', 'username', 'email', 'phone', 'added', 'groups']
-
-    def clean_username(self):
-        # Usernames are unique but not required, and forms return empty strings which can't then be unique
-        # So we turn empty strings into None so that we can retain both optionality and uniqueness.
-        return self.cleaned_data['username'] or None
+        fields = ['kennitala', 'name', 'email', 'phone', 'added', 'groups']
 
