@@ -19,7 +19,7 @@ def require_login_or_key(request):
 def member_to_dict(member):
 
     result = {
-        'kennitala': member.kennitala,
+        'ssn': member.ssn,
         'name': member.name,
         'username': member.username,
         'email': member.email,
@@ -89,8 +89,8 @@ def get(request, field, searchstring):
             member = Member.objects.get(name=searchstring)
         elif field == 'username':
             member = Member.objects.get(username=searchstring)
-        elif field == 'kennitala':
-            member = Member.objects.get(kennitala=searchstring)
+        elif field == 'ssn':
+            member = Member.objects.get(ssn=searchstring)
     except Member.DoesNotExist as e:
         return json_error('No such member')
 
@@ -106,14 +106,14 @@ def add(request):
     if not require_login_or_key(request):
         return redirect('/')
 
-    kennitala = request.GET.get('kennitala')
+    ssn = request.GET.get('ssn')
     username = request.GET.get('username')
     name = request.GET.get('name')
     email = request.GET.get('email')
     added = request.GET.get('added', '')
 
     member = Member()
-    member.kennitala = kennitala
+    member.ssn = ssn
     member.username = username
     member.name = name
     member.email = email

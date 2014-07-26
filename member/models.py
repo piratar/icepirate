@@ -3,7 +3,7 @@ from datetime import datetime
 from group.models import Group
 
 class Member(models.Model):
-    kennitala = models.CharField(max_length=10, unique=True)
+    ssn = models.CharField(max_length=30, unique=True)
     name = models.CharField(max_length=63)
     username = models.CharField(max_length=50, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)

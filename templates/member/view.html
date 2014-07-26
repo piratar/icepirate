@@ -3,10 +3,10 @@
 
 {% block content %}
 
-<form action="/member/view/{{ member.kennitala }}" method="POST">
+<form action="/member/view/{{ member.ssn }}" method="POST">
 
 <div class="formbuttons-top">
-    <button type="button" href="/member/delete/{{ member.kennitala }}">{% trans 'Delete' %}</button>
+    <button type="button" href="/member/delete/{{ member.ssn }}">{% trans 'Delete' %}</button>
 </div>
 
 <div class="infosheet-container">
@@ -14,7 +14,7 @@
 </div>
 
 <div class="formbuttons">
-    <button type="button" href="/member/edit/{{ member.kennitala }}">{% trans 'Edit' %}</button>
+    <button type="button" href="/member/edit/{{ member.ssn }}">{% trans 'Edit' %}</button>
 </div>
 
 </form>

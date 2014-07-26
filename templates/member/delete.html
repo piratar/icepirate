@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form action="/member/delete/{{ member.kennitala }}" method="POST">
+<form action="/member/delete/{{ member.ssn }}" method="POST">
 {% csrf_token %}
 
 <p class="warning">{% trans 'Are you absolutely certain that you wish to delete the following member?' %}</p>
@@ -15,7 +15,7 @@
 
 <div class="formbuttons">
     <button type="sumbit">{% trans 'DELETE FOREVER!' %}</button>
-    <button type="button" href="/member/view/{{ member.kennitala }}">{% trans 'Cancel' %}</button>
+    <button type="button" href="/member/view/{{ member.ssn }}">{% trans 'Cancel' %}</button>
 </div>
 
 <form>

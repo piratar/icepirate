@@ -20,9 +20,9 @@ urlpatterns = patterns('',
     # General stuff.
     url(r'^list/(?P<group_techname>.*)', 'member.views.list', name='list'),
     url(r'^add/', 'member.views.add', name='add'),
-    url(r'^edit/(?P<kennitala>[^/]+)', 'member.views.edit', name='edit'),
-    url(r'^delete/(?P<kennitala>[^/]+)', 'member.views.delete', name='delete'),
-    url(r'^view/(?P<kennitala>[^/]+)', 'member.views.view', name='view'),
+    url(r'^edit/(?P<ssn>[^/]+)', 'member.views.edit', name='edit'),
+    url(r'^delete/(?P<ssn>[^/]+)', 'member.views.delete', name='delete'),
+    url(r'^view/(?P<ssn>[^/]+)', 'member.views.view', name='view'),
 
     # Verification
     url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),

@@ -14,7 +14,7 @@ from group.models import Group
 from member.models import Member
 from member.forms import MemberForm
 
-from member import kennitala
+from member import ssn
 
 from icepirate.saml import authenticate
 
@@ -43,7 +43,7 @@ def add(request):
 
         if form.is_valid():
             member = form.save()
-            return HttpResponseRedirect('/member/view/%s' % member.kennitala)
+            return HttpResponseRedirect('/member/view/%s' % member.ssn)
 
     else:
         form = MemberForm()
@@ -51,9 +51,9 @@ def add(request):
     return render_to_response('member/add.html', { 'form': form }, context_instance=RequestContext(request))
 
 @login_required
-def edit(request, kennitala):
+def edit(request, ssn):
 
-    member = get_object_or_404(Member, kennitala=kennitala)
+    member = get_object_or_404(Member, ssn=ssn)
 
     if request.method == 'POST':
         member.groups = request.POST.getlist('groups')
@@ -61,7 +61,7 @@ def edit(request, kennitala):
 
         if form.is_valid():
             member = form.save()
-            return HttpResponseRedirect('/member/view/%s/' % member.kennitala)
+            return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 
     else:
         form = MemberForm(instance=member)
@@ -69,9 +69,9 @@ def edit(request, kennitala):
     return render_to_response('member/edit.html', { 'form': form, 'member': member }, context_instance=RequestContext(request))
 
 @login_required
-def delete(request, kennitala):
+def delete(request, ssn):
 
-    member = get_object_or_404(Member, kennitala=kennitala)
+    member = get_object_or_404(Member, ssn=ssn)
 
     if request.method == 'POST':
         member.delete()
@@ -80,9 +80,9 @@ def delete(request, kennitala):
     return render_to_response('member/delete.html', { 'member': member }, context_instance=RequestContext(request))
 
 @login_required
-def view(request, kennitala):
+def view(request, ssn):
 
-    member = get_object_or_404(Member, kennitala=kennitala)
+    member = get_object_or_404(Member, ssn=ssn)
 
     return render_to_response('member/view.html', { 'member': member }, context_instance=RequestContext(request))
 
@@ -90,20 +90,20 @@ def verify(request):
 
     member = None
 
-    kennitala = request.session.get('kennitala', None)
-    if kennitala:
-        member = Member.objects.get(kennitala=kennitala)
+    ssn = request.session.get('ssn', None)
+    if ssn:
+        member = Member.objects.get(ssn=ssn)
 
     if member is None:
         auth = authenticate(request, settings.AUTH_URL)
         try:
-            member = Member.objects.get(kennitala=auth['kennitala'])
+            member = Member.objects.get(ssn=auth['ssn'])
             member.verified = True
             member.auth_token = request.GET['token']
             member.auth_timing = datetime.now()
             member.save()
 
-            request.session['kennitala'] = member.kennitala
+            request.session['ssn'] = member.ssn
             return redirect('/member/verify/')
         except:
             pass
