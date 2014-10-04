@@ -35,7 +35,8 @@ def email(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_pre
 
     real_subject = subject
     if subject_prefix:
-        real_subject = u'[%s] %s' % (subject_prefix.decode('utf-8'), real_subject)
+        real_subject = u'[%s] %s' % (subject_prefix, real_subject)
+
 
     send_mail(
         real_subject,
