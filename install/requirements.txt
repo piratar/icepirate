@@ -1,5 +1,5 @@
 Django
 MySQL-python
-django-registration
+django-registration-redux
 lxml
 suds

@@ -155,3 +155,5 @@ LOGGING = {
 
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
