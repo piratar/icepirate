@@ -7,4 +7,6 @@ urlpatterns = patterns('',
     url(r'^delete/(?P<techname>[^/]+)', 'group.views.delete', name='delete'),
     url(r'^view/(?P<techname>[^/]+)', 'group.views.view', name='view'),
 
+    #api
+    url(r'^api/list/', 'group.views_api.list', name='list'),
 )
