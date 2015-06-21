@@ -111,6 +111,8 @@ def add(request):
     name = request.GET.get('name')
     email = request.GET.get('email')
     added = request.GET.get('added', '')
+    groups = request.GET.getlist('group', [])
+    print groups, "list"
 
     member = Member()
     member.ssn = ssn
@@ -122,6 +124,8 @@ def add(request):
     try:
         member.save()
         member = Member.objects.get(id=member.id)
+        for group in groups:
+            member.groups.add(Group.objects.get(techname=group))        
     except IntegrityError as e:
         return json_error(e)
 
