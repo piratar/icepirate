@@ -36,6 +36,22 @@ def list(request, group_techname):
     return render_to_response('member/list.html', context)
 
 @login_required
+def count(request):   
+    members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
+    results = {}
+    for entry in members_by_month:
+        added = str(entry['year'])+'-'+str(entry['month'])
+        if added in results:
+            results[added] += 1
+        else:
+            results[added] = 1
+    print sorted(results.iteritems())            
+    context = {
+        'data': sorted(results.iteritems())
+    }
+    return render_to_response('member/count.html', context)
+
+@login_required
 def add(request):
 
     if request.method == 'POST':

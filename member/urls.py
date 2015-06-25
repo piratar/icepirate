@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^edit/(?P<ssn>[^/]+)', 'member.views.edit', name='edit'),
     url(r'^delete/(?P<ssn>[^/]+)', 'member.views.delete', name='delete'),
     url(r'^view/(?P<ssn>[^/]+)', 'member.views.view', name='view'),
+    url(r'^count/', 'member.views.count', name='count'),
 
     # Verification
     url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
@@ -36,5 +37,6 @@ urlpatterns = patterns('',
     url(r'^api/filter/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.filter', name='api_filter'),
     url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.get', name='api_get'),
     url(r'^api/add/$', 'member.views_api.add', name='api_add'),
+    url(r'^api/count/$', 'member.views_api.count', name='api_count'),
 
 )

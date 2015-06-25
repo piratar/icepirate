@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<table>
+	<thead>
+		<tr>
+			<th>Year-Month</th>
+			<th>Count</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for key, item in data %}
+		<tr>
+			<td>{{ key }}</a></td>
+			<td>{{ item }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 
 from icepirate.utils import json_error
 
@@ -135,4 +136,16 @@ def add(request):
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
-
+def count(request):
+    if not require_login_or_key(request):
+        return redirect('/')
+        
+    members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
+    results = {}
+    for entry in members_by_month:
+        added = str(entry['year'])+'-'+str(entry['month'])
+        if added in results:
+            results[added] += 1
+        else:
+            results[added] = 1
+    return HttpResponse(json.dumps(results), content_type='application/json')
