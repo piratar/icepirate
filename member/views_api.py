@@ -112,7 +112,6 @@ def add(request):
     email = request.GET.get('email')
     added = request.GET.get('added', '')
     groups = request.GET.getlist('group', [])
-    print groups, "list"
 
     member = Member()
     member.ssn = ssn
