@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from group.models import Group
 from member.models import Member
 
-from icepirate.utils import email
+from icepirate.utils import quick_mail
 
 class Command(BaseCommand):
 
@@ -21,7 +21,7 @@ class Command(BaseCommand):
             body.append('Member count: %d' % group.member_set.count())
 
             sys.stdout.write('Sending member statistics for group \'%s\'...' % group.techname)
-            email(group.email, subject, '\n'.join(body))
+            quick_mail(group.email, subject, '\n'.join(body))
             sys.stdout.write(' done\n')
 
 

@@ -3,7 +3,7 @@ from sys import stdout, stderr
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from icepirate.utils import email
+from icepirate.utils import quick_mail
 
 from group.models import Group
 from member.models import Member
@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 delivery.message = message
                 delivery.save()
 
-                email(
+                quick_mail(
                     to=recipient.email,
                     subject=message.subject,
                     body=message.body,

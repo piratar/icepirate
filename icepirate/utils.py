@@ -31,7 +31,7 @@ def techify(input_string):
 
     return result
 
-def email(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_prefix=settings.EMAIL_SUBJECT_PREFIX):
+def quick_mail(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_prefix=settings.EMAIL_SUBJECT_PREFIX):
 
     real_subject = subject
     if subject_prefix:
