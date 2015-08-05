@@ -15,7 +15,7 @@ class Member(models.Model):
     auth_token = models.CharField(max_length=100, unique=True, null=True)
     auth_timing = models.DateTimeField(null=True)
 
-    groups = models.ManyToManyField(Group)
+    groups = models.ManyToManyField(Group, related_name='members')
 
     class Meta:
         ordering = ['added', 'name']

@@ -18,7 +18,7 @@ class Command(BaseCommand):
             body = []
 
             body.append('These are the member statistics for the group "%s"' % group.name)
-            body.append('Member count: %d' % group.member_set.count())
+            body.append('Member count: %d' % group.members.count())
 
             sys.stdout.write('Sending member statistics for group \'%s\'...' % group.techname)
             quick_mail(group.email, subject, '\n'.join(body))
