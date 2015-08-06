@@ -38,28 +38,28 @@ $(document).ready(function() {
 </div>
 
 <table>
-	<thead>
-		<tr>
-			<th>{% trans 'SSN' %}</th>
-			<th>{% trans 'Name' %}</th>
-			<th>{% trans 'Username' %}</th>
+    <thead>
+        <tr>
+            <th>{% trans 'SSN' %}</th>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Username' %}</th>
             <th>{% trans 'Email' %}</th>
             <th>{% trans 'Phone' %}</th>
             <th>{% trans 'Added' %}</th>
-		</tr>
-	</thead>
-	<tbody>
-	{% for member in members %}
-		<tr>
-			<td><a href="/member/view/{{ member.ssn }}">{{ member.ssn }}</a></td>
-			<td>{{ member.name }}</td>
-			<td>{% if member.username %}{{ member.username }}{% endif %}</td>
+        </tr>
+    </thead>
+    <tbody>
+    {% for member in members %}
+        <tr>
+            <td><a href="/member/view/{{ member.ssn }}">{{ member.ssn }}</a></td>
+            <td>{{ member.name }}</td>
+            <td>{% if member.username %}{{ member.username }}{% endif %}</td>
             <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
             <td>{{ member.phone }}</td>
-			<td>{{ member.added }}</td>
-		</tr>
-	{% endfor %}
-	</tbody>
+            <td>{{ member.added }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
 
 {% endblock %}
