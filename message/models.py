@@ -35,3 +35,48 @@ class MessageDelivery(models.Model):
     timing_start = models.DateTimeField(default=timezone.now)
     timing_end = models.DateTimeField(null=True)
 
+class InteractiveMessage(models.Model):
+
+    INTERACTIVE_TYPES = (
+        ('registration_received', 'Registration received'),
+        ('registration_confirmed', 'Registration confirmed'),
+    )
+
+    INTERACTIVE_TYPES_DETAILS = {
+        'registration_received': {
+            'description': 'Use the strings {{confirm}} and {{reject}}\nto place confirmation and rejection links.',
+            'links': ('confirm', 'reject'),
+        },
+    }
+
+    interactive_type = models.CharField(max_length=60, choices=INTERACTIVE_TYPES)
+    active = models.BooleanField(default=True)
+
+    from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
+    subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
+    body = models.TextField()
+
+    deliveries = models.ManyToManyField(Member, related_name='interactive_deliveries', through='InteractiveMessageDelivery')
+    author = models.ForeignKey(User) # User, not member
+
+    added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
+
+    def produce_links(self, random_string):
+        result = self.body
+
+        for link_name in InteractiveMessage.INTERACTIVE_TYPES_DETAILS[self.interactive_type]['links']:
+            link = '%s/message/mailcommand/%s/%s/%s/' % (settings.SITE_URL, self.interactive_type, link_name, random_string)
+            result = result.replace('{{%s}}' % link_name, link)
+
+        return result
+
+    class Meta:
+        ordering = ['interactive_type', 'added']
+
+class InteractiveMessageDelivery(models.Model):
+    interactive_message = models.ForeignKey('InteractiveMessage')
+    member = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL)
+    email = models.CharField(max_length=75)
+    timing_start = models.DateTimeField(default=timezone.now)
+    timing_end = models.DateTimeField(null=True)
+

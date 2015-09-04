@@ -1,0 +1,24 @@
+{% load staticfiles %}
+{% load i18n %}
+<html>
+<head>
+<title>{% trans 'Pirate Party Iceland: Member Database' %}</title>
+<link rel="stylesheet" href="http://www.piratar.is/wp-content/themes/piratar/style.css" />
+<script language="javascript" type="text/javascript" src="{% static "icepirate/js/jquery/jquery-1.10.2.js" %}"></script>
+</head>
+<body>
+
+<div id="header">
+    <div id="header-content">
+        <p id="site-heading"><a href="http://www.piratar.is/">Píratar</a></p>
+    </div>
+</div>
+
+<div class="section section-page">
+    <div class="container">
+        {% block content %}[ Content section ]{% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

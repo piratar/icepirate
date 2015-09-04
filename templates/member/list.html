@@ -52,9 +52,17 @@ $(document).ready(function() {
     {% for member in members %}
         <tr>
             <td><a href="/member/view/{{ member.ssn }}">{{ member.ssn }}</a></td>
-            <td>{{ member.name }}</td>
+            <td>
+                {{ member.name }}
+                {% if member.legal_name and member.name != member.legal_name %}
+                    <small>({{ member.legal_name }})</small>
+                {% endif %}
+            </td>
             <td>{% if member.username %}{{ member.username }}{% endif %}</td>
-            <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
+            <td>
+                <a href="mailto:{{ member.email }}">{{ member.email }}</a>
+                {% if member.email_verified %}<small>({% trans 'verified' %})</small>{% endif %}
+            </td>
             <td>{{ member.phone }}</td>
             <td>{{ member.added }}</td>
         </tr>

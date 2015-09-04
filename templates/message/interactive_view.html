@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<form action="/message/interactive/view/{{ interactive_message.id }}" method="POST">
+
+<div class="infosheet-container">
+{% include 'message/stubs/interactive_infosheet.html' %}
+</div>
+
+<div class="formbuttons">
+    <button type="button" href="{% url 'interactive_edit' interactive_message.interactive_type %}">{% trans 'Edit' %}</button>
+</div>
+
+</form>
+
+{% endblock %}
+

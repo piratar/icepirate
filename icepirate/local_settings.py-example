@@ -4,6 +4,13 @@
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
+# URL to use when constructing full links sent by email to users
+SITE_URL = 'https://something.example.com' # Without trailing slash
+
+# Main organization information
+ORGANIZATION_MAIN_URL = 'https://example.com' # Without trailing slash
+ORGANIZATION_EMAIL = 'example@example.com'
+
 # Authentication URL (Icekey)
 AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
 AUTH_ISLAND = {
@@ -14,6 +21,27 @@ AUTH_ISLAND = {
 
 # For example: https://some-site/member/api/get/ssn/1234567890/?json_api_key=some-random-string
 JSON_API_KEY = 'some-random-string'
+
+# IMAP account for receiving new registrations
+NEW_REGISTRATIONS_IMAP = {
+    'server': 'mail.example.com', # IMAP server
+    'username': 'example@example.com',
+    'password': 'some-other-random-string',
+    'inbox': 'inbox', # Almost always 'inbox', unless some filtering is going on in the mailbox
+
+    'filter-to-address': 'whatever-sent-to@example.com', # Email address to which new registrations are addressed
+    'filter-last-days': 3, # How far back we want to look, in days
+}
+
+# National registry lookup configuration
+# This assumes that the service is provided as is from CreditInfo (https://creditinfo.is)
+# CreditInfo provides XML via HTML form POST
+NATIONAL_REGISTRY = {
+    'url': 'https://ws.lt.is/NationalRegistryExtra/NationalRegistryExtraservice.asmx/LookupRegno',
+    'username': 'creditinfo_username',
+    'password': 'creditinfo_password',
+    'xml_namespace': 'http://ws.lt.is/NationalRegistryPlus',
+}
 
 DEBUG = True
 

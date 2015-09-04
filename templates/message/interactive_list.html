@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load printadmin %}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>{% trans 'Purpose' %}</th>
+            <th>{% trans 'Added' %}</th>
+            <th>{% trans 'Subject' %}</th>
+            <th>{% trans 'Author' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for interactive_type, entry in display_struct.items %}
+        {% if entry.active_message %}
+            {% with entry.active_message as interactive_message %}
+                <tr>
+                    <td><strong>{{ entry.display }}</strong></td>
+                    <td>{{ interactive_message.added }}</td>
+                    <td><a href="{% url 'interactive_view' interactive_type %}">{{ interactive_message.subject }}</a></td>
+                    <td>{{ interactive_message.author|printadmin }}</td>
+                </tr>
+            {% endwith %}
+        {% else %}
+            <tr>
+                <td><strong>{{ entry.display }}</strong></td>
+                <td>&nbsp;</td>
+                <td><button href="{% url 'interactive_edit' interactive_type %}">{% trans 'Add Interactive Message' %}</button></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<script language="javascript" type="text/javascript">
+
+$(document).ready(function() {
+    $('#id_subject').focusEnd();
+});
+
+</script>
+
+<form action="/message/interactive/edit/{{ form.instance.interactive_type }}/" method="POST" class="bigform">
+{% csrf_token %}
+<p>
+    <label>{% trans 'Purpose' %}:</label>
+    <strong>{{ form.instance.get_interactive_type_display }}</strong>
+</p>
+{{ form.as_p }}
+<div class="formbuttons">
+    <button type="submit">{% trans 'Save' %}</button>
+    <button type="button" href="{% url 'interactive_view' interactive_message.interactive_type %}">{% trans 'Cancel' %}</button>
+</div>
+</form>
+
+{% endblock %}
+

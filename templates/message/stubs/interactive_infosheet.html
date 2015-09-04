@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load printadmin %}
+
+<div class="infosheet">
+    <div class="header">
+        {% trans 'Message added at' %} {{ interactive_message.added }}
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Added' %}:</p>
+        <p class="value">{{ interactive_message.added }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Subject' %}:</p>
+        <p class="value">{{ interactive_message.subject }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Body' %}:</p>
+        <p class="value">
+            <div class="mailbody">{{ interactive_message.body|urlize|linebreaks }}</div>
+        </p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Author' %}:</p>
+        <p class="value">{{ interactive_message.author|printadmin }}</p>
+    </div>
+</div>
+
