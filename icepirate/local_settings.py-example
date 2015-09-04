@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# 1) Start a Django shell: python manage.py shell
-# 2) Enter the following commands (resolving dependencies as needed):
-#    : from django.contrib.sites.models import Site
-#    : new_site = Site.objects.create(domain='foo.com', name='foo.com')
-#    : print new_site.id
-# 3) Set SITE_ID below to the resulting output (hint: 2L just means 2)
-SITE_ID = 1
-
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
