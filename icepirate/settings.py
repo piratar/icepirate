@@ -6,12 +6,6 @@ try:
 except:
     raise Exception('You need to set up local_settings.py (see local_settings.py-example)')
 
-try:
-    if SITE_ID == 0:
-        raise Exception('You must set SITE_ID (see local_settings.py-example)')
-except:
-    raise Exception('SITE_ID must be defined (see local_settings.py-example)')
-
 # Django settings for icepirate project.
 
 TEMPLATE_DEBUG = DEBUG
@@ -115,7 +109,6 @@ INSTALLED_APPS = (
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.sessions',
-	'django.contrib.sites',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	# Uncomment the next line to enable the admin:
