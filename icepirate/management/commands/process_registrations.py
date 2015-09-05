@@ -116,27 +116,31 @@ class Command(BaseCommand):
             for reg in registration_requests:
                 stdout.write('Processing registration (%s, %s, %s)\n' % (reg['ssn'], reg['name'], reg['email']))
 
-                if self.check_if_valid_ssn(reg):
-                    if self.is_already_member(reg):
-                        if not self.check_if_emails_differ(reg):
-                            stdout.write('* Registration ignored.\n')
+                try:
+                    if self.check_if_valid_ssn(reg):
+                        if self.is_already_member(reg):
+                            if not self.check_if_emails_differ(reg):
+                                stdout.write('* Registration ignored.\n')
 
-                    else:
-                        if not self.check_if_recently_rejected(reg):
-                            if self.check_national_registry(reg):
-                                if not self.check_names(reg):
-                                    self.notify_name_mismatch(reg)
+                        else:
+                            if not self.check_if_recently_rejected(reg):
+                                if self.check_national_registry(reg):
+                                    if not self.check_names(reg):
+                                        self.notify_name_mismatch(reg)
 
-                                self.register_member(reg)
+                                    self.register_member(reg)
+
+                                else:
+                                    stdout.write('* Registration ignored.\n')
 
                             else:
                                 stdout.write('* Registration ignored.\n')
 
-                        else:
-                            stdout.write('* Registration ignored.\n')
-
-                else:
-                    stdout.write('* Registration ignored.\n')
+                    else:
+                        stdout.write('* Registration ignored.\n')
+                except Exception as e:
+                    stdout.write('Error: %s\n' % e)
+                    stdout.write('THERE HAS BEEN AN ERROR. Continuing with registrations.\n')
 
                 stdout.write('\n')
 
