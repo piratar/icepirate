@@ -8,6 +8,7 @@ class Member(models.Model):
     username = models.CharField(max_length=50, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
     email_verified = models.BooleanField(default=False)
+    email_unwanted = models.BooleanField(default=False)
     phone = models.CharField(max_length=30, blank=True)
     partake = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)

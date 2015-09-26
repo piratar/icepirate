@@ -18,7 +18,12 @@
     </div>
     <div class="line">
         <p class="label">{% trans 'Email' %}:</p>
-        <p class="value"><a href="mailto:{{ member.email }}">{{ member.email }}</a></p>
+        <p class="value">
+            <a href="mailto:{{ member.email }}">{{ member.email }}</a>
+            {% if member.email_unwanted %}
+                <small>(Email unwanted)</small>
+            {% endif %}
+        </p>
     </div>
     {% if member.phone %}
     <div class="line">
