@@ -105,6 +105,8 @@ class Command(BaseCommand):
 
         # Observe Ctrl-C
         try:
+            stdout.write('Processing started at %s\n' % timezone.now())
+
             # First we make sure that the registration_received email (interactive message)
             # has been configured in the web app.
             try:
