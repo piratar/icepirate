@@ -209,7 +209,7 @@ class Command(BaseCommand):
 
         stdout.write('- Checking if email addresses differ...')
         stdout.flush()
-        if member.email != reg['email']:
+        if member.email.lower() != reg['email'].lower():
             stdout.write(' yes\n')
 
             stdout.write('* Notifying admins...')
