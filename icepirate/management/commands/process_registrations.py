@@ -9,8 +9,9 @@ if SSN checksum is OK
         if new email
             notify admins and task them with investigation
             (do nothing else)
-        else
-            do nothing
+
+        if new groups requested
+            register member to requested groups
     else
         if user has not recently rejected membership
             if SSN is in national registry
@@ -120,10 +121,14 @@ class Command(BaseCommand):
 
                 try:
                     if self.check_if_valid_ssn(reg):
-                        if self.is_already_member(reg):
-                            if not self.check_if_emails_differ(reg):
-                                stdout.write('* Registration ignored.\n')
+                        existing_member = self.is_already_member(reg)
+                        if existing_member:
+                            added_to_groups = self.process_groups(reg, existing_member)
 
+                            emails_differ = self.check_if_emails_differ(reg)
+
+                            if not added_to_groups and not emails_differ:
+                                stdout.write('* Registration ignored.\n')
                         else:
                             if not self.check_if_recently_rejected(reg):
                                 if self.check_national_registry(reg):
@@ -318,6 +323,21 @@ class Command(BaseCommand):
             return True
 
 
+    # Put member in appropriate groups
+    def process_groups(self, reg, member):
+        added_to_groups = False
+        for group in Group.objects.filter(name__in=reg['member_assoc']).exclude(members=member):
+            # I was here... about to make this print thing conditional
+            stdout.write('* Adding member to group: %s...' % group.name)
+            stdout.flush()
+            group.members.add(member)
+            stdout.write(' done\n')
+
+            added_to_groups = True
+
+        return added_to_groups
+
+
     def register_member(self, reg):
         random_string = generate_random_string()
         while Member.objects.filter(temporary_web_id=random_string).count() > 0:
@@ -347,12 +367,7 @@ class Command(BaseCommand):
         member.save()
         stdout.write(' done\n')
 
-        # Put member in appropriate groups
-        for group in Group.objects.filter(name__in=reg['member_assoc']):
-            stdout.write('* Adding member to group: %s...' % group.name)
-            stdout.flush()
-            group.members.add(member)
-            stdout.write(' done\n')
+        self.process_groups(reg, member)
 
         # Send confirmation message
         message = InteractiveMessage.objects.get(interactive_type='registration_received', active=True)
