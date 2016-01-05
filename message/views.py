@@ -70,7 +70,7 @@ def delete(request, message_id):
 
 @login_required
 def list(request):
-    messages = Message.objects.select_related('groups').all()
+    messages = Message.objects.all()
 
     return render_to_response('message/list.html', { 'messages': messages })
 
