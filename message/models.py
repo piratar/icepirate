@@ -40,12 +40,17 @@ class InteractiveMessage(models.Model):
     INTERACTIVE_TYPES = (
         ('registration_received', 'Registration received'),
         ('registration_confirmed', 'Registration confirmed'),
+        ('reject_email_messages', 'Reject mail messages'),
     )
 
     INTERACTIVE_TYPES_DETAILS = {
         'registration_received': {
             'description': 'Use the strings {{confirm}} and {{reject}}\nto place confirmation and rejection links.',
             'links': ('confirm', 'reject'),
+        },
+        'reject_email_messages': {
+            'description': 'Use the string {{reject_link}} to place\nthe rejection link.',
+            'links': ('reject_link',),
         },
     }
 

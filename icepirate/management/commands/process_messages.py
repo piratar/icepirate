@@ -3,11 +3,14 @@ from sys import stdout, stderr
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
 
 from group.models import Group
 from member.models import Member
-from message.models import Message, MessageDelivery
+from message.models import InteractiveMessage
+from message.models import Message
+from message.models import MessageDelivery
 
 class Command(BaseCommand):
 
@@ -51,6 +54,25 @@ class Command(BaseCommand):
 
                 stdout.write("- (%d/%d) Mailing message with ID %d to %s..." % (i, recipient_count, message.id, recipient.email))
 
+                body = message.body
+
+                try:
+                    rejection_message = InteractiveMessage.objects.get(interactive_type='reject_email_messages')
+                    if not recipient.temporary_web_id:
+                        random_string = generate_random_string()
+                        while Member.objects.filter(temporary_web_id=random_string).count() > 0:
+                            # Preventing duplication errors
+                            random_string = generate_random_string()
+
+                        recipient.temporary_web_id = random_string
+                        recipient.save()
+
+                    rejection_body = rejection_message.produce_links(recipient.temporary_web_id)
+                    body += '\n\n------------------------------\n'
+                    body += rejection_body
+                except InteractiveMessage.DoesNotExist:
+                    pass
+
                 delivery = MessageDelivery()
                 delivery.member = recipient
                 delivery.message = message
@@ -59,7 +81,7 @@ class Command(BaseCommand):
                 quick_mail(
                     to=recipient.email,
                     subject=message.subject,
-                    body=message.body,
+                    body=body,
                     from_email=message.from_address,
                     subject_prefix=None
                 )

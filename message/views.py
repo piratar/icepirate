@@ -173,8 +173,6 @@ def mailcommand(request, interactive_type, link, random_string):
                 return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
             member.email_verified = True
-            member.temporary_web_id = None
-            member.temporary_web_id_timing = None
             member.save()
 
             return render_to_response('message/mailcommand.html', {
@@ -201,6 +199,24 @@ def mailcommand(request, interactive_type, link, random_string):
             }, context_instance=RequestContext(request))
         else:
             return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+    elif interactive_type == 'reject_email_messages':
+        if link == 'reject_link':
+            try:
+                member = Member.objects.get(temporary_web_id=random_string)
+            except Member.DoesNotExist:
+                return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+
+            member.email_unwanted = True
+            member.save()
+
+            return render_to_response('message/mailcommand.html', {
+                'interactive_type': interactive_type,
+                'link': link,
+                'redirect_countdown': 30,
+                'redirect_url': settings.ORGANIZATION_MAIN_URL,
+                'member': member,
+                'organization_email': settings.ORGANIZATION_EMAIL,
+            }, context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
