@@ -1,4 +1,4 @@
-Django
+Django==1.8.10
 MySQL-python
 django-registration-redux
 lxml
