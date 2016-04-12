@@ -10,6 +10,7 @@
 			<th>{% trans 'Techname' %}</th>
             <th>{% trans 'Email' %}</th>
 			<th>{% trans 'Added' %}</th>
+			<th>{% trans 'Count' %}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,6 +20,7 @@
             <td>{{ group.techname }}</td>
             <td><a href="mailto:{{ group.email }}">{{ group.email }}</a></td>
 			<td>{{ group.added }}</td>
+			<td>{{ group.members.count  }}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
