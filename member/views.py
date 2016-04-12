@@ -40,7 +40,7 @@ def count(request):
     members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
     results = {}
     for entry in members_by_month:
-        added = str(entry['year'])+'-'+str(entry['month'])
+        added = str(entry['year'])+'-'+str(entry['month']).zfill(2)
         if added in results:
             results[added] += 1
         else:
