@@ -19,6 +19,9 @@ AUTH_ISLAND = {
     'password': 'some_password',
 }
 
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '1234567890abcdefghijklm9876543210nopqrstuvwxyz1234567890'
+
 # For example: https://some-site/member/api/get/ssn/1234567890/?json_api_key=some-random-string
 JSON_API_KEY = 'some-random-string'
 

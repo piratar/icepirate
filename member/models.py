@@ -20,6 +20,7 @@ class Member(models.Model):
     legal_name = models.CharField(max_length=63)
     legal_address = models.CharField(max_length=63)
     legal_zip_code = models.CharField(max_length=3, null=True)
+    legal_municipality_code = models.CharField(max_length=5, null=True)
     legal_zone = models.CharField(max_length=63, null=True)
     legal_lookup_timing = models.DateTimeField(null=True)
 
