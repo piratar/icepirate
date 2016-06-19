@@ -32,6 +32,12 @@ def member_to_dict(member):
         'groups': []
     }
 
+    for key, val in (
+            ('legal_zip_code', member.legal_zip_code),
+            ('legal_municipality_code', member.legal_municipality_code)):
+        if val:
+            result[key] = val
+
     result['groups'] = [g.techname for g in member.groups.all()]
     return result
 
