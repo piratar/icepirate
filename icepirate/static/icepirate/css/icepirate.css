@@ -55,6 +55,7 @@ form textarea, form input { font-family: inherit; font-size: inherit; }
 form.bigform input[type='text'] { width: 360px; }
 form.bigform input[type='email'] { width: 360px; }
 form.bigform textarea { width: 360px; }
+form.bigform select { width: 360px; }
 form.bigform ul { min-width: 360px; }
 
 /* General formats */

@@ -11,7 +11,8 @@ class MessageForm(ModelForm):
 
     class Meta:
         model = Message
-        fields = ['from_address', 'subject', 'body', 'send_to_all', 'groups']
+        fields = ['from_address', 'subject', 'body', 'send_to_all', 'groups',
+                  'locations']
 
 class InteractiveMessageForm(ModelForm):
 
