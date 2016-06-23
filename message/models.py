@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from group.models import Group
-from member.models import Member
+from member.models import Member, LocationCode
 
 class Message(models.Model):
 
@@ -14,6 +14,7 @@ class Message(models.Model):
 
     send_to_all = models.BooleanField(default=True)
     groups = models.ManyToManyField(Group)
+    locations = models.ManyToManyField(LocationCode, blank=True)
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
