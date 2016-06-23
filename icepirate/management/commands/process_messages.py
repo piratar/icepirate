@@ -34,9 +34,11 @@ class Command(BaseCommand):
             if message.send_to_all:
                 recipients = Member.objects.filter(email_unwanted=False)
             else:
-                groups = message.groups.all()
-                for group in groups:
+                for group in message.groups.all():
                     recipients.extend(group.members.filter(email_unwanted=False))
+
+                for location in message.locations.all():
+                    recipients.extend(location.get_members())
 
             # NOTE: If a MessageDelivery exists for a user but timing_end=None, then previous sending must have failed
             already_delivered = [d.member for d in message.messagedelivery_set.select_related('member').exclude(timing_end=None)]
