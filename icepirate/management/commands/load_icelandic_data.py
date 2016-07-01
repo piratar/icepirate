@@ -5,7 +5,7 @@
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
-from member.models import LocationCode
+from locationcode.models import LocationCode
 
 
 # Gögn frá: https://is.wikipedia.org/wiki/%C3%8Dslensk_sveitarf%C3%A9l%C3%B6g_eftir_sveitarf%C3%A9lagsn%C3%BAmerum
