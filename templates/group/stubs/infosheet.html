@@ -20,12 +20,31 @@
         <p class="label">{% trans 'Added' %}:</p>
         <p class="value">{{ group.added }}</p>
     </div>
+    <div class="line">
+        <p class="label">{% trans 'Subgroups' %}:</p>
+        <p class="value">{% if group.auto_subgroups.count %}
+            {% include 'group/stubs/shortlist.html' with groups=group.auto_subgroups.all nolinebr=True %}
+        {% else %}
+            <i>{% trans 'none' %}</i>
+        {% endif %}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Locations' %}:</p>
+        <p class="value">{% if group.auto_locations.count %}
+            {% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}
+            ({{ group.combination_method }})
+        {% else %}
+            <i>{% trans 'none' %}</i>
+        {% endif %}</p>
+    </div>
     {% if group.members.count %}
     <div class="line">
         <p class="label">{% trans 'Members' %}:</p>
-        <p class="value">
-            {% include 'member/stubs/shortlist.html' with members=group.members.all %}
-        </p>
+        <p class="value"><a href="/member/list/{{ group.techname }}">
+            {{ group.members.count }}
+        </a>(<a href="/member/list/{{ group.techname }}/combined">
+            {{ group.get_members.count }} combined
+        </a>)</p>
     </div>
     {% endif %}
 </div>
