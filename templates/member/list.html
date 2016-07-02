@@ -7,12 +7,14 @@
 $(document).ready(function() {
 
     $('#export-csv').click(function() {
-        location.href = '/member/csv/list/' + $('#group-techname').val();
+        location.pathname = (location.pathname.substring(0, 7) + '/csv' + 
+                             location.pathname.substring(7));
     });
 
     // Group selection drop-down list
-    $('#group-techname').change(function() {
-        location.href = '/member/list/' + $(this).val();
+    $('#group-techname, #combined').change(function() {
+        location.href = '/member/list/' + $('#group-techname').val() +
+                        ($('#combined').is(':checked') ? '/combined' : '');
     });
 
 });
@@ -20,13 +22,23 @@ $(document).ready(function() {
 
 <div class="list-top-buttons">
     <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
-    {% if groups.count %}
+    {% if groups.count or location_codes.count %}
     <select id="group-techname">
         <option value="">{% trans '- All Groups -' %}</option>
         {% for group in groups %}
             <option value="{{ group.techname }}" {% if group.techname == group_techname %}selected="1"{% endif %}>{{ group }}</option>
         {% endfor %}
+        <option value="">----</option>
+        {% for lc in location_codes %}
+            <option value="in/{{ lc.location_code }}" {% if lc == location_code %}selected{% endif %}>{{ lc|truncatechars:40 }}</option>
+        {% endfor %}
     </select>
+    {% endif %}
+    {% if group %}
+        {% if combined or group.auto_subgroups.count or group.auto_locations.count %}
+            <input type=checkbox id="combined"{% if combined %}checked{% endif %}>
+            {% trans "Include location-based membership and/or subgroups" %}
+        {% endif %}
     {% endif %}
 </div>
 
