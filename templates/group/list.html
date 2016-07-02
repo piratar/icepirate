@@ -25,7 +25,10 @@
 			<td>{{ group.added }}</td>
 			<td><a href="/member/list/{{ group.techname }}">{{ group.members.count }}</a></td>
 			<td>{% include 'group/stubs/shortlist.html' with groups=group.auto_subgroups.all nolinebr=True %}</td>
-			<td>{% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}</td>
+			<td>{% if group.auto_locations.count %}
+                          {{ group.combination_method }} with:
+                          {% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}
+                        {% endif %}</td>
 			<td><a href="/member/list/{{ group.techname }}/combined">{{ group.get_members.count }}</a></td>
 		</tr>
 	{% endfor %}

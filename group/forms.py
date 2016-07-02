@@ -11,4 +11,5 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = Group
-        fields = ['name', 'email', 'added', 'auto_subgroups', 'auto_locations']
+        fields = ['name', 'email', 'added',
+                  'auto_subgroups', 'auto_locations', 'combination_method']
