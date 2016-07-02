@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for message in messages %}
+    {% for message in messages reversed %}
         <tr>
             <td>{{ message.added }}</td>
             <td><a href="/message/view/{{ message.id }}/">{{ message.subject }}</a></td>
@@ -29,6 +29,7 @@
                     {% trans 'Everyone' %}
                 {% else %}
                     {% include 'group/stubs/shortlist.html' with groups=message.groups.all nolinebr=True %}
+                    {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all nolinebr=True %}
                 {% endif %}
             </td>
             <td>{{ message.author|printadmin }}</td>

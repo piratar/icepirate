@@ -38,6 +38,7 @@
                 {% trans 'Everyone' %}
             {% else %}
                 {% include 'group/stubs/shortlist.html' with groups=message.groups.all %}
+                {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all %}
             {% endif %}
         </p>
     </div>

@@ -12,6 +12,7 @@ class MessageForm(ModelForm):
     class Meta:
         model = Message
         fields = ['from_address', 'subject', 'body', 'send_to_all', 'groups',
+                  'groups_include_subgroups', 'groups_include_locations',
                   'locations']
 
 class InteractiveMessageForm(ModelForm):
