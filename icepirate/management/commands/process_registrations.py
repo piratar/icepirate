@@ -43,6 +43,7 @@ import imaplib
 import email
 import json
 import locale
+import os
 import pytz
 import urllib
 import urllib2
@@ -202,6 +203,21 @@ class Command(BaseCommand):
 
         return names_match
 
+    def recently_mailed_about(self, email):
+        filename = os.path.expanduser('~/recently-mailed-about.json')
+        try:
+            with open(filename, 'r') as fd:
+                recent = json.load(fd)
+        except (IOError, OSError, ValueError):
+            recent = []
+        if email in recent:
+            return True
+        else:
+            recent.append(email)
+            recent = recent[-100:]
+            with open(filename, 'w') as fd:
+                json.dump(recent, fd)
+            return False
 
     def check_if_emails_differ(self, reg):
 
@@ -212,32 +228,36 @@ class Command(BaseCommand):
         if member.email.lower() != reg['email'].lower():
             stdout.write(' yes\n')
 
-            stdout.write('* Notifying admins...')
-            stdout.flush()
+            if self.recently_mailed_about(reg['email'].lower()):
+                stdout.write('* Already notified admins, ignoring.')
+                stdout.flush()
+            else:
+                stdout.write('* Notifying admins...')
+                stdout.flush()
 
-            for admin in User.objects.filter(is_staff=True):
-                body = 'IMPORTANT!\n'
-                body += 'Someone who is already a member registered again, but they used a different email.\n'
-                body += '\n'
-                body += 'Please contact the member through both email addresses and resolve the issue.\n'
-                body += '\n'
-                body += 'Prior email address: %s\n' % member.email
-                body += 'New email address: %s\n' % reg['email']
-                body += '\n'
-                body += 'SSN: %s\n' % reg['ssn']
-                body += 'Name in registration: %s\n' % reg['name']
-                if reg['name'] != member.name:
-                    body += 'Name in database: %s\n' % member.name
-                body += '\n'
-                body += 'NOTE: The member has NOT been modified in the database. Please modify manually after investigating the matter.\n'
-                quick_mail(admin.email, 'IMPORTANT! New email address in registration!', body)
+                for admin in User.objects.filter(is_staff=True):
+                    body = 'IMPORTANT!\n'
+                    body += 'Someone who is already a member registered again, but they used a different email.\n'
+                    body += '\n'
+                    body += 'Please contact the member through both email addresses and resolve the issue.\n'
+                    body += '\n'
+                    body += 'Prior email address: %s\n' % member.email
+                    body += 'New email address: %s\n' % reg['email']
+                    body += '\n'
+                    body += 'SSN: %s\n' % reg['ssn']
+                    body += 'Name in registration: %s\n' % reg['name']
+                    if reg['name'] != member.name:
+                        body += 'Name in database: %s\n' % member.name
+                    body += '\n'
+                    body += 'NOTE: The member has NOT been modified in the database. Please modify manually after investigating the matter.\n'
+                    quick_mail(admin.email, 'IMPORTANT! New email address in registration!', body)
 
-            stdout.write(' done\n')
+                stdout.write(' done\n')
+
             return True
         else:
             stdout.write(' no\n')
             return False
-
 
     def check_national_registry(self, reg):
         stdout.write('- Checking if %s is an individual in the national registry...' % reg['ssn'])
