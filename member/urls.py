@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     # ------------------------------------------------------------------#
 
     # General stuff.
+    url(r'^list/in/(?P<location_code>[^/]*)', 'member.views.list'),
+    url(r'^list/(?P<group_techname>.+)/(?P<combined>combined)', 'member.views.list', name='list'),
     url(r'^list/(?P<group_techname>.*)', 'member.views.list', name='list'),
     url(r'^add/', 'member.views.add', name='add'),
     url(r'^edit/(?P<ssn>[^/]+)', 'member.views.edit', name='edit'),
@@ -30,7 +32,9 @@ urlpatterns = patterns('',
     url(r'^verify/', 'member.views.verify', name='verify'),
 
     # CSV
-    url(r'^csv/list/(?P<group_techname>.*)', 'member.views_csv.list', name='csv_list'),
+    url(r'^csv/list/in/(?P<location_code>[^/]*)', 'member.views_csv.list'),
+    url(r'^csv/list/(?P<group_techname>[^/]*)/(?P<combined>[^/]+)', 'member.views_csv.list'),
+    url(r'^csv/list/(?P<group_techname>[^/]*)', 'member.views_csv.list', name='csv_list'),
 
     # API pages (JSON)
     url(r'^api/list/', 'member.views_api.list', name='api_list'),

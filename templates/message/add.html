@@ -9,7 +9,10 @@ function check_send_to_all() {
     var checked = $('#id_send_to_all').is(':checked');
 
     $boxes = $('#id_groups input[type="checkbox"]')
-    $subgroups = $('#id_groups, label[for="id_groups_0"], #id_locations, label[for="id_locations"]')
+    $subgroups = $('#id_groups, label[for="id_groups_0"], ' +
+                   '#id_groups_include_subgroups, label[for="id_groups_include_subgroups"],' +
+                   '#id_groups_include_locations, label[for="id_groups_include_locations"],' +
+                   '#id_locations, label[for="id_locations"]')
 
     if (!checked) {
         $boxes.removeAttr('disabled');

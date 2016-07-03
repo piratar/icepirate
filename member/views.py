@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from group.models import Group
 from member.models import Member
+from locationcode.models import LocationCode
 from member.forms import MemberForm
 
 from member import ssn
@@ -19,19 +20,39 @@ from member import ssn
 from icepirate.saml import authenticate
 
 @login_required
-def list(request, group_techname):
+def list(request, group_techname=None, location_code=None, combined=False):
 
+    group = None
     if group_techname:
-        members = Member.objects.filter(groups__techname=group_techname)
+        group = Group.objects.get(techname=group_techname)
+        if combined:
+            members = group.get_members()
+            if members.count() == group.members.count():
+                combined = False
+        else:
+            members = group.members.all()
+        location_code = None
+
+    elif location_code:
+        location_code = LocationCode.objects.get(location_code=location_code)
+        members = location_code.get_members()
+        combined = False
+
     else:
         members = Member.objects.all()
+        combined = False
 
     groups = Group.objects.all()
+    location_codes = LocationCode.objects.all()
 
     context = {
         'members': members,
         'groups': groups,
+        'location_codes': location_codes,
         'group_techname': group_techname,
+        'group': group,
+        'location_code': location_code,
+        'combined': combined
     }
     return render_to_response('member/list.html', context)
 

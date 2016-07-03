@@ -10,7 +10,10 @@
 			<th>{% trans 'Techname' %}</th>
             <th>{% trans 'Email' %}</th>
 			<th>{% trans 'Added' %}</th>
-			<th>{% trans 'Count' %}</th>
+			<th>{% trans 'Members' %}</th>
+			<th>{% trans 'Subgroups' %}</th>
+			<th>{% trans 'Locations' %}</th>
+			<th>{% trans 'Combined' %}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,7 +23,13 @@
             <td>{{ group.techname }}</td>
             <td><a href="mailto:{{ group.email }}">{{ group.email }}</a></td>
 			<td>{{ group.added }}</td>
-			<td>{{ group.members.count  }}</td>
+			<td><a href="/member/list/{{ group.techname }}">{{ group.members.count }}</a></td>
+			<td>{% include 'group/stubs/shortlist.html' with groups=group.auto_subgroups.all nolinebr=True %}</td>
+			<td>{% if group.auto_locations.count %}
+                          {{ group.combination_method }} with:
+                          {% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}
+                        {% endif %}</td>
+			<td><a href="/member/list/{{ group.techname }}/combined">{{ group.get_members.count }}</a></td>
 		</tr>
 	{% endfor %}
 	</tbody>

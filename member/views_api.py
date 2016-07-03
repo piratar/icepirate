@@ -14,6 +14,7 @@ from icepirate.utils import json_error
 from member.models import Member
 from group.models import Group
 
+
 def require_login_or_key(request):
     return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
 
@@ -38,7 +39,15 @@ def member_to_dict(member):
         if val:
             result[key] = val
 
-    result['groups'] = [g.techname for g in member.groups.all()]
+    all_groups = [g.techname for g in member.get_groups()]
+    main_groups = [g.techname for g in member.groups.all()]
+    # We cannot use list() here because it's redefined below :(
+    auto_groups = [g for g in (set(all_groups) - set(main_groups))]
+
+    result['groups'] = all_groups
+    result['main_groups'] = main_groups
+    result['auto_groups'] = auto_groups
+
     return result
 
 @login_required

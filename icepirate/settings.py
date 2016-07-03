@@ -99,6 +99,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'icepirate',
+	'locationcode',
 	'member',
     'group',
     'message',

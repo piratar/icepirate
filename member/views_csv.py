@@ -4,25 +4,38 @@ from django.http import HttpResponse
 
 from django.contrib.auth.decorators import login_required
 
+from group.models import Group
 from member.models import Member
+from locationcode.models import LocationCode
 
 @login_required
-def list(request, group_techname):
+def list(request, group_techname=None, location_code=None, combined=False):
     if group_techname:
-        members = Member.objects.filter(groups__techname=group_techname)
+        group = Group.objects.get(techname=group_techname)
+        if combined:
+            members = group.get_members()
+        else:
+            members = group.members.all()
+    elif location_code:
+        location_code = LocationCode.objects.get(location_code=location_code)
+        members = location_code.get_members()
     else:
         members = Member.objects.all()
     
     # NOTE: Apparently concatinating lists of strings is really efficient.
     lines = []
 
-    lines.append('#"SSN","Name","Username","Email","Phone","Added","Municipality","Zip"')
+    lines.append('#"SSN","Name","Username","Email","Phone","Added"')
     for m in members:
-        line = '"%s","%s","%s","%s","%s","%s"' % (m.ssn, m.name, m.username, m.email, m.phone, m.added, m.legal_municipality_code, m.legal_zip_code)
+        line = '"%s","%s","%s","%s","%s","%s"' % (m.ssn, m.name, m.username, m.email, m.phone, m.added)
         lines.append(line)
 
     if group_techname:
-        filename = 'Members.%s.%s.csv' % (group_techname, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
+        fmt = 'Members-Combined.%s.%s.csv' if combined else 'Members.%s.%s.csv'
+        filename = fmt % (group_techname, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
+    elif location_code:
+        loc_name = unicode(location_code).replace(':', '-').replace(' ', '_')
+        filename = 'Members-%s.%s.csv' % (loc_name, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
     else:
         filename = 'Members.%s.csv' % datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
 

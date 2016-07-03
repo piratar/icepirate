@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='LocationCode',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('location_code', models.CharField(unique=True, max_length=20)),
+                ('location_name', models.CharField(max_length=200)),
+                ('auto_location_codes', models.ManyToManyField(to='locationcode.LocationCode')),
+            ],
+        ),
+    ]

@@ -43,5 +43,13 @@
         </p>
     </div>
     {% endif %}
+    {% if member.get_location_codes %}
+    <div class="line">
+        <p class="label">{% trans 'Locations' %}:</p>
+        <p class="value">
+            {% include 'locationcode/stubs/shortlist.html' with locationcodes=member.get_location_codes %}
+        </p>
+    </div>
+    {% endif %}
 </div>
 
