@@ -134,7 +134,8 @@ class Command(BaseCommand):
                             if not self.check_if_recently_rejected(reg):
                                 if self.check_national_registry(reg):
                                     if not self.check_names(reg):
-                                        self.notify_name_mismatch(reg)
+                                        if not self.recently_mailed_about(reg):
+                                            self.notify_name_mismatch(reg)
 
                                     self.register_member(reg)
 
@@ -203,7 +204,8 @@ class Command(BaseCommand):
 
         return names_match
 
-    def recently_mailed_about(self, email):
+    def recently_mailed_about(self, reg):
+        email = reg['email'].lower()
         filename = os.path.expanduser('~/recently-mailed-about.json')
         try:
             with open(filename, 'r') as fd:
@@ -228,7 +230,7 @@ class Command(BaseCommand):
         if member.email.lower() != reg['email'].lower():
             stdout.write(' yes\n')
 
-            if self.recently_mailed_about(reg['email'].lower()):
+            if self.recently_mailed_about(reg):
                 stdout.write('* Already notified admins, ignoring.')
                 stdout.flush()
             else:
