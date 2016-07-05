@@ -57,17 +57,30 @@ def list(request, group_techname=None, location_code=None, combined=False):
     return render_to_response('member/list.html', context)
 
 @login_required
-def count(request):   
+def count(request, grep=None):
     members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
     results = {}
     for entry in members_by_month:
         added = str(entry['year'])+'-'+str(entry['month']).zfill(2)
-        if added in results:
-            results[added] += 1
-        else:
-            results[added] = 1
-    print sorted(results.iteritems())            
+        if (not grep) or grep in added:
+            if added in results:
+                results[added] += 1
+            else:
+                results[added] = 1
     context = {
+        'grouping': 'Year-Month',
+        'data': sorted(results.iteritems())
+    }
+    return render_to_response('member/count.html', context)
+
+@login_required
+def location_count(request, grep=None):
+    results = {}
+    for loc in LocationCode.objects.all():
+        if (not grep) or grep in unicode(loc):
+            results[unicode(loc)] = loc.get_members().count()
+    context = {
+        'grouping': 'LocationCode',
         'data': sorted(results.iteritems())
     }
     return render_to_response('member/count.html', context)

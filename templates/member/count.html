@@ -2,10 +2,17 @@
 {% load i18n %}
 
 {% block content %}
+<p>
+  <b>Hint:</b> Add a term to the URL to filter the results. Example:
+  <a href="/member/count/2014">2014</a>,
+  <a href="/member/count/location/svfnr:">svfnr:</a> or
+  <a href="/member/count/location/kd:">kd:</a>.
+</p>
+
 <table>
     <thead>
         <tr>
-            <th>Year-Month</th>
+            <th>{{ grouping }}</th>
             <th>Count</th>
         </tr>
     </thead>
