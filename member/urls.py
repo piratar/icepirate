@@ -25,7 +25,8 @@ urlpatterns = patterns('',
     url(r'^edit/(?P<ssn>[^/]+)', 'member.views.edit', name='edit'),
     url(r'^delete/(?P<ssn>[^/]+)', 'member.views.delete', name='delete'),
     url(r'^view/(?P<ssn>[^/]+)', 'member.views.view', name='view'),
-    url(r'^count/', 'member.views.count', name='count'),
+    url(r'^count/location/(?P<grep>[^/]*)', 'member.views.location_count', name='location_count'),
+    url(r'^count/(?P<grep>[^/]*)', 'member.views.count', name='count'),
 
     # Verification
     url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
