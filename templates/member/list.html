@@ -46,6 +46,9 @@ $(document).ready(function() {
     <span class="stats-field">
         <span class="stats-label">{% trans 'Count' %}:</span>
         <span class="stats-value">{{ members.count }}</span>
+        {% if not group_techname and not location_code %}
+        (<a href="/member/count">history</a>)
+        {% endif %}
     </span>
 </div>
 
