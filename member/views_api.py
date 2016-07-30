@@ -1,5 +1,7 @@
 import json
+import sys
 import time
+import traceback
 
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -17,6 +19,7 @@ from group.models import Group
 
 def require_login_or_key(request):
     return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
+
 
 def member_to_dict(member):
 
@@ -50,6 +53,7 @@ def member_to_dict(member):
 
     return result
 
+
 @login_required
 def list(request):
     members = Member.objects.all().order_by('added')
@@ -67,6 +71,7 @@ def list(request):
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 
 @login_required
 def filter(request, field, searchstring):
@@ -95,6 +100,7 @@ def filter(request, field, searchstring):
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
+
 def get(request, field, searchstring):
 
     if not require_login_or_key(request):
@@ -110,12 +116,32 @@ def get(request, field, searchstring):
     except Member.DoesNotExist as e:
         return json_error('No such member')
 
+    # Update our DB with data from the remote end
+    # Currently ignored attributes: ssn, name, added
+    try:
+        username = request.GET.get('username')
+        email = request.GET.get('email')
+        if username or email:
+            if username:
+                member.username = username
+            if email:
+                member.email = email
+            member.save()
+    except:
+        # Update failed somehow, barf details to stderr but keep on truckin'
+        #
+        # In particular, this is likely to happen if the DBs are out of sync
+        # and the email uniqueness constraints are violated.
+        #
+        traceback.print_exc(file=sys.stderr)
+
     response_data = {
         'success': True,
         'data': member_to_dict(member)
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 
 def add(request):
 
@@ -150,6 +176,7 @@ def add(request):
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')
+
 
 def count(request):
     if not require_login_or_key(request):
