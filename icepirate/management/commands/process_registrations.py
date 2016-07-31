@@ -423,7 +423,10 @@ class Command(BaseCommand):
                 result['name'] = line.split(": ")[1]
             elif u'Kennitala:' in line:
                 ssn = line.split(": ")[1].replace('-','').replace(' ', '')
-                result['ssn'] = ''.join(c for c in ssn if c.isdigit()) # Remove non-digits
+                ssn = ''.join(c for c in ssn if c.isdigit()) # Remove non-digits
+                if len(ssn) == 11 and ssn[10] == '0':
+                    ssn = ssn[:10]  # Workaround for buglet in form.
+                result['ssn'] = ssn
             elif u'Svæðisbundið aðildarfélag:' in line:
                 member_assoc = line.split(": ")[1]
                 if member_assoc != u'Ekkert':
