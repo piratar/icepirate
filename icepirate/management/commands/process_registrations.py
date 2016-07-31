@@ -45,47 +45,27 @@ import json
 import locale
 import os
 import pytz
-import urllib
-import urllib2
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 from email.header import decode_header
-from lxml import etree
 from sys import stderr
 from sys import stdout
 from datetime import datetime
 from datetime import timedelta
 from dateutil import parser as dateparser
-from StringIO import StringIO
 
 from group.models import Group
 from icepirate.utils import quick_mail
 from icepirate.utils import generate_random_string
 from icepirate.utils import techify
 from icepirate.utils import validate_ssn
+from icepirate.utils import lookup_national_registry
+from icepirate.utils import merge_national_registry_info
 from member.models import Member
 from message.models import InteractiveMessage
 from message.models import InteractiveMessageDelivery
 
-def get_response(web_url, data=None):
-
-    retry_count = 2
-
-    success = False
-    while not success and retry_count > -1:
-        try:
-            response = urllib2.urlopen(web_url, data=data, timeout=5)
-            success = True
-        except IOError:
-            stderr.write('Retrieving remote content failed, retries left: %s...\n' % retry_count)
-            retry_count = retry_count - 1
-
-    if success:
-        return response
-    else:
-        stderr.write('Error: Failed retrieving URL: %s\n' % web_url)
-        quit(1)
 
 class Command(BaseCommand):
 
@@ -265,7 +245,7 @@ class Command(BaseCommand):
         stdout.write('- Checking if %s is an individual in the national registry...' % reg['ssn'])
         stdout.flush()
 
-        national = self.lookup_national_registry(reg['ssn'])
+        national = lookup_national_registry(reg['ssn'])
 
         if national['is_valid'] and national['is_individual']:
             reg['national'] = national
@@ -375,11 +355,7 @@ class Command(BaseCommand):
         member.ssn = reg['ssn']
         member.name = reg['name']
         member.email = reg['email']
-        member.legal_name = reg['national']['name']
-        member.legal_address = reg['national']['legal_address']
-        member.legal_zip_code = reg['national']['legal_zip_code']
-        member.legal_zone = reg['national']['legal_zone']
-        member.legal_lookup_timing = timezone.now()
+        merge_national_registry_info(member, reg['national'], timezone.now())
         member.temporary_web_id = random_string
         member.temporary_web_id_timing = timezone.now()
 
@@ -457,42 +433,6 @@ class Command(BaseCommand):
                     result['member_assoc'].append(u'Ungir Píratar')
 
         return result
-
-
-    def lookup_national_registry(self, ssn):
-        nr_url = settings.NATIONAL_REGISTRY['url']
-        nr_username = settings.NATIONAL_REGISTRY['username']
-        nr_password = settings.NATIONAL_REGISTRY['password']
-        nr_xml_namespace = settings.NATIONAL_REGISTRY['xml_namespace']
-
-        nr_data = urllib.urlencode({
-            'username': nr_username,
-            'password': nr_password,
-            'regno': ssn,
-            'requesterregno': '',
-        })
-
-        response = get_response(nr_url, data=nr_data)
-        content = response.read()
-
-        # Parse the XML. Yes, it's painful to look at, and it should be, it's XML.
-        xmldoc = etree.parse(StringIO(content))
-        result = {
-            'is_individual': xmldoc.find('//ns:IsIndividual', namespaces={'ns': nr_xml_namespace}).text == 'true',
-            'is_current': xmldoc.find('//ns:IsCurrent', namespaces={'ns': nr_xml_namespace}).text == 'true',
-            'is_valid': xmldoc.find('//ns:IsValid', namespaces={'ns': nr_xml_namespace}).text == 'true',
-        }
-
-        if result['is_valid']:
-            result.update({
-                'name': xmldoc.find('//ns:FullName', namespaces={'ns': nr_xml_namespace}).text,
-                'legal_address': xmldoc.find('//ns:LegalAddress', namespaces={'ns': nr_xml_namespace}).text,
-                'legal_zip_code': xmldoc.find('//ns:LegalZipCode', namespaces={'ns': nr_xml_namespace}).text,
-                'legal_zone': xmldoc.find('//ns:LegalZone', namespaces={'ns': nr_xml_namespace}).text,
-            })
-
-        return result
-
 
     def get_registration_requests(self):
 
