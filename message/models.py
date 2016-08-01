@@ -90,3 +90,46 @@ class InteractiveMessageDelivery(models.Model):
     timing_start = models.DateTimeField(default=timezone.now)
     timing_end = models.DateTimeField(null=True)
 
+
+class ShortURL(models.Model):
+    added = models.DateTimeField(default=timezone.now)
+    code = models.CharField(max_length=20, unique=True, null=True)
+    url = models.CharField(max_length=1024)
+
+    @classmethod
+    def Expired(cls):
+        return timezone.now() - datetime.timedelta(days=20)
+
+    @classmethod
+    def DeleteExpired(cls):
+        ShortURL.objects.filter(added__lt=cls.Expired()).delete()
+
+    def _set_code(self):
+        if self.code is None and self.url:
+            self.code = hashlib.sha1(
+                '%s%s' % (time.time(), self.url)).hexdigest()[:16]
+
+    def __repr__(self):
+        return '<ShortURL(%s): %s>' % (self.code, self.url)
+
+    def __init__(self, *args, **kwargs):
+        models.Model.__init__(self, *args, **kwargs)
+        self._set_code()
+
+    def short_length(self):
+        return 3 + len(settings.SITE_URL) + len(self.code)
+
+    def short_url(self):
+        return '%s/r/%s' % (settings.SITE_URL, self.code)
+
+    def __str__(self):
+        if self.short_length() < len(self.url):
+            return self.short_url()
+        else:
+            return self.url
+
+    def save(self):
+        self._set_code()
+        if self.short_length() < len(self.url):
+            models.Model.save(self)
+        return self
