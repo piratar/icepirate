@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from icepirate.utils import lookup_national_registry
 from icepirate.utils import merge_national_registry_info
+from locationcode.models import LocationCode
 from member.models import Member
 
 
@@ -21,6 +22,7 @@ class Command(BaseCommand):
         parser.add_argument('--update-db', action='store_true', dest='update-db')
         parser.add_argument('--intersect', action='store_true', dest='intersect')
         parser.add_argument('--ssn', nargs='*', dest='ssn')
+        parser.add_argument('--loc-code', nargs='*', dest='loc-code')
         parser.add_argument('--refresh', nargs='*', dest='refresh', type=str)
         for arg in ('url', 'password', 'username', 'xml_namespace'):
             parser.add_argument('--%s' % arg, nargs='*', type=str, dest=arg)
@@ -51,6 +53,17 @@ class Command(BaseCommand):
             user_sets.append(
                 set(Member.objects.filter(ssn__in=ssn)))
 
+        # These are users in a particular location
+        locs = []
+        for loc in (options.get('loc-code') or []):
+            locs.extend([lc.strip() for lc in loc.split(',')])
+        if locs:
+            users = []
+            for lc in locs:
+                users.extend(LocationCode.objects.get(
+                   location_code=lc).get_members())
+            user_sets.append(set(users))
+
         # These are users whose last legal-lookup happened before a deadline.
         # An example of usage: --refresh=$(date +%s '6 months ago')
         if options.get('refresh'):
@@ -60,7 +73,7 @@ class Command(BaseCommand):
                 when = when.replace(tzinfo=pytz.utc)
                 deadline_set |= (
                    set(Member.objects.filter(legal_lookup_timing__lt=when)))
-            users_sets.append(deadline_set)
+            user_sets.append(deadline_set)
 
         # The specified user sets are combined, either by intersecting them
         # (constraint AND constraint AND ...) or combining (OR).
