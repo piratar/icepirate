@@ -58,20 +58,22 @@ def techify(input_string):
 
     return result
 
-def quick_mail(to, subject, body, from_email=settings.DEFAULT_FROM_EMAIL, subject_prefix=settings.EMAIL_SUBJECT_PREFIX):
+def quick_mail(to, subject, body,
+        from_email=None,
+        subject_prefix=settings.EMAIL_SUBJECT_PREFIX,
+        html_body=None):
 
     real_subject = subject
     if subject_prefix:
         real_subject = u'[%s] %s' % (subject_prefix, real_subject)
 
-
-    send_mail(
+    return send_mail(
         real_subject,
         body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
+        from_email=from_email or settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to,],
-        fail_silently=False
-    )
+        fail_silently=False,
+        html_message=html_body)
 
 def generate_random_string():
     return hashlib.sha1(os.urandom(128)).hexdigest()
