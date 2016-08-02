@@ -1,10 +1,17 @@
+import datetime
+import copy
+import time
+import hashlib
+
+from markdown import markdown
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 from group.models import Group
-from member.models import Member
+from icepirate.utils import generate_unique_random_string, wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
 
@@ -35,6 +42,8 @@ class Message(models.Model):
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
     author = models.ForeignKey(User) # User, not Member
+
+    generate_html_mail = models.BooleanField(default=False)
 
     ready_to_send = models.BooleanField(default=False) # Should this message be processed?
 
@@ -83,6 +92,73 @@ class Message(models.Model):
     class Meta:
         ordering = ['added']
 
+    def get_text_body(message, recipient):
+        return message.get_bodies(recipient, with_html=False)[0]
+
+    def get_html_body(message, recipient):
+        return message.get_bodies(recipient, with_html=True)[1]
+
+    def get_bodies(message, recipient, with_html=True):
+        body, html_body = message.body, None
+
+        for field in (
+                'ssn', 'name', 'username', 'email', 'phone', 'added',
+                'legal_name', 'legal_address',
+                'legal_zip_code', 'legal_municipality_code'):
+            data = unicode(getattr(recipient, field))
+            body = body.replace('{{%s}}' % field, data)
+        if '{{wasa2il_url}}' in body:
+            data = wasa2il_url(recipient)
+            body = body.replace('{{wasa2il_url}}', data)
+        if '{{wasa2il_url_short}}' in body:
+            data = wasa2il_url(recipient, shorten=True)
+            body = body.replace('{{wasa2il_url_short}}', data)
+
+        if message.generate_html_mail and with_html:
+            html_body = markdown(body)
+
+        rejection_body = None
+        try:
+            rejection_message = InteractiveMessage.objects.get(
+                interactive_type='reject_email_messages')
+
+            if not recipient.temporary_web_id:
+                random_string = generate_unique_random_string()
+                recipient.temporary_web_id = random_string
+                recipient.save()
+
+            rejection_body = rejection_message.produce_links(
+                recipient.temporary_web_id)
+
+            body += '\n\n------------------------------\n'
+            body += rejection_body
+
+        except InteractiveMessage.DoesNotExist:
+            pass
+
+        if html_body:
+            try:
+                html_template = InteractiveMessage.objects.get(
+                    interactive_type='email_html_template')
+
+                html_body = html_template.render_body(
+                    recipient.temporary_web_id,
+                    message_content=html_body,
+                    footer_content=rejection_body)
+
+            except InteractiveMessage.DoesNotExist:
+                # If we have no HTML template, hard-code the basics.
+                html_body += (
+                    '\n<div class="icepirate_footer"><hr>\n%s\n</div>\n'
+                    % markdown(rejection_body))
+
+            html_body = (
+                '<html><body>\n%s\n</body></html>' % html_body
+                ).replace('\r', '').replace('\n', '\r\n')
+
+        return body, html_body or None
+
+
 class MessageDelivery(models.Model):
     message = models.ForeignKey(Message)
     member = models.ForeignKey(Member)
@@ -96,6 +172,7 @@ class InteractiveMessage(models.Model):
         ('registration_received', 'Registration received'),
         ('registration_confirmed', 'Registration confirmed'),
         ('reject_email_messages', 'Reject mail messages'),
+        ('email_html_template', 'Email HTML template'),
     )
 
     INTERACTIVE_TYPES_DETAILS = {
@@ -105,6 +182,10 @@ class InteractiveMessage(models.Model):
         },
         'reject_email_messages': {
             'description': 'Use the string {{reject_link}} to place\nthe rejection link.',
+            'links': ('reject_link',),
+        },
+        'email_html_template': {
+            'description': 'Use the strings {{message_content}} and {{footer_content}} to place\nthe actual message content and rejection links.',
             'links': ('reject_link',),
         },
     }
@@ -121,17 +202,40 @@ class InteractiveMessage(models.Model):
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
 
-    def produce_links(self, random_string):
-        result = self.body
+    def produce_links(self, random_string, body=None, raw=False):
+        result = body or self.body
 
-        for link_name in InteractiveMessage.INTERACTIVE_TYPES_DETAILS[self.interactive_type]['links']:
-            link = '%s/message/mailcommand/%s/%s/%s/' % (settings.SITE_URL, self.interactive_type, link_name, random_string)
+        for link_name in InteractiveMessage.INTERACTIVE_TYPES_DETAILS[
+                self.interactive_type]['links']:
+            short_link = ShortURL(url='%s/message/mailcommand/%s/%s/%s/' % (
+                settings.SITE_URL,
+                self.interactive_type,
+                link_name,
+                random_string))
+            short_link.save()
+            link = str(short_link)
+            if not raw:
+                link = '<%s>' % link
             result = result.replace('{{%s}}' % link_name, link)
 
         return result
 
+    def render_body(self, random_string, **data):
+        result = self.body
+
+        assert('message_content' in data)
+        for data_name in data:
+            result = result.replace(
+                '{{%s}}' % data_name, data[data_name] or '')
+
+        if random_string:
+            return self.produce_links(random_string, body=result, raw=True)
+        else:
+            return result
+
     class Meta:
         ordering = ['interactive_type', 'added']
+
 
 class InteractiveMessageDelivery(models.Model):
     interactive_message = models.ForeignKey('InteractiveMessage')
