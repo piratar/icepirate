@@ -125,7 +125,9 @@ def get(request, field, searchstring):
             if username:
                 member.username = username
             if email:
+                # We trust the other guy to have verified the e-mail
                 member.email = email
+                member.email_verified = True
             member.save()
     except:
         # Update failed somehow, barf details to stderr but keep on truckin'
