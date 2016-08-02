@@ -13,6 +13,7 @@ from StringIO import StringIO
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
+from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext as _
 
 import re
@@ -218,11 +219,19 @@ def lookup_national_registry(ssn):
 
 
 def merge_national_registry_info(member, nr_info, now):
-    assert(nr_info.get('name') and nr_info.get('legal_address'))
+    try:
+        assert(nr_info.get('name') and nr_info.get('is_individual'))
+    except:
+        sys.stderr.write('Failed to update %s (%s) with %s\n' % (
+            force_bytes(unicode(member)),
+            force_bytes(member.ssn),
+            force_bytes('%s' % nr_info)))
+        raise
 
     member.legal_name = nr_info['name']
-    member.legal_address = nr_info['legal_address']
 
+    if nr_info.get('legal_address'):
+        member.legal_address = nr_info['legal_address']
     if nr_info.get('legal_zip_code'):
         member.legal_zip_code = nr_info['legal_zip_code']
     if nr_info.get('legal_zone'):

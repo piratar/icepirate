@@ -1,7 +1,8 @@
 import datetime
-import pytz
-import sys
 import json
+import pytz
+import random
+import sys
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -20,6 +21,7 @@ class Command(BaseCommand):
         parser.add_argument('--dump-ssns', action='store_true', dest='dump-ssns')
         parser.add_argument('--update-as-json', action='store_true', dest='update-as-json')
         parser.add_argument('--update-db', action='store_true', dest='update-db')
+        parser.add_argument('--shuffle', action='store_true', dest='shuffle')
         parser.add_argument('--intersect', action='store_true', dest='intersect')
         parser.add_argument('--ssn', nargs='*', dest='ssn')
         parser.add_argument('--loc-code', nargs='*', dest='loc-code')
@@ -72,7 +74,8 @@ class Command(BaseCommand):
                 when = datetime.datetime.utcfromtimestamp(int(deadline))
                 when = when.replace(tzinfo=pytz.utc)
                 deadline_set |= (
-                   set(Member.objects.filter(legal_lookup_timing__lt=when)))
+                   set(Member.objects.filter(legal_lookup_timing__lt=when)) |
+                   set(Member.objects.filter(legal_lookup_timing__isnull=True)))
             user_sets.append(deadline_set)
 
         # The specified user sets are combined, either by intersecting them
@@ -89,8 +92,15 @@ class Command(BaseCommand):
 
         else:
             sys.stderr.write('Processing %d users...\n' % len(users))
+
+            users = list(users)
+            if options.get('shuffle'):
+                random.shuffle(users)
+            else:
+                users.sort(key=lambda u: u.ssn)
+
             if options.get('dump-ssns'):
-                print '\n'.join(user.ssn for user in sorted(users))
+                print '\n'.join(user.ssn for user in users)
 
             dump = []
             if options.get('update-db') or options.get('update-as-json'):
@@ -100,8 +110,11 @@ class Command(BaseCommand):
                     if options.get('update-db'):
                         sys.stderr.write('Updating %s in DB\n' % user.ssn)
                         now = timezone.now()
-                        merge_national_registry_info(user, nr_info, now)
-                        user.save()
+                        try:
+                            merge_national_registry_info(user, nr_info, now)
+                            user.save()
+                        except AssertionError:
+                            pass  # Just keen on truckin'
 
                     if options.get('update-as-json'):
                         dump.append(nr_info)
