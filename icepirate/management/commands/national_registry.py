@@ -16,18 +16,33 @@ from member.models import Member
 
 class Command(BaseCommand):
 
+    def member_nr_info(self, member):
+        return {
+             'ssn': member.ssn,
+             'name': member.legal_name,
+             'legal_address': member.legal_address,
+             'legal_zip_code': member.legal_zip_code,
+             'legal_zone': member.legal_zone,
+             'legal_municipality_code': member.legal_municipality_code,
+             'is_individual': True,
+             'is_valid': True,
+             'is_current': True}
+
     def add_arguments(self, parser):
+        parser.add_argument('--all', action='store_true', dest='all')
         parser.add_argument('--lack-muni', action='store_true', dest='lack-muni')
         parser.add_argument('--dump-ssns', action='store_true', dest='dump-ssns')
         parser.add_argument('--update-as-json', action='store_true', dest='update-as-json')
         parser.add_argument('--update-db', action='store_true', dest='update-db')
+        parser.add_argument('--export-db-state', action='store_true', dest='export-db-state')
+        parser.add_argument('--import-db-state', nargs='*', dest='import-db-state')
         parser.add_argument('--shuffle', action='store_true', dest='shuffle')
         parser.add_argument('--intersect', action='store_true', dest='intersect')
         parser.add_argument('--ssn', nargs='*', dest='ssn')
         parser.add_argument('--loc-code', nargs='*', dest='loc-code')
         parser.add_argument('--refresh', nargs='*', dest='refresh', type=str)
         for arg in ('url', 'password', 'username', 'xml_namespace'):
-            parser.add_argument('--%s' % arg, nargs='*', type=str, dest=arg)
+            parser.add_argument('--%s' % arg, default='', type=str, dest=arg)
 
     def handle(self, *args, **options):
 
@@ -37,11 +52,19 @@ class Command(BaseCommand):
         for arg in ('url', 'password', 'username', 'xml_namespace'):
             if options.get(arg):
                 settings.NATIONAL_REGISTRY[arg] = options.get(arg)[0]
+        local_update_db = {}
+        if options.get('import-db-state'):
+            for fn in options['import-db-state']:
+                with open(fn, 'r') as fd:
+                    local_update_db.update(json.load(fd))
 
         # Each of the selection arguments creates a set of users...
 
         # These are the users that lack a legal municipality code.
         user_sets = []
+        if options.get('all', False):
+            user_sets.append(Member.objects.all())
+
         if options.get('lack-muni', False):
             user_sets.append(
                set(Member.objects.filter(legal_municipality_code=None)) |
@@ -102,22 +125,35 @@ class Command(BaseCommand):
             if options.get('dump-ssns'):
                 print '\n'.join(user.ssn for user in users)
 
-            dump = []
-            if options.get('update-db') or options.get('update-as-json'):
+            dump = {}
+            if (options.get('update-db')
+                   or options.get('update-as-json')
+                   or options.get('export-db-state')):
                 for user in users:
-                    nr_info = lookup_national_registry(user.ssn)
+                    if options.get('export-db-state'):
+                        nr_info = self.member_nr_info(user)
+                    else:
+                        if options.get('import-db-state'):
+                            nr_info = local_update_db.get(user.ssn, {})
+                        else:
+                            nr_info = lookup_national_registry(user.ssn)
 
-                    if options.get('update-db'):
-                        sys.stderr.write('Updating %s in DB\n' % user.ssn)
-                        now = timezone.now()
-                        try:
-                            merge_national_registry_info(user, nr_info, now)
-                            user.save()
-                        except AssertionError:
-                            pass  # Just keen on truckin'
+                        if not nr_info:
+                            sys.stderr.write('Lookup failed for %s\n' % user.ssn)
 
-                    if options.get('update-as-json'):
-                        dump.append(nr_info)
+                        if nr_info and options.get('update-db'):
+                            sys.stderr.write('Updating %s in DB\n' % user.ssn)
+                            now = timezone.now()
+                            try:
+                                merge_national_registry_info(user, nr_info, now)
+                                user.save()
+                            except AssertionError:
+                                pass  # Just keen on truckin'
+
+                    if nr_info and (
+                            options.get('update-as-json') or
+                            options.get('export-db-state')):
+                        dump[nr_info['ssn']] = nr_info
 
             if dump:
-                json.dump(dump, sys.stdout)
+                json.dump(dump, sys.stdout, indent=1)
