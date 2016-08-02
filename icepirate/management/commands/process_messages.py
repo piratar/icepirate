@@ -1,9 +1,10 @@
+import time
+import traceback
 from sys import stdout, stderr
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
 
 from group.models import Group
@@ -12,91 +13,77 @@ from message.models import InteractiveMessage
 from message.models import Message
 from message.models import MessageDelivery
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-
         stdout.write("Processing started at %s\n" % timezone.now())
 
-        messages = Message.objects.filter(ready_to_send=True, sending_started=None, sending_complete=None)
-
+        messages = Message.objects.filter(
+            ready_to_send=True, sending_started=None, sending_complete=None)
         stdout.write("Messages to process: %d\n" % len(messages))
 
+        # Do this first, to reduce the odds of races where messages get
+        # sent more than once.
         for message in messages:
-            stdout.write("Starting processing of message with ID %d\n" % message.id)
-
             message.sending_started = timezone.now()
             message.save()
 
-            stdout.write("- Generating recipient list...")
+        # Try to process all the messages.
+        for message in messages:
+            try:
+                self._process_message(message)
+            except:
+                pass  # Still try to process the rest!
 
-            recipients = []
-            if message.send_to_all:
-                recipients = Member.objects.filter(email_unwanted=False)
-            else:
-                for group in message.groups.all():
-                    recipients.extend(group.get_members(
-                        subgroups=message.groups_include_subgroups,
-                        locations=message.groups_include_locations
-                        ).filter(email_unwanted=False))
+    def _get_message_recipients(self, message):
+        stdout.write("- Generating recipient list...")
+        recipients = message.get_undelivered_recipients()
+        stdout.write(" done. (%d)\n" % len(recipients))
+        return recipients
 
-                for location in message.locations.all():
-                    recipients.extend(location.get_members().filter(email_unwanted=False))
+    def _process_message(self, message):
+        stdout.write(
+           "Starting processing of message with ID %d\n" % message.id)
 
-            # NOTE: If a MessageDelivery exists for a user but timing_end=None, then previous sending must have failed
-            already_delivered = [d.member for d in message.messagedelivery_set.select_related('member').exclude(timing_end=None)]
-            # Remove duplicates (member may be in several groups) and those already delivered to
-            recipients = list(set(recipients) - set(already_delivered))
+        recipients = self._get_message_recipients(message)
+        recipient_count = len(recipients)
 
-            # Get recipient count since we'll be printing it to screen a lot
-            recipient_count = len(recipients)
+        for i, recipient in enumerate(recipients):
+            try:
+                stdout.write(
+                    "- (%d/%d) Mailing message with ID %d to %s..." % (
+                        i+1, recipient_count, message.id, recipient.email))
 
-            stdout.write(" done. (%d)\n" % recipient_count)
-
-            i = 0
-            for recipient in recipients:
-                i = i + 1
-
-                stdout.write("- (%d/%d) Mailing message with ID %d to %s..." % (i, recipient_count, message.id, recipient.email))
-
-                body = message.body
-
-                try:
-                    rejection_message = InteractiveMessage.objects.get(interactive_type='reject_email_messages')
-                    if not recipient.temporary_web_id:
-                        random_string = generate_random_string()
-                        while Member.objects.filter(temporary_web_id=random_string).count() > 0:
-                            # Preventing duplication errors
-                            random_string = generate_random_string()
-
-                        recipient.temporary_web_id = random_string
-                        recipient.save()
-
-                    rejection_body = rejection_message.produce_links(recipient.temporary_web_id)
-                    body += '\n\n------------------------------\n'
-                    body += rejection_body
-                except InteractiveMessage.DoesNotExist:
-                    pass
+                # Note: This may have the side effect of setting the
+                #       recipient's temporary_web_id attribute.
+                body, html_body = message.get_bodies(recipient)
+                stdout.write('.')
 
                 delivery = MessageDelivery()
                 delivery.member = recipient
                 delivery.message = message
                 delivery.save()
+                stdout.write('.')
 
                 quick_mail(
                     to=recipient.email,
                     subject=message.subject,
                     body=body,
+                    html_body=html_body,
                     from_email=message.from_address,
-                    subject_prefix=None
-                )
+                    subject_prefix=None)
+                stdout.write('.')
 
                 delivery.timing_end = timezone.now()
                 delivery.save()
 
                 stdout.write(" done.\n")
+            except:
+                stdout.write(" FAILED!\n")
+                traceback.print_exc(file=sys.stderr)
+                time.sleep(10)
 
-            if i == recipient_count: # Something went wrong if this is false
-                message.sending_complete = timezone.now()
-                message.save()
+        message.sending_complete = timezone.now()
+        message.save()
 
