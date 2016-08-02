@@ -13,7 +13,7 @@ from member.models import Member
 from message.forms import InteractiveMessageForm
 from message.forms import MessageForm
 from message.models import InteractiveMessage
-from message.models import Message
+from message.models import Message, ShortURL
 
 @login_required
 def list(request):
@@ -163,6 +163,17 @@ def interactive_view(request, interactive_type):
         { 'interactive_message': interactive_message },
         context_instance=RequestContext(request)
     )
+
+
+def short_url_redirect(request, code=None):
+    try:
+        return HttpResponseRedirect(
+            ShortURL.objects.get(code=code, added__gte=ShortURL.Expired()
+            ).url)
+    except ShortURL.DoesNotExist:
+        ShortURL.DeleteExpired()
+        return render_to_response('message/shorturl_expired.html')
+
 
 def mailcommand(request, interactive_type, link, random_string):
     if interactive_type == 'registration_received':

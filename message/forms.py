@@ -13,7 +13,8 @@ class MessageForm(ModelForm):
         model = Message
         fields = ['from_address', 'subject', 'body', 'send_to_all', 'groups',
                   'groups_include_subgroups', 'groups_include_locations',
-                  'locations']
+                  'locations', 'wasa2il_usage', 'generate_html_mail']
+
 
 class InteractiveMessageForm(ModelForm):
 

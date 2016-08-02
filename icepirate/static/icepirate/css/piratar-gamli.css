@@ -1,0 +1,1040 @@
+/* @override http://www.piratar.is/wp-content/themes/piratar/style.css */
+
+/*   
+Theme Name: Piratar.is
+Theme URI: http://www.piratar.is/
+Description: Wordpress theme for the Icelandic Pirate Party
+Authors: StefÃ¡n Vignir SkarphÃ©Ã°insson, Helgi Hrafn Gunnarsson, Andri SigurÃ°sson
+Author URI: http://stefanvignir.de/
+Version: 1.1
+*/
+
+/*
+	HTML5 Reset Wordpress Theme :: style.css
+	----------------------------------------------------------
+	We have learned much from/been inspired by/taken code where offered from:
+	
+	Eric Meyer					:: http://ericmeyer.com
+	HTML5 Doctor				:: http://html5doctor.com
+	and the HTML5 Boilerplate	:: http://html5boilerplate.com
+	
+	Special thanks: The Wordpress theme owes its start to an empty theme authored 
+		by Chris Coyier & Jeff Starr: http://digwp.com
+	
+-------------------------------------------------------------------------------*/
+
+/* Let's default this puppy out
+-------------------------------------------------------------------------------*/
+
+html, body, body div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, hgroup, menu, nav, section, time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+a { color: #562a85; text-decoration: none }
+a:hover { color: #422066; text-decoration: none; }
+
+article, aside, figure, footer, header, hgroup, nav, section {display: block;}
+
+/* Responsive images and other embedded objects
+   Note: keeping IMG here will cause problems if you're using foreground images as sprites, like, say for Google Maps custom placemarkers. 
+   There has been a report of problems with standard Google maps as well, but we haven't been able to duplicate or diagnose the issue. */
+img,
+object,
+embed {max-width: 100%;}
+
+/* force a vertical scrollbar to prevent a jumpy page */
+html {overflow-y: scroll;}
+
+/* we use a lot of ULs that aren't bulleted. 
+	don't forget to restore the bullets within content. */
+ul {list-style: none;}
+
+.section ul, article ul {
+	list-style: disc;
+	margin-left: 18px;
+}
+
+blockquote, q {quotes: none;}
+
+blockquote:before, 
+blockquote:after, 
+q:before, 
+q:after {content: ''; content: none;}
+
+a {margin: 0; padding: 0; font-size: 100%; vertical-align: baseline; background: transparent;}
+
+del {text-decoration: line-through;}
+
+abbr[title], dfn[title] {border-bottom: 1px dotted #000; cursor: help;}
+
+/* tables still need cellspacing="0" in the markup */
+table {border-collapse: collapse; border-spacing: 0;}
+th {font-weight: bold; vertical-align: bottom;}
+td {font-weight: normal; vertical-align: top;}
+
+hr {display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0;}
+
+input, select {vertical-align: middle;}
+
+pre {
+	white-space: pre; /* CSS2 */
+	white-space: pre-wrap; /* CSS 2.1 */
+	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+	word-wrap: break-word; /* IE */
+}
+
+input[type="radio"] {vertical-align: text-bottom;}
+input[type="checkbox"] {vertical-align: bottom; *vertical-align: baseline;}
+.ie6 input {vertical-align: text-bottom;}
+
+select, input, textarea {font: 99% sans-serif;}
+
+table {font-size: inherit; font: 100%;}
+ 
+/* Accessible focus treatment
+	people.opera.com/patrickl/experiments/keyboard/test */
+a:hover, a:active {outline: none;}
+
+small {font-size: 85%;}
+
+strong, th {font-weight: bold;}
+
+td, td img {vertical-align: top;} 
+
+/* Make sure sup and sub don't screw with your line-heights
+	gist.github.com/413930 */
+sub, sup {font-size: 75%; line-height: 0; position: relative;}
+sup {top: -0.5em;}
+sub {bottom: -0.25em;}
+
+/* standardize any monospaced elements */
+pre, code, kbd, samp {font-family: monospace, sans-serif;}
+
+/* hand cursor on clickable elements */
+.clickable,
+label, 
+input[type=button], 
+input[type=submit], 
+button {cursor: pointer;}
+
+/* Webkit browsers add a 2px margin outside the chrome of form elements */
+button, input, select, textarea {margin: 0;}
+
+/* make buttons play nice in IE */
+button {width: auto; overflow: visible;}
+ 
+/* scale images in IE7 more attractively */
+.ie7 img {-ms-interpolation-mode: bicubic;}
+
+/* prevent BG image flicker upon hover */
+.ie6 html {filter: expression(document.execCommand("BackgroundImageCache", false, true));}
+
+/* let's clear some floats */
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; overflow: hidden; }  
+.clearfix:after { clear: both; }  
+.clearfix { zoom: 1; }  
+
+/* Added by Stefan
+-------------------------------------------------------------------------------*/
+
+@font-face {
+    font-family: 'League Gothic';
+    src: url('fonts/leaguegothic-regular-webfont.eot');
+    src: url('fonts/leaguegothic-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/leaguegothic-regular-webfont.woff') format('woff'),
+         url('fonts/leaguegothic-regular-webfont.ttf') format('truetype'),
+         url('fonts/leaguegothic-regular-webfont.svg#league_gothicregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Liberation Serif';
+    src: url('fonts/liberationserif-regular.eot');
+    src: url('fonts/liberationserif-regular.eot?#iefix') format('embedded-opentype'),
+         url('fonts/liberationserif-regular.woff') format('woff'),
+         url('fonts/liberationserif-regular.ttf') format('truetype'),
+         url('fonts/liberationserif-regular.svg#liberation_serifregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+/* Ok, this is where the fun starts.
+-------------------------------------------------------------------------------*/
+
+/* new Linux- and Windows-friendly sans-serif font stack: http://mky.be/fontstack */
+body {
+	font-family: "PT Serif", Georgia, "Times New Roman", Serif;
+	color: #333333;
+	background: url('/wp-content/uploads/2013/04/bg_logo.png') 0 50px fixed no-repeat;
+	font-size: 16px;
+	line-height: 1.5em;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family: "League Gothic";
+	text-transform: uppercase;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	margin: 1em 0;
+}
+
+h1 {
+	font-size: 60px;
+}
+
+h2 {
+	font-size: 36px;
+}
+
+h3, h4, h5 {
+	font-size: 24px;
+}
+
+/* we like off-black for text */
+body, select, input, textarea {color: #333;}
+
+/* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
+::-moz-selection{background: #fcd700; color: #fff; text-shadow: none;}
+::selection {background: #fcd700; color: #fff; text-shadow: none;} 
+
+/*	j.mp/webkit-tap-highlight-color */
+a:link {-webkit-tap-highlight-color: #270048;} 
+
+ins {background-color: #fcd700; color: #000; text-decoration: none;}
+mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: bold;}
+
+/* Grid */
+
+.section {
+	padding: 4em 0;
+}
+
+.container {
+	width: 960px;
+	margin: 0 auto;
+}
+
+.col-group {
+	zoom: 1;
+	position: relative;
+	margin-right: -12px;
+	margin-left: -12px;
+}
+
+.col-group:after {
+	display: block;
+	visibility: hidden;
+	height: 0;
+	clear: both;
+	content: ".";
+}
+
+.col {
+	float: left;
+	min-height: 1px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 0 12px;
+	zoom: 1;
+}
+
+/*
+
+.col-1 { width: 80px; }
+.col-2 { width: 160px; }
+.col-3 { width: 240px; }
+.col-4 { width: 320px; }
+.col-5 { width: 400px; }
+.col-6 { width: 480px; }
+.col-7 { width: 560px; }
+.col-8 { width: 640px; }
+.col-9 { width: 720px; }
+.col-10 { width: 800px; }
+.col-11 { width: 880px; }
+.col-12 { width: 960px; }
+
+*/
+
+.col-1 { width: 8.333333333333%; }
+.col-2 { width: 16.666666666667%; }
+.col-3 { width: 25%; }
+.col-4 { width: 33.333333333333% }
+.col-5 { width: 41.666666666667%; }
+.col-6 { width: 50%; }
+.col-7 { width: 58.333333333333%; }
+.col-8 { width: 66.666666666667%; }
+.col-9 { width: 75%; }
+.col-10 { width: 83.333333333333%; }
+.col-11 { width: 91.666666666667%; }
+.col-12 { width: 100%; }
+
+/* And here begins the Wordpress fun.
+-------------------------------------------------------------------------------*/
+
+#page-wrap {width: 960px; margin: 48px auto;}
+
+
+.navigation {width: 700px; margin:0.5em 0;}
+.next-posts {float: left; margin: 0;line-height: 3em;}
+.prev-posts {float: right;margin: 0; text-align: right;line-height: 3em;}
+
+#searchform {}
+#s { width: 200px; }
+#searchsubmit { margin-top: 6px; }
+
+#social-media-links a { color: #542a8a; padding-right: 12px; line-height: 2em; display: inline-block; }
+
+#sidelinks { font-size: 16px; padding-top: 0px; margin-top: 24px; }
+#sidelinks img {
+	margin-bottom: 1em;
+}
+
+ol.commentlist {list-style: none;}
+ol.commentlist li {}
+ol.commentlist li.alt {}
+ol.commentlist li.bypostauthor {}
+ol.commentlist li.byuser {}
+ol.commentlist li.comment-author-admin {}
+ol.commentlist li.comment {border-bottom: 1px dotted #666; padding: 10px;}
+ol.commentlist li.comment div.comment-author {}
+ol.commentlist li.comment div.vcard {}
+ol.commentlist li.comment div.vcard cite.fn {font-style: normal;}
+ol.commentlist li.comment div.vcard cite.fn a.url {}
+ol.commentlist li.comment div.vcard img.avatar {float:right; margin: 0 0 10px 10px;}
+ol.commentlist li.comment div.vcard img.avatar-32 {}
+ol.commentlist li.comment div.vcard img.photo {}
+ol.commentlist li.comment div.vcard span.says {}
+ol.commentlist li.comment div.commentmetadata {}
+ol.commentlist li.comment div.comment-meta {font-size: 10px;}
+ol.commentlist li.comment div.comment-meta a {color: #ccc;}
+ol.commentlist li.comment p {}
+ol.commentlist li.comment ul {}
+ol.commentlist li.comment div.reply {font-size: 11px;}
+ol.commentlist li.comment div.reply a {font-weight: bold;}
+ol.commentlist li.comment ul.children {list-style: none; margin: 10px 0 0;}
+ol.commentlist li.comment ul.children li {}
+ol.commentlist li.comment ul.children li.alt {}
+ol.commentlist li.comment ul.children li.bypostauthor {}
+ol.commentlist li.comment ul.children li.byuser {}
+ol.commentlist li.comment ul.children li.comment {}
+ol.commentlist li.comment ul.children li.comment-author-admin {}
+ol.commentlist li.comment ul.children li.depth-2 {border-left: 5px solid #555; margin: 0 0 10px 10px;}
+ol.commentlist li.comment ul.children li.depth-3 {border-left: 5px solid #999; margin: 0 0 10px 10px;}
+ol.commentlist li.comment ul.children li.depth-4 {border-left: 5px solid #bbb; margin: 0 0 10px 10px;}
+ol.commentlist li.comment ul.children li.depth-5 {}
+ol.commentlist li.comment ul.children li.odd {}
+ol.commentlist li.even {background: #fff;}
+ol.commentlist li.odd {background: #f6f6f6;}
+ol.commentlist li.parent {border-left: 5px solid #111;}
+ol.commentlist li.thread-alt {}
+ol.commentlist li.thread-even {}
+ol.commentlist li.thread-odd {}
+
+blockquote { border-left: 4px solid #ccc; margin: 1em; padding-left: 1em; font-style: italic; }
+
+/* New header-content from Thorey */
+
+#header
+{
+	height: 6em;
+	background: #572b85;
+
+}
+
+#header #site-heading {
+	float: left;
+}
+
+#header-content
+{
+	width: 960px;
+	margin: 0 auto;
+	position: relative;
+}
+
+#header-content ul.menu
+{
+	/*position: absolute;*/
+	/*position: relative;*/
+	right: 0px;
+	top: 0px;
+	display: block;
+}
+
+#header-content ul.menu:after
+{
+	content: "";t
+	clear: both;
+	display: block;
+}
+
+#header-content ul.menu li {
+	margin: 0 0.75em;
+	display: block;
+	color: #fff;
+	float: left;
+	border-bottom: 2px solid transparent;
+	-webkit-transition: border-bottom 250ms linear;
+	padding: 0;
+	position: relative;
+	line-height: 6em;
+}
+
+#header-content ul.menu li a
+{
+	font-size: 24px;
+	display: block;
+	color: #fff;
+	text-decoration: none;
+	font-family: "League Gothic";
+	text-transform: uppercase;
+	-webkit-font-smoothing: antialiased;
+}
+
+#header-content ul.menu li:hover {
+	color: rgba(255,255,255,0.75);
+}
+
+#header-content ul.menu li:hover > ul
+{
+	display: block;
+}
+
+#header-content ul.menu li ul 
+{
+	font-size: 16px;
+	display: none;
+	position:absolute;
+	top: 100%;
+	left: 50%;
+	border-radius: 0px;
+	background-color: #572b85;
+	background-color: rgba(87, 43, 133, 0.9);
+	border: none;
+	z-index: 1000;
+	width: 12em;
+	margin-left: -6em;
+	padding: 1em 0;
+}
+
+
+#header-content ul.menu li ul li
+{
+	float: none; 
+	position: relative;
+	border: none;
+	padding: 0.2em 0;
+	line-height: 1.5em;
+
+}
+
+#header-content ul.menu li ul li:hover
+{
+	border: none;
+
+}
+
+#header-content ul.menu li ul li a
+{
+	font-family: Georgia, "Times New Roman", Serif;
+	font-size: 16px;
+	text-transform: none;
+}
+
+#header-content ul.menu li ul li a:hover
+{
+}
+
+#header-content ul.menu li ul li ul
+{
+	position: absolute;
+	width: 100%;
+	left: 110%;
+	font-size: 16px;
+	top:0;
+}
+
+#header-content ul.menu li ul li ul li
+{
+	font-size: 16px;
+}
+
+#header-content ul.menu li ul li ul li:hover
+{
+	font-size: 16px;
+}
+
+#header-content ul.menu li ul li ul li a
+{
+	font-size: 16px;
+	width: 100%;
+}
+
+
+#header-content ul.menu li ul li ul li a:hover
+{
+	font-size: 16px;
+}
+
+#header-content #site-heading {
+	margin: 0;
+}
+
+#header-content #site-heading a
+{
+	display: block;
+	width: 180px;
+	height: 96px;
+	background: url('/wp-content/uploads/2013/04/piratar_logo.png') left center no-repeat;
+	text-indent: -999em; overflow: hidden;
+	/* background-color: rgba(0,0,0,0.1); */
+	-webkit-transition: background-color 250ms linear;
+}
+
+#header-content {
+	position: relative;
+}
+
+#header-content > nav {
+	float: right;
+}
+
+/* Lang picker in header */
+
+#header-content .lang {
+	float: right;
+}
+
+#header-content .lang a {
+	color: #fff;
+	font-size: 24px;
+	font-family: "League Gothic";
+	text-transform: uppercase;
+	line-height: 96px;
+	padding: 0 0 0 0.25em;
+	float: right;
+	color: rgba(255,255,255,0.65);
+	-webkit-font-smoothing: antialiased;
+}
+
+#header-content .lang .fa {
+	float: right;
+	line-height: 96px;
+	color: rgba(255,255,255,0.65);
+	padding-right: 1em;
+}
+
+/* End of header content from Thorey */
+
+/*#sidebar { margin-top: 24px; margin-left:14px; float: left; width: 238px; overflow: hidden; text-align: center; }*/
+#sidebar .xline { text-align: left; }
+
+#news .hentry { margin: 1em 0; margin-bottom: 2em; }
+#news .hentry h2,
+#index-widgets .hentry h2 {
+	margin-bottom: 0;
+}
+#news .hentry h2 a { font-size: 36px; line-height: 36px; }
+#news .entry .morelink { text-decoration: none; display: inline-block; font-weight: bold; }
+#news .entry p {
+	display: inline-block;
+}
+#news h2 {margin: 1em 0;}
+
+.index-heading { font-size: 21px; margin-bottom: 2em; }
+
+/*body.single .hentry { width: 700px; float: left; }*/
+body.single .entry-title, body.page .entry-title { font-family: "League Gothic"; font-weight: normal; font-size: 60px; /*line-height: 60px;*/ line-height:1em; margin-top: 0; }
+body.single .entry-content { margin-top: 1em; line-height: 1.5em; }
+body.single p { margin-bottom: 1em; }
+/* body.single li { list-style: circle; } */
+
+p { margin-bottom: 0.5em; }
+
+h2.frettir { width: 700px; font-family: "League Gothic"; font-weight: normal; font-size: 72px; line-height:72px; }
+article h4 { font-weight: normal; font-size: 20px; line-height: 40px; }
+/*.archive-frettir {width:684px;float:left;}*/
+
+div.meta {margin: 0.5em 0;}
+.updated, .meta { color: #666666; text-transform: uppercase; font-size: 14px; }
+time {margin:0.5em 0;}
+.hentry .meta {
+	margin: 0;
+}
+
+.entry-content ol, .entry ol {margin: 0 0 0 2em;}
+
+/*body.page .post { width: 700px; float: left; }*/
+body.page .post h2 { font-family: "League Gothic"; font-size: 60px; }
+body.page .post h3 { font-size: 48px; }
+body.page .post h4 { font-size: 36px; }
+body.page .post h5 { font-size: 24px; }
+body.page .post h6 { font-weight: normal; font-size: 12px; line-height: 24px; }
+body.page .post .entry { margin-top: 1em; line-height: 1.5em; }
+body.page .post .entry ul { list-style: circle; }
+body.page .post .entry ul li { margin-left: 36px; }
+body.page .post .entry ul li.separator { color: #909090; font-style: italic; list-style: disc; padding: 2px 0px 2px 0px; margin-left: 15px; }
+body.page .post .entry ul.constituencies { list-style: none; }
+body.page .post .entry ul.constituencies li { font-weight: bold; font-style: italic; color: #909090; padding-bottom: 6px; }
+body.page .post .entry ul.constituencies li ul li { font-weight: normal; font-style: normal; color: #000000; }
+body.single p { margin-bottom: 1em; }
+
+
+/*#index-widgets { width: 280px; float: left; }*/
+#index-widgets .widget { margin-bottom: 1em; }
+#index-widgets .widget li { margin: 0.5em 0; }
+#index-widgets .widget_rss li a { font-family: "League Gothic"; text-decoration: none;  font-size: 24px;  text-transform: uppercase; }
+#index-widgets .widget_rss li a:hover { text-decoration: underline; }
+#index-widgets .widget_rss li .rss-date { display: block; }
+#index-widgets .widget_rss li .rssSummary { display: none; }
+#index-widgets #text-5 a { float: left; }
+#index-widgets #text-5 a:nth-child(even) { margin-left: 20px; }
+#index-widgets  #text-5 .textwidget { overflow: hidden; }
+#index-widgets article {
+	border-bottom: 1px solid #e6e6e6;
+	padding-bottom: 1em;
+}
+#index-widgets article h3 {
+	margin-bottom: 0;
+}
+
+.widget_search input[name=s] { width: 100%; }
+.widget_search h2 { display: none; }
+
+.widget_gce_widget ul li ul li { margin-top: 0 !important; }
+.widget_gce_widget li a { font-size: 16px; font-family: "Liberation Serif", serif; color: #333; text-decoration: none; }
+.widget_gce_widget li a:hover { text-decoration: underline; }
+
+::-moz-selection{background: #572B85; color: #fff; text-shadow: none;}
+::selection {background: #572B85; color: #fff; text-shadow: none;}
+
+.avatar { float: right; max-height: 100px; max-width: 100px; border: 1px solid black; margin-left: 16px; margin-bottom: 6px; }
+
+.alignright 
+{
+float: right;
+margin: 0 0 1em 2em !important;
+}
+
+.alignleft
+{
+float: left;
+margin: 0 2em 1em 0 !important;
+}
+
+.stefnubox {
+	float: left; 
+	width: 130px;
+	border: 1px solid #572B85;
+	padding: 15px;
+	padding-right: 20px;
+	background: #fff;
+	margin-right: 15px;
+	margin-bottom: 15px;
+}
+.stefnubox ul {
+	margin: none;
+}
+body.page .post .stefnubox ul li {
+	font-size: 12pt;
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 13px;
+}
+body.page .post .stefnubox ul li:last-child {
+	margin-bottom: 0px;
+}
+
+#webreaderContainer
+{
+margin: 0 0 2em 0;
+width: 200px !important;
+}
+
+.widget_archive
+{
+margin: 1em 0;
+}
+
+.widget_archive ul li
+{
+margin: 0.5em 0;
+}
+
+.widget_archive h2
+{
+font-size: 16px;
+}
+
+#footer {
+	border-top: 2px #E6E6E6 solid;
+}
+
+#footer .footer-wrap {
+	width: 960px;
+	margin: 0 auto;
+	padding: 4em 0;
+}
+
+#footer .contact,
+#footer .contact a {
+	color: #666666;
+	font-size: 12px;
+}
+
+#social-media-links {
+	float: right;
+}
+
+.instagram-image {
+	margin: 0 0 1px 0 !important;
+	padding: 0 !important;
+}
+
+#instagram-widget-2 h2 {
+	font-size: 24px;
+}
+
+.xline {
+	border-top: 2px solid #666666;
+	line-height: 0em;
+}
+
+.xline span {
+	background: #FFFFFF;
+	padding-right: 1em;
+}
+
+.xline a {
+	background: #fff;
+	padding-right: 1em;
+}
+
+#index-widgets h2 img {
+	display: none;
+}
+
+#index-widgets .widget_rss {
+	margin-top: 3em;
+}
+
+#sidebar .menu-item,
+#sidebar .menu-item a {
+	display: none;
+}
+
+#sidebar .sub-menu .menu-item a {
+	display: block;
+}
+
+#sidebar .current-menu-item,
+#sidebar .current-menu-item .sub-menu .menu-item,
+#sidebar .current-page-ancestor,
+#sidebar .current-page-ancestor .sub-menu .menu-item {
+	display: block;
+}
+
+#sidebar ul.menu {
+	font-size: 24px;
+	margin-bottom: 1.5em;
+	font-family: "League Gothic";
+	text-transform: uppercase;
+}
+
+#sidebar ul.menu li {
+	margin-bottom: 0.5em;
+	-webkit-font-smoothing: antialiased;
+}
+
+#sidebar .cashmoney {
+	background: #E6E6E6;
+	padding: 1.5em;
+}
+
+#sidebar .cashmoney h3 {
+	margin-top: 0;
+	padding-top: 0;
+}
+
+#sidebar .cashmoney strong {
+	display: block;
+}
+
+#sidebar #webreaderContainer,
+#sidebar #webreaderContainer_container,
+#sidebar #webreaderContainer_link,
+#sidebar #webreaderContainer_stbutton,
+#sidebar #webreaderContainer_text {
+	width: 100% !important;
+	margin: 0; padding: 0;
+	display: inline-block !important;
+}
+
+#sidebar #webreaderContainer_stbutton {
+	border-radius: 0px !important;
+	border-width: 1px 0 0 0 !important;
+	border-color: #333 !important;
+}
+
+.addthis_toolbox
+{
+	margin:2em 0 1em 0;
+}
+
+a.blogg
+{
+border-bottom: 1px solid #e6e6e6;
+margin: 0 0 0.7em 0;
+padding: 0 0 0 0;
+float: left;
+width: 350px;
+text-align: left;
+}
+
+a.bright
+{
+border-bottom: 1px solid #e6e6e6;
+margin: 0 0 0.7em 0;
+float: left;
+width: 310px;
+text-align: left;
+padding: 0 0 0 40px;
+}
+
+ul.fjol li
+{
+line-height: 1.7;
+}
+
+/* 
+
+	SveitÃ³ 2014
+	Added by @andrisig
+
+*/
+
+/* Front page */
+
+.sveito {
+	background: #f3f3f3;
+}
+
+.sveito h2 {	
+	width: 40%;
+	float: left;
+}
+
+.sveito ul {
+	float: left;
+	width: 60%;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+
+.sveito ul li {
+	display: inline-block;
+	margin: 0 1em;
+}
+
+.sveito ul li:last-child {
+	margin-right: 0;
+}
+
+.sveito ul li a {
+	display: block;
+	line-height: 96px;
+	font-family: "League Gothic";
+	text-transform: uppercase;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	font-size: 24px;
+}
+
+.sveito-banner {
+	height: 24em;
+	background: url(images/piratar-crop.jpg) top center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.sveito-banner h2 {
+	position: absolute;
+	top: -9990em;
+	left: -9999em;
+}
+
+.styrkja {
+	background: #542a8a;
+	text-align: center;
+	padding: 0 1.5em 1.5em 1.5em;
+}
+
+.styrkja h2 {
+	padding: 1em 0 0.5em 0;
+	margin: 0;
+	color: #fff;
+	line-height: 1em;
+}
+
+.styrkja h2 a {
+	color: #fff;
+}
+
+#text-12 {
+	background: #e6e6e6;
+	padding: 0 1.5em 1.5em 1.5em;
+	margin-bottom: 3em !important;
+}
+
+#text-12 h2 {
+	border: 0;
+	font-size: 36px;
+	margin: 0;
+	padding: 1em 0 0.5em 0;
+	line-height: 1em;
+}
+
+#text-12 h2 span {
+	background: transparent;
+	padding: 0;
+}
+
+#text-12 ul li {
+	list-style: none;
+}
+
+#text-12 ul li a {
+	font-weight: 700;
+	font-size: 21px;
+	letter-spacing: -0.04em;
+}
+
+@media (min-width: 1200px) {
+   	.top-banner {
+		height: 24em;
+	}
+}
+
+@media (min-width: 1400px) {
+   	.top-banner {
+		height: 24em;
+	}
+}
+
+@media (min-width: 1600px) {
+   	.top-banner {
+		height: 36em;
+	}
+}
+
+.face-pile {
+	border-top: 2px #E6E6E6 solid;
+}
+
+.fb-social-plugin {
+	margin-top: 2em;
+}
+
+.stafur {
+	margin-bottom: 1em;
+}
+
+/*	AÃ°ildarfÃ©lÃ¶g */
+
+.section-adildarfelag {
+	background-position: top center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.section-adildarfelag h1 {
+	position: absolute;
+	top: -9999em;
+	left: -9999em;
+} 
+
+.section-frambjodendur {
+	border-bottom: 2px solid #E6E6E6;
+}
+
+.section-frambjodendur .col-12 {
+	margin-bottom: 1em;
+}
+
+.section-frambjodendur h2 {
+	margin: 0.5em 0;
+}
+
+.section-frambjodendur .xline a,
+.section-frambjodendur .xline span,
+.section-stefna .xline a,
+.section-stefna .xline span
+ {
+	background: #E6E6E6;
+	padding-right: 0.5em;
+}
+
+.section-frambjodendur .xline a,
+.section-frambjodendur .xline span {
+	background: #fff;
+}
+
+.section-frambjodendur-list {
+	border-bottom: 0;
+}
+
+.section-frambjodendur-list .frambjodandi {
+	margin-bottom: 2em;
+}
+
+.section-stefna {
+	background: #E6E6E6;
+}
+
+.section-stefna h2 {
+	margin: 0.5em 0;
+}
+
+.section-stefna h2 span {
+	background: #E6E6E6;	
+}
+
+.section-frambjodendur .frambjodandi h3 {
+	margin-bottom: 0;
+}
+
+.section-frambjodendur .frambjodandi .img {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+}
+
+.section-frambjodendur .frambjodandi .img:before{
+	content: "";
+	display: block;
+	padding-top: 100%; 	/* initial ratio of 1:1*/
+}
+
+.section-frambjodendur .frambjodandi .img .img-wrap {
+	position:  absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}

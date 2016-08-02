@@ -1,4 +1,8 @@
+import hashlib
+import time
+
 from django.db import models
+from django.conf import settings
 from datetime import datetime
 
 from group.models import Group
@@ -61,3 +65,13 @@ class Member(models.Model):
                 groups |= set(lc.auto_location_groups.all())
 
         return groups
+
+    def email_sig(self):
+        ts = '%x/' % time.time()
+        return ts + hashlib.sha1('%s:%s%s:%s' % (
+             settings.JSON_API_KEY, ts, self.email, settings.JSON_API_KEY
+             )).hexdigest()
+
+    def wasa2il_url(self, *args, **kwargs):
+        from icepirate.utils import wasa2il_url
+        return wasa2il_url(self, *args, **kwargs)
