@@ -6,9 +6,17 @@ from django.utils import timezone
 from group.models import Group
 from member.models import Member
 from locationcode.models import LocationCode
+from member.models import Member
 
 
 class Message(models.Model):
+    WASA2IL_ANY = 'any'
+    WASA2IL_USERS = 'are_users'
+    WASA2IL_NON_USERS = 'not_users'
+    WASA2IL_MEMBERSHIP_TYPES = (
+        (WASA2IL_ANY, 'Does not matter'),
+        (WASA2IL_USERS, 'Recipients are wasa2il users'),
+        (WASA2IL_NON_USERS, 'Recipients are not wasa2il users'))
 
     from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
@@ -19,6 +27,10 @@ class Message(models.Model):
     groups_include_subgroups = models.BooleanField(default=True)
     groups_include_locations = models.BooleanField(default=True)
     locations = models.ManyToManyField(LocationCode, blank=True)
+
+    wasa2il_usage = models.CharField(max_length=12,
+        choices=WASA2IL_MEMBERSHIP_TYPES,
+        default=WASA2IL_ANY)
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
@@ -31,6 +43,43 @@ class Message(models.Model):
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
 
+    def get_recipients(message):
+        def rcpt_filter(q):
+            if message.sending_started:
+                q = q.filter(added__lt=message.sending_started)
+            if message.wasa2il_usage == message.WASA2IL_USERS:
+                q = q.filter(username__isnull=False)
+            elif message.wasa2il_usage == message.WASA2IL_NON_USERS:
+                q = q.filter(username__isnull=True)
+            return q.filter(email_unwanted=False)
+
+        recipients = []
+        if message.send_to_all:
+            recipients = rcpt_filter(Member.objects)
+        else:
+            for group in message.groups.all():
+                recipients.extend(rcpt_filter(group.get_members(
+                    subgroups=message.groups_include_subgroups,
+                    locations=message.groups_include_locations)))
+
+            for location in message.locations.all():
+                recipients.extend(rcpt_filter(location.get_members()))
+
+        return list(set(recipients))
+
+    def get_undelivered_recipients(message):
+        recipients = message.get_recipients()
+
+        # NOTE: If a MessageDelivery exists for a user but timing_end=None,
+        #       then previous sending must have failed.
+        already_delivered = [d.member for d in
+            message.messagedelivery_set.select_related(
+                'member').exclude(timing_end=None)]
+
+        # Remove duplicates (member may be in several groups) and those
+        # already delivered to.
+        return list(set(recipients) - set(already_delivered))
+
     class Meta:
         ordering = ['added']
 
@@ -39,6 +88,7 @@ class MessageDelivery(models.Model):
     member = models.ForeignKey(Member)
     timing_start = models.DateTimeField(default=timezone.now)
     timing_end = models.DateTimeField(null=True)
+
 
 class InteractiveMessage(models.Model):
 

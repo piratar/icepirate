@@ -34,12 +34,23 @@
     <div class="line">
         <p class="label">{% trans 'Targets' %}:</p>
         <p class="value">
-            {% if message.send_to_all %}
+            {% if message.wasa2il_usage == 'are_users' %}
+                {% trans 'Wasa2il users only' %}<br>
+            {% elif message.wasa2il_usage == 'not_users' %}
+                {% trans 'Wasa2il non-users only' %}<br>
+            {% elif message.send_to_all %}
                 {% trans 'Everyone' %}
-            {% else %}
+            {% endif %}
+            {% if not message.send_to_all %}
                 {% include 'group/stubs/shortlist.html' with groups=message.groups.all %}
                 {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all %}
             {% endif %}
+        </p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Recipients' %}:</p>
+        <p class="value">
+            {{ message.get_recipients|length }}
         </p>
     </div>
     <div class="line">
