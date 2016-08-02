@@ -11,6 +11,11 @@ SITE_URL = 'https://something.example.com' # Without trailing slash
 ORGANIZATION_MAIN_URL = 'https://example.com' # Without trailing slash
 ORGANIZATION_EMAIL = 'example@example.com'
 
+# When paired with a wasa2il instance, these are useful
+WASA2IL_REGISTRATION_URL = 'https://x.piratar.is/accounts/register/'
+WASA2IL_LOGIN_URL = 'https://x.piratar.is/accounts/login/'
+WASA2IL_HOME_URL = 'https://x.piratar.is/'
+
 # Authentication URL (Icekey)
 AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
 AUTH_ISLAND = {

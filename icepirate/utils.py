@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import hashlib
 import json
 import os
@@ -76,7 +77,20 @@ def quick_mail(to, subject, body,
         html_message=html_body)
 
 def generate_random_string():
-    return hashlib.sha1(os.urandom(128)).hexdigest()
+    return hashlib.sha1(os.urandom(128)).hexdigest()[:40]
+
+def generate_unique_random_string():
+    # Technically, this could repeat every 16 years or so. But it's
+    # so unlikely that we just don't really care. The SHA1 above
+    # really should be enough on its own, this is all overkill.
+    #
+    # Of course, we ARE assuming time never stands still or goes
+    # backwards... but even if we're wrong about that: SHA1 ftw.
+    #
+    now = long(time.time() * 0x7f01f) & 0xffffffffffff
+    return (
+        '%x%x%s' % (os.getpid(), now, generate_random_string())
+        ).replace('.', '')[:40]
 
 def json_error(exception):
     response_data = {
@@ -202,6 +216,7 @@ def lookup_national_registry(ssn):
 
     raise NotImplementedError('Unknown XML namespace, halp')
 
+
 def merge_national_registry_info(member, nr_info, now):
     assert(nr_info.get('name') and nr_info.get('legal_address'))
 
@@ -217,3 +232,26 @@ def merge_national_registry_info(member, nr_info, now):
 
     member.legal_lookup_timing = now
     return member
+
+
+def wasa2il_url(member, data=None, shorten=False):
+    url = settings.WASA2IL_HOME_URL
+    data = copy.copy(data or {})
+    try:
+        if member.username:
+            url = settings.WASA2IL_LOGIN_URL,
+            data['username'] = member.username
+        elif member.email:
+            url = settings.WASA2IL_REGISTRATION_URL
+            data['email'] = member.email
+            if member.email_verified:
+                 data['email_sig'] = member.email_sig()
+    except:
+        pass
+
+    url ='%s?%s' % (url, urllib.urlencode(data))
+    if shorten:
+        from message.models import ShortURL
+        return str(ShortURL(url=url).save())
+    else:
+        return url
