@@ -47,6 +47,7 @@ def list(request, group_techname=None, location_code=None, combined=False):
 
     context = {
         'members': members,
+        'have_username': members.filter(username__isnull=False),
         'groups': groups,
         'location_codes': location_codes,
         'group_techname': group_techname,
