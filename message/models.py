@@ -107,11 +107,15 @@ class Message(models.Model):
                 'legal_zip_code', 'legal_municipality_code'):
             data = unicode(getattr(recipient, field))
             body = body.replace('{{%s}}' % field, data)
+
+        # When embedding the following URLs into e-mails, we force them to
+        # count as verified; this e-mail effectively becomes a verification
+        # mail in disguise.
         if '{{wasa2il_url}}' in body:
-            data = wasa2il_url(recipient)
+            data = wasa2il_url(recipient, verified=True)
             body = body.replace('{{wasa2il_url}}', data)
         if '{{wasa2il_url_short}}' in body:
-            data = wasa2il_url(recipient, shorten=True)
+            data = wasa2il_url(recipient, verified=True, shorten=True)
             body = body.replace('{{wasa2il_url_short}}', data)
 
         if message.generate_html_mail and with_html:
