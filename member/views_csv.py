@@ -25,9 +25,9 @@ def list(request, group_techname=None, location_code=None, combined=False):
     # NOTE: Apparently concatinating lists of strings is really efficient.
     lines = []
 
-    lines.append('#"SSN","Name","Username","Email","Phone","Added"')
+    lines.append('#"SSN","Name","Username","Email","Email unwanted","Phone","Added"')
     for m in members:
-        line = '"%s","%s","%s","%s","%s","%s"' % (m.ssn, m.name, m.username, m.email, m.phone, m.added)
+        line = '"%s","%s","%s","%s","%s","%s","%s"' % (m.ssn, m.name, m.username, m.email, m.email_unwanted, m.phone, m.added)
         lines.append(line)
 
     if group_techname:
