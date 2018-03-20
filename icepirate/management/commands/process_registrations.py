@@ -415,9 +415,7 @@ class Command(BaseCommand):
             'member_assoc': [],
         }
 
-        for line in email_content.split('\r\n'):
-            line = line.decode('utf-8')
-
+        for line in email_content.split('\n'):
             # This part is really ugly because we receive the email in a really ugly format
             if u'Nafn:' in line:
                 result['name'] = line.split(": ")[1]
@@ -545,7 +543,7 @@ class Command(BaseCommand):
                 stdout.flush()
 
                 # Parse the registration from the message
-                email_content = self.parse_email_content(email_message.get_payload())
+                email_content = self.parse_email_content(email_message.get_payload(decode=True).decode('utf-8'))
                 registration.update(email_content)
 
                 registrations.append(registration)
