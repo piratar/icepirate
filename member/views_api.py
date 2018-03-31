@@ -54,53 +54,6 @@ def member_to_dict(member):
     return result
 
 
-@login_required
-def list(request):
-    members = Member.objects.all().order_by('added')
-
-    data = []
-    for member in members:
-        data.append(member_to_dict(member))
-
-    response_data = {
-        'success': True,
-        'meta': {
-            'count': len(data)
-        },
-        'data': data
-    }
-
-    return HttpResponse(json.dumps(response_data), content_type='application/json')
-
-
-@login_required
-def filter(request, field, searchstring):
-    members = []
-
-    if field == 'name':
-        members = Member.objects.filter(name__icontains=searchstring)
-    elif field == 'username':
-        members = Member.objects.filter(username__icontains=searchstring)
-    elif field == 'email':
-        members = Member.objects.filter(email__icontains=searchstring)
-    else:
-        raise Http404
-
-    data = []
-    for member in members:
-        data.append(member_to_dict(member))
-
-    response_data = {
-        'success': True,
-        'meta': {
-            'count': len(data)
-        },
-        'data': data
-    }
-
-    return HttpResponse(json.dumps(response_data), content_type='application/json')
-
-
 def get(request, field, searchstring):
 
     if not require_login_or_key(request):
