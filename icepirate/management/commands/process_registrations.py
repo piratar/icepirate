@@ -211,8 +211,7 @@ class Command(BaseCommand):
             stdout.write(' yes\n')
 
             if self.recently_mailed_about(reg):
-                stdout.write('* Already notified admins, ignoring.')
-                stdout.flush()
+                stdout.write('* Already notified admins, ignoring.\n')
             else:
                 stdout.write('* Notifying admins...')
                 stdout.flush()
