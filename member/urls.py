@@ -1,10 +1,15 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.utils.http import urlencode
 
-urlpatterns = patterns('',
+from member import views
+from member import views_api
+from member import views_csv
+
+urlpatterns = [
     # Examples:
     # url(r'^$', 'icepirate.views.home', name='home'),
     # url(r'^icepirate/', include('icepirate.foo.urls')),
@@ -18,28 +23,28 @@ urlpatterns = patterns('',
     # ------------------------------------------------------------------#
 
     # General stuff.
-    url(r'^list/in/(?P<location_code>[^/]*)', 'member.views.list'),
-    url(r'^list/(?P<group_techname>.+)/(?P<combined>combined)', 'member.views.list', name='list'),
-    url(r'^list/(?P<group_techname>.*)', 'member.views.list', name='list'),
-    url(r'^add/', 'member.views.add', name='add'),
-    url(r'^edit/(?P<ssn>[^/]+)', 'member.views.edit', name='edit'),
-    url(r'^delete/(?P<ssn>[^/]+)', 'member.views.delete', name='delete'),
-    url(r'^view/(?P<ssn>[^/]+)', 'member.views.view', name='view'),
-    url(r'^count/location/(?P<grep>[^/]*)', 'member.views.location_count', name='location_count'),
-    url(r'^count/(?P<grep>[^/]*)', 'member.views.count', name='count'),
+    url(r'^list/in/(?P<location_code>[^/]*)', views.list),
+    url(r'^list/(?P<group_techname>.+)/(?P<combined>combined)', views.list, name='list'),
+    url(r'^list/(?P<group_techname>.*)', views.list, name='list'),
+    url(r'^add/', views.add, name='add'),
+    url(r'^edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
+    url(r'^delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
+    url(r'^view/(?P<ssn>[^/]+)', views.view, name='view'),
+    url(r'^count/location/(?P<grep>[^/]*)', views.location_count, name='location_count'),
+    url(r'^count/(?P<grep>[^/]*)', views.count, name='count'),
 
     # Verification
     url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
-    url(r'^verify/', 'member.views.verify', name='verify'),
+    url(r'^verify/', views.verify, name='verify'),
 
     # CSV
-    url(r'^csv/list/in/(?P<location_code>[^/]*)', 'member.views_csv.list'),
-    url(r'^csv/list/(?P<group_techname>[^/]*)/(?P<combined>[^/]+)', 'member.views_csv.list'),
-    url(r'^csv/list/(?P<group_techname>[^/]*)', 'member.views_csv.list', name='csv_list'),
+    url(r'^csv/list/in/(?P<location_code>[^/]*)', views_csv.list),
+    url(r'^csv/list/(?P<group_techname>[^/]*)/(?P<combined>[^/]+)', views_csv.list),
+    url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
 
     # API pages (JSON)
-    url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)', 'member.views_api.get', name='api_get'),
-    url(r'^api/add/$', 'member.views_api.add', name='api_add'),
-    url(r'^api/count/$', 'member.views_api.count', name='api_count'),
+    url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)', views_api.get, name='api_get'),
+    url(r'^api/add/$', views_api.add, name='api_add'),
+    url(r'^api/count/$', views_api.count, name='api_count'),
 
-)
+]

@@ -5,7 +5,7 @@ from django.http import Http404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 
 from member.models import Member
@@ -16,11 +16,6 @@ from message.models import InteractiveMessage
 from message.models import Message, ShortURL
 
 @login_required
-def list(request):
-
-    return render_to_response('message/list.html')
-
-@login_required
 def add(request):
 
     if request.method == 'POST':
@@ -28,14 +23,14 @@ def add(request):
 
         if form.is_valid():
             form.instance.author = request.user
-            form.instance.ready_to_send = request.POST.get('ready_to_send', False)
+            form.instance.ready_to_send = len(request.POST.get('ready_to_send', '')) > 0
             message = form.save()
             return HttpResponseRedirect('/message/view/%d' % message.id)
 
     else:
         form = MessageForm()
 
-    return render_to_response('message/add.html', { 'form': form }, context_instance=RequestContext(request))
+    return render(request, 'message/add.html', { 'form': form })
 
 @login_required
 def edit(request, message_id):
@@ -47,14 +42,14 @@ def edit(request, message_id):
 
         if form.is_valid():
             form.instance.author = request.user
-            form.instance.ready_to_send = request.POST.get('ready_to_send', False)
+            form.instance.ready_to_send = len(request.POST.get('ready_to_send', '')) > 0
             message = form.save()
             return HttpResponseRedirect('/message/view/%d/' % message.id)
 
     else:
         form = MessageForm(instance=message)
 
-    return render_to_response('message/edit.html', { 'form': form, 'message': message }, context_instance=RequestContext(request))
+    return render(request, 'message/edit.html', { 'form': form, 'message': message })
 
 @login_required
 def delete(request, message_id):
@@ -65,20 +60,20 @@ def delete(request, message_id):
         message.delete()
         return HttpResponseRedirect('/message/list/')
 
-    return render_to_response('message/delete.html', { 'message': message }, context_instance=RequestContext(request))
+    return render(request, 'message/delete.html', { 'message': message })
 
 
 @login_required
 def list(request):
     messages = Message.objects.all()
 
-    return render_to_response('message/list.html', { 'messages': messages })
+    return render(request, 'message/list.html', { 'messages': messages })
 
 @login_required
 def view(request, message_id):
     message = get_object_or_404(Message, id=message_id)
 
-    return render_to_response('message/view.html', { 'message': message }, context_instance=RequestContext(request))
+    return render(request, 'message/view.html', { 'message': message })
 
 @login_required
 def interactive_list(request):
@@ -97,7 +92,7 @@ def interactive_list(request):
 
         display_struct[i_type]['display'] = i_display
 
-    return render_to_response('message/interactive_list.html', { 'display_struct': display_struct })
+    return render(request, 'message/interactive_list.html', { 'display_struct': display_struct })
 
 @login_required
 def interactive_edit(request, interactive_type):
@@ -139,7 +134,7 @@ def interactive_edit(request, interactive_type):
         'form': form,
         'interactive_message': interactive_message,
     }
-    return render_to_response('message/interactive_edit.html', ctx, context_instance=RequestContext(request))
+    return render(request, 'message/interactive_edit.html', ctx)
 
 @login_required
 def interactive_view(request, interactive_type):
@@ -158,11 +153,7 @@ def interactive_view(request, interactive_type):
             )
             interactive_message.body = interactive_message.body.replace('{{%s}}' % link, replacement)
 
-    return render_to_response(
-        'message/interactive_view.html',
-        { 'interactive_message': interactive_message },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'message/interactive_view.html', { 'interactive_message': interactive_message })
 
 
 def short_url_redirect(request, code=None):
@@ -172,7 +163,7 @@ def short_url_redirect(request, code=None):
             ).url)
     except ShortURL.DoesNotExist:
         ShortURL.DeleteExpired()
-        return render_to_response('message/shorturl_expired.html')
+        return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
 
 def mailcommand(request, interactive_type, link, random_string):
@@ -186,13 +177,13 @@ def mailcommand(request, interactive_type, link, random_string):
             member.email_verified = True
             member.save()
 
-            return render_to_response('message/mailcommand.html', {
+            return render(request, 'message/mailcommand.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 10,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
                 'member': member,
-            }, context_instance=RequestContext(request))
+            })
         elif link == 'reject':
             try:
                 member = Member.objects.get(temporary_web_id=random_string)
@@ -201,13 +192,13 @@ def mailcommand(request, interactive_type, link, random_string):
 
             member.delete()
 
-            return render_to_response('message/mailcommand.html', {
+            return render(request, 'message/mailcommand.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
                 'organization_email': settings.ORGANIZATION_EMAIL,
-            }, context_instance=RequestContext(request))
+            })
         else:
             return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
     elif interactive_type == 'reject_email_messages':
@@ -220,14 +211,14 @@ def mailcommand(request, interactive_type, link, random_string):
             member.email_unwanted = True
             member.save()
 
-            return render_to_response('message/mailcommand.html', {
+            return render(request, 'message/mailcommand.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
                 'member': member,
                 'organization_email': settings.ORGANIZATION_EMAIL,
-            }, context_instance=RequestContext(request))
+            })
     else:
         return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 

@@ -3,7 +3,7 @@ import pytz
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
@@ -17,7 +17,7 @@ def list(request):
 
     groups = Group.objects.all().order_by('name')
 
-    return render_to_response('group/list.html', { 'groups': groups})
+    return render(request, 'group/list.html', { 'groups': groups})
 
 @login_required
 def stats(request, as_csv=False):
@@ -68,9 +68,7 @@ def stats(request, as_csv=False):
         response['Content-Disposition'] = 'attachment; filename="stats.csv"'
         return response
     else:
-        return render_to_response('group/stats.html', {
-            'dates': dates,
-            'stats': stats})
+        return render(request, 'group/stats.html', { 'dates': dates, 'stats': stats })
 
 @login_required
 def add(request):
@@ -86,7 +84,7 @@ def add(request):
     else:
         form = GroupForm()
 
-    return render_to_response('group/add.html', { 'form': form }, context_instance=RequestContext(request))
+    return render(request, 'group/add.html', { 'form': form })
 
 @login_required
 def edit(request, techname):
@@ -104,7 +102,7 @@ def edit(request, techname):
     else:
         form = GroupForm(instance=group)
 
-    return render_to_response('group/edit.html', { 'form': form, 'group': group }, context_instance=RequestContext(request))
+    return render(request, 'group/edit.html', { 'form': form, 'group': group })
 
 @login_required
 def delete(request, techname):
@@ -115,11 +113,11 @@ def delete(request, techname):
         group.delete()
         return HttpResponseRedirect('/group/list/')
 
-    return render_to_response('group/delete.html', { 'group': group }, context_instance=RequestContext(request))
+    return render(request, 'group/delete.html', { 'group': group })
 
 @login_required
 def view(request, techname):
     group = get_object_or_404(Group, techname=techname)
 
-    return render_to_response('group/view.html', { 'group': group }, context_instance=RequestContext(request))
+    return render(request, 'group/view.html', { 'group': group })
 

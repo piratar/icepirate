@@ -8,8 +8,6 @@ except:
 
 # Django settings for icepirate project.
 
-TEMPLATE_DEBUG = DEBUG
-
 MANAGERS = ADMINS
 
 # Local time zone for this installation. Choices can be found here:
@@ -68,13 +66,6 @@ STATICFILES_FINDERS = (
 #	'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-	'django.template.loaders.filesystem.Loader',
-	'django.template.loaders.app_directories.Loader',
-#	 'django.template.loaders.eggs.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
@@ -90,29 +81,41 @@ ROOT_URLCONF = 'icepirate.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'icepirate.wsgi.application'
 
-TEMPLATE_DIRS = (
-	here('../templates'),
-	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-	# Always use forward slashes, even on Windows.
-	# Don't forget to use absolute paths, not relative paths.
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+
+    'registration',
+
     'icepirate',
-	'locationcode',
-	'member',
+    'locationcode',
+    'member',
     'group',
     'message',
-
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	# Uncomment the next line to enable the admin:
-	'django.contrib.admin',
-	# Uncomment the next line to enable admin documentation:
-	# 'django.contrib.admindocs',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -55,7 +55,7 @@ def list(request, group_techname=None, location_code=None, combined=False):
         'location_code': location_code,
         'combined': combined
     }
-    return render_to_response('member/list.html', context)
+    return render(request, 'member/list.html', context)
 
 @login_required
 def count(request, grep=None):
@@ -72,7 +72,7 @@ def count(request, grep=None):
         'grouping': 'Year-Month',
         'data': sorted(results.iteritems())
     }
-    return render_to_response('member/count.html', context)
+    return render(request, 'member/count.html', context)
 
 @login_required
 def location_count(request, grep=None):
@@ -84,7 +84,7 @@ def location_count(request, grep=None):
         'grouping': 'LocationCode',
         'data': sorted(results.iteritems())
     }
-    return render_to_response('member/count.html', context)
+    return render(request, 'member/count.html', context)
 
 @login_required
 def add(request):
@@ -99,7 +99,7 @@ def add(request):
     else:
         form = MemberForm()
 
-    return render_to_response('member/add.html', { 'form': form }, context_instance=RequestContext(request))
+    return render(request, 'member/add.html', { 'form': form })
 
 @login_required
 def edit(request, ssn):
@@ -117,7 +117,7 @@ def edit(request, ssn):
     else:
         form = MemberForm(instance=member)
 
-    return render_to_response('member/edit.html', { 'form': form, 'member': member }, context_instance=RequestContext(request))
+    return render(request, 'member/edit.html', { 'form': form, 'member': member })
 
 @login_required
 def delete(request, ssn):
@@ -128,14 +128,14 @@ def delete(request, ssn):
         member.delete()
         return HttpResponseRedirect('/member/list/')
 
-    return render_to_response('member/delete.html', { 'member': member }, context_instance=RequestContext(request))
+    return render(request, 'member/delete.html', { 'member': member })
 
 @login_required
 def view(request, ssn):
 
     member = get_object_or_404(Member, ssn=ssn)
 
-    return render_to_response('member/view.html', { 'member': member }, context_instance=RequestContext(request))
+    return render(request, 'member/view.html', { 'member': member })
 
 def verify(request):
 
@@ -159,5 +159,5 @@ def verify(request):
         except:
             pass
 
-    return render_to_response('member/verify.html', { 'member': member, }, context_instance=RequestContext(request))
+    return render(request, 'member/verify.html', { 'member': member, })
 
