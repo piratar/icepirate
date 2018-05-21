@@ -20,7 +20,15 @@ $(document).ready(function() {
 {{ form.as_p }}
 <div class="formbuttons">
     <button type="submit">{% trans 'Save' %}</button>
-    <button type="button" href="{% url 'interactive_view' interactive_message.interactive_type %}">{% trans 'Cancel' %}</button>
+    {% if form.instance.id %}
+        <button type="button" href="{% url 'interactive_view' interactive_message.interactive_type %}">
+            {% trans 'Cancel' %}
+        </button>
+    {% else %}
+        <button type="button" href="{% url 'interactive_list' %}">
+            {% trans 'Cancel' %}
+        </button>
+    {% endif %}
 </div>
 </form>
 
