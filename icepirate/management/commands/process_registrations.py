@@ -328,7 +328,6 @@ class Command(BaseCommand):
     def process_groups(self, reg, member):
         added_to_groups = False
         for group in Group.objects.filter(name__in=reg['member_assoc']).exclude(members=member):
-            # I was here... about to make this print thing conditional
             stdout.write('* Adding member to group: %s...' % group.name)
             stdout.flush()
             group.members.add(member)
