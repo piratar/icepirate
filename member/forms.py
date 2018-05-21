@@ -12,5 +12,5 @@ class MemberForm(ModelForm):
 
     class Meta:
         model = Member
-        fields = ['ssn', 'name', 'email', 'email_unwanted', 'phone', 'added', 'groups']
+        fields = ['ssn', 'name', 'email', 'email_wanted', 'phone', 'added', 'groups']
 

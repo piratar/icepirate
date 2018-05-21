@@ -24,8 +24,11 @@
         <p class="label">{% trans 'Email' %}:</p>
         <p class="value">
             <a href="mailto:{{ member.email }}">{{ member.email }}</a>
-            {% if member.email_unwanted %}
-                <small>(Email unwanted)</small>
+            <br />
+            {% if member.email_wanted %}
+                <small>(consent for sending email provided)</small>
+            {% else %}
+                <small><strong>(consent for sending email not provided)</strong></small>
             {% endif %}
         </p>
     </div>

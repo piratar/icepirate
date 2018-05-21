@@ -14,7 +14,21 @@ class Member(models.Model):
     username = models.CharField(max_length=50, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
     email_verified = models.BooleanField(default=False)
+
+    # NOTE/IMPORTANT: The `email_unwanted` field is deprecated and should
+    # never be used in code. It is from the time when consent for receiving
+    # email was assumed from the registration of a member. As a result of the
+    # General Data Protection Regulation however, explicit consent is required
+    # and marked in the `email_wanted` field. The `email_unwanted` field is
+    # only retained to keep information about who had specifically rejected
+    # emails before the GDPR took effect. By keeping this field, it's possible
+    # to look up members who have not explicitly consented to receiving email,
+    # but had also not specifically rejected it before GDPR. This may be
+    # useful during the transition to GDPR-compliance, but at some point this
+    # field will become useless and shall then be removed.
     email_unwanted = models.BooleanField(default=False)
+
+    email_wanted = models.BooleanField(default=False)
     phone = models.CharField(max_length=30, blank=True)
     partake = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)

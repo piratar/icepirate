@@ -6,12 +6,18 @@ Script plan:
 
 if SSN checksum is OK
     if member in local database
+        if new groups requested
+            register member to requested groups
+
         if new email
             notify admins and task them with investigation
             (do nothing else)
 
-        if new groups requested
-            register member to requested groups
+        if email is unchanged
+            check for changes in consent to emails being sent
+            if consent is different from database
+                note or revoke consent
+
     else
         if user has not recently rejected membership
             if SSN is in national registry
@@ -108,7 +114,12 @@ class Command(BaseCommand):
 
                             emails_differ = self.check_if_emails_differ(reg)
 
-                            if not added_to_groups and not emails_differ:
+                            if not emails_differ:
+                                email_consent_changed = self.check_if_email_consent_changed(reg)
+                            else:
+                                email_consent_changed = False
+
+                            if not added_to_groups and not emails_differ and not email_consent_changed:
                                 stdout.write('* Registration ignored.\n')
                         else:
                             if not self.check_if_recently_rejected(reg):
@@ -238,6 +249,30 @@ class Command(BaseCommand):
             return True
         else:
             stdout.write(' no\n')
+            return False
+
+    def check_if_email_consent_changed(self, reg):
+
+        member = Member.objects.get(ssn=reg['ssn'])
+
+        stdout.write('- Checking if consent for email being sent has changed...')
+        stdout.flush()
+        if member.email_wanted != reg['email_ok']:
+            stdout.write(' yes\n')
+
+            if reg['email_ok']:
+                stdout.write('* Noting consent for email being sent...')
+            else:
+                stdout.write('* Revoking consent for email being sent...')
+            stdout.flush()
+            member.email_wanted = reg['email_ok']
+            member.save()
+            stdout.write(' done\n')
+
+            return True
+        else:
+            stdout.write(' no\n')
+
             return False
 
     def check_national_registry(self, reg):
@@ -411,6 +446,7 @@ class Command(BaseCommand):
             'ssn': '',
             'name': '',
             'member_assoc': [],
+            'email_ok': False,
         }
 
         for line in email_content.split('\n'):
@@ -430,6 +466,9 @@ class Command(BaseCommand):
             elif u'Ungir Píratar:' in line:
                 if line.split(": ")[1] == u'Já':
                     result['member_assoc'].append(u'Ungir Píratar')
+            elif u'Samþykki fyrir tölvupósti' in line:
+                if line.split(": ")[1] == u'Já':
+                    result['email_ok'] = True
 
         return result
 

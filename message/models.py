@@ -60,7 +60,7 @@ class Message(models.Model):
                 q = q.filter(username__isnull=False)
             elif message.wasa2il_usage == message.WASA2IL_NON_USERS:
                 q = q.filter(username__isnull=True)
-            return q.filter(email_unwanted=False)
+            return q.filter(email_wanted=True)
 
         recipients = []
         if message.send_to_all:

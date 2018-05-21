@@ -208,7 +208,7 @@ def mailcommand(request, interactive_type, link, random_string):
             except Member.DoesNotExist:
                 return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
-            member.email_unwanted = True
+            member.email_wanted = False
             member.save()
 
             return render(request, 'message/mailcommand.html', {
