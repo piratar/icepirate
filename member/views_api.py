@@ -29,6 +29,7 @@ def member_to_dict(member):
         'name': member.name,
         'username': member.username,
         'email': member.email,
+        'email_wanted': member.email_wanted,
         'phone': member.phone,
         'partake': member.partake,
         'added': member.added.strftime('%Y-%m-%d %H:%M:%S'),
@@ -112,6 +113,7 @@ def add(request):
     username = request.GET.get('username')
     name = request.GET.get('name')
     email = request.GET.get('email')
+    email_wanted = str(request.GET.get('email_wanted', 'false')).lower() == 'true'
     added = request.GET.get('added', timezone.now())
     groups = request.GET.getlist('group', [])
 
@@ -120,6 +122,7 @@ def add(request):
     member.username = username
     member.name = name
     member.email = email
+    member.email_wanted = email_wanted
     member.added = added
 
     try:
