@@ -10,6 +10,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.utils import timezone
 
 from icepirate.utils import json_error
 
@@ -107,7 +108,7 @@ def add(request):
     username = request.GET.get('username')
     name = request.GET.get('name')
     email = request.GET.get('email')
-    added = request.GET.get('added', '')
+    added = request.GET.get('added', timezone.now())
     groups = request.GET.getlist('group', [])
 
     member = Member()
