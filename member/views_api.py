@@ -104,6 +104,10 @@ def add(request):
     if not require_login_or_key(request):
         return redirect('/')
 
+    required_fields = ['ssn', 'username', 'name', 'email']
+    if not all([(field in request.GET) for field in required_fields]):
+        return json_error('The following fields are required: %s' % required_fields)
+
     ssn = request.GET.get('ssn')
     username = request.GET.get('username')
     name = request.GET.get('name')
