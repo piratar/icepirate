@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
 
     # API pages (JSON)
-    url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)', views_api.get, name='api_get'),
+    url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)/', views_api.get, name='api_get'),
     url(r'^api/add/$', views_api.add, name='api_add'),
     url(r'^api/count/$', views_api.count, name='api_count'),
 
