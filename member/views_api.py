@@ -4,6 +4,7 @@ import time
 import traceback
 
 from django.conf import settings
+from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from django.http import Http404
@@ -11,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 from icepirate.utils import json_error
 
@@ -19,7 +21,11 @@ from group.models import Group
 
 
 def require_login_or_key(request):
-    return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
+    return request.user.is_authenticated() or request.POST.get('json_api_key') == settings.JSON_API_KEY
+
+
+def access_denied():
+    return json_error('Access denied')
 
 
 def member_to_dict(member):
@@ -56,10 +62,11 @@ def member_to_dict(member):
     return result
 
 
+@csrf_exempt
 def get(request, field, searchstring):
 
     if not require_login_or_key(request):
-        return redirect('/')
+        return access_denied()
 
     try:
         if field == 'name':
@@ -68,29 +75,10 @@ def get(request, field, searchstring):
             member = Member.objects.get(username=searchstring)
         elif field == 'ssn':
             member = Member.objects.get(ssn=searchstring)
+        else:
+            return json_error('No such member')
     except Member.DoesNotExist as e:
         return json_error('No such member')
-
-    # Update our DB with data from the remote end
-    # Currently ignored attributes: ssn, name, added
-    try:
-        username = request.GET.get('username')
-        email = request.GET.get('email')
-        if username or email:
-            if username:
-                member.username = username
-            if email:
-                # We trust the other guy to have verified the e-mail
-                member.email = email
-                member.email_verified = True
-            member.save()
-    except:
-        # Update failed somehow, barf details to stderr but keep on truckin'
-        #
-        # In particular, this is likely to happen if the DBs are out of sync
-        # and the email uniqueness constraints are violated.
-        #
-        traceback.print_exc(file=sys.stderr)
 
     response_data = {
         'success': True,
@@ -100,22 +88,87 @@ def get(request, field, searchstring):
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
+@csrf_exempt
+def update(request, ssn):
+
+    if not require_login_or_key(request):
+        return access_denied()
+
+    input_vars = request.POST
+    if settings.DEBUG and request.method == 'GET':
+        input_vars = request.GET
+
+    updated_fields = []
+
+    # Get user.
+    try:
+        member = Member.objects.get(ssn=ssn)
+    except Member.DoesNotExist:
+        return json_error('No such member')
+
+    # Update member with data from the remote end.
+    try:
+        username = input_vars.get('username', '')
+        email = input_vars.get('email', '')
+        if 'email_wanted' in input_vars:
+            email_wanted = str(input_vars.get('email_wanted', '')).lower() == 'true'
+        else:
+            # No change.
+            email_wanted = None
+
+        if username and member.username != username:
+            member.username = username
+            updated_fields.append('username')
+
+        if email and member.email != email:
+            # We trust client to have verified the e-mail.
+            member.email = email
+            member.email_verified = True
+            updated_fields.append('email')
+
+        if email_wanted is not None and member.email_wanted != email_wanted:
+            member.email_wanted = email_wanted
+            updated_fields.append('email_wanted')
+
+        if len(updated_fields) > 0:
+            member.save()
+
+    except Exception as e:
+        raise IcePirateException(e)
+
+    response_data = {
+        'success': True,
+        'updated_fields': updated_fields,
+        'data': member_to_dict(member),
+    }
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@csrf_exempt
 def add(request):
 
     if not require_login_or_key(request):
-        return redirect('/')
+        return access_denied()
+
+    input_vars = request.POST
+    if settings.DEBUG and request.method == 'GET':
+        input_vars = request.GET
 
     required_fields = ['ssn', 'username', 'name', 'email']
-    if not all([(field in request.GET) for field in required_fields]):
+    if not all([(field in input_vars) for field in required_fields]):
         return json_error('The following fields are required: %s' % required_fields)
 
-    ssn = request.GET.get('ssn')
-    username = request.GET.get('username')
-    name = request.GET.get('name')
-    email = request.GET.get('email')
-    email_wanted = str(request.GET.get('email_wanted', 'false')).lower() == 'true'
-    added = request.GET.get('added', timezone.now())
-    groups = request.GET.getlist('group', [])
+    ssn = input_vars.get('ssn')
+    username = input_vars.get('username')
+    name = input_vars.get('name')
+    email = input_vars.get('email')
+    email_wanted = str(input_vars.get('email_wanted', '')).lower() == 'true'
+    added = input_vars.get('added', timezone.now())
+    groups = input_vars.getlist('group', [])
+
+    # Make sure that the member doesn't already exist.
+    if Member.objects.filter(Q(ssn=ssn) | Q(username=username)).count() != 0:
+        return json_error('Member already exists')
 
     member = Member()
     member.ssn = ssn
@@ -127,11 +180,15 @@ def add(request):
 
     try:
         member.save()
-        member = Member.objects.get(id=member.id)
+        member.refresh_from_db()
         for group in groups:
-            member.groups.add(Group.objects.get(techname=group))        
-    except IntegrityError as e:
-        return json_error(e)
+            try:
+                member.groups.add(Group.objects.get(techname=group))
+            except Group.DoesNotExist:
+                # Nothing to see here. Move along.
+                pass
+    except Exception as e:
+        raise IcePirateException(e)
 
     response_data = {
         'success': True,
@@ -143,7 +200,7 @@ def add(request):
 
 def count(request):
     if not require_login_or_key(request):
-        return redirect('/')
+        return access_denied()
         
     members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
     results = {}
