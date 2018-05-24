@@ -1,0 +1,306 @@
+# IcePirate.
+# Copyright (C) 2018
+# This file is distributed under the same license as the IcePirate package.
+# Helgi Hrafn Gunnarsson <helgi@piratar.is>, 2018
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-24 15:20+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
+
+#: member/views.py:75
+#, python-format
+msgid "Please narrow the search down to %d results or less."
+msgstr ""
+
+#: templates/base.html:5 templates/outsider.html:5
+msgid "Pirate Party Iceland: Member Database"
+msgstr ""
+
+#: templates/base.html:16
+msgid "Member List"
+msgstr ""
+
+#: templates/base.html:17 templates/member/add.html:19
+msgid "Add Member"
+msgstr ""
+
+#: templates/base.html:20
+msgid "Group List"
+msgstr ""
+
+#: templates/base.html:21
+msgid "Group Stats"
+msgstr ""
+
+#: templates/base.html:22 templates/group/add.html:16
+msgid "Add Group"
+msgstr ""
+
+#: templates/base.html:25
+msgid "Message List"
+msgstr ""
+
+#: templates/base.html:26 templates/message/add.html:44
+msgid "Add Message"
+msgstr ""
+
+#: templates/base.html:29
+msgid "Interactive Message List"
+msgstr ""
+
+#: templates/base.html:34 templates/registration/logout.html:9
+msgid "Logout"
+msgstr ""
+
+#: templates/group/add.html:17 templates/group/delete.html:18
+#: templates/group/edit.html:18 templates/member/add.html:20
+#: templates/member/delete.html:18 templates/member/edit.html:12
+#: templates/message/add.html:49 templates/message/delete.html:18
+#: templates/message/edit.html:43 templates/message/interactive_edit.html:25
+#: templates/message/interactive_edit.html:29
+msgid "Cancel"
+msgstr ""
+
+#: templates/group/delete.html:9
+msgid "Are you absolutely certain that you wish to delete the following group?"
+msgstr ""
+
+#: templates/group/delete.html:10 templates/member/delete.html:10
+#: templates/message/delete.html:10
+msgid "This action cannot be undone."
+msgstr ""
+
+#: templates/group/delete.html:17 templates/member/delete.html:17
+#: templates/message/delete.html:17
+msgid "DELETE FOREVER!"
+msgstr ""
+
+#: templates/group/edit.html:17 templates/member/edit.html:11
+#: templates/message/edit.html:38 templates/message/interactive_edit.html:22
+msgid "Save"
+msgstr ""
+
+#: templates/group/list.html:9 templates/group/stats.html:9
+msgid "Group Name"
+msgstr ""
+
+#: templates/group/list.html:10
+msgid "Techname"
+msgstr ""
+
+#: templates/group/list.html:11 templates/group/stubs/infosheet.html:16
+#: templates/member/list.html:82 templates/member/stubs/infosheet.html:24
+msgid "Email"
+msgstr ""
+
+#: templates/group/list.html:12 templates/group/stubs/infosheet.html:20
+#: templates/member/list.html:84 templates/member/stubs/infosheet.html:42
+#: templates/message/interactive_list.html:11 templates/message/list.html:10
+#: templates/message/stubs/infosheet.html:9
+#: templates/message/stubs/interactive_infosheet.html:9
+msgid "Added"
+msgstr ""
+
+#: templates/group/list.html:13 templates/group/stubs/infosheet.html:42
+msgid "Members"
+msgstr ""
+
+#: templates/group/list.html:14 templates/group/stubs/infosheet.html:24
+msgid "Subgroups"
+msgstr ""
+
+#: templates/group/list.html:15 templates/group/stubs/infosheet.html:32
+#: templates/member/list.html:61 templates/member/stubs/infosheet.html:55
+msgid "Locations"
+msgstr ""
+
+#: templates/group/list.html:16
+msgid "Combined"
+msgstr ""
+
+#: templates/group/stats.html:11
+msgid "Weekly new members (combined), from "
+msgstr ""
+
+#: templates/group/stats.html:14
+msgid "Total"
+msgstr ""
+
+#: templates/group/stubs/infosheet.html:8 templates/member/list.html:80
+#: templates/member/stubs/infosheet.html:13
+msgid "Name"
+msgstr ""
+
+#: templates/group/stubs/infosheet.html:12
+msgid "Technical name"
+msgstr ""
+
+#: templates/group/stubs/infosheet.html:28
+#: templates/group/stubs/infosheet.html:37
+msgid "none"
+msgstr ""
+
+#: templates/group/view.html:9 templates/member/view.html:9
+#: templates/message/view.html:9
+msgid "Delete"
+msgstr ""
+
+#: templates/group/view.html:17 templates/member/view.html:17
+#: templates/message/interactive_view.html:13 templates/message/view.html:17
+msgid "Edit"
+msgstr ""
+
+#: templates/member/delete.html:9
+msgid ""
+"Are you absolutely certain that you wish to delete the following member?"
+msgstr ""
+
+#: templates/member/list.html:30
+msgid "Export to CSV"
+msgstr ""
+
+#: templates/member/list.html:33
+msgid "- All Groups -"
+msgstr ""
+
+#: templates/member/list.html:46
+msgid "Include location-based membership and/or subgroups"
+msgstr ""
+
+#: templates/member/list.html:53
+msgid "Count"
+msgstr ""
+
+#: templates/member/list.html:56
+msgid "Have username"
+msgstr ""
+
+#: templates/member/list.html:60
+msgid "History"
+msgstr ""
+
+#: templates/member/list.html:70
+msgid "Search"
+msgstr ""
+
+#: templates/member/list.html:71
+msgid "Clear"
+msgstr ""
+
+#: templates/member/list.html:79 templates/member/stubs/infosheet.html:9
+msgid "SSN"
+msgstr ""
+
+#: templates/member/list.html:81 templates/member/stubs/infosheet.html:17
+msgid "Username"
+msgstr ""
+
+#: templates/member/list.html:83 templates/member/stubs/infosheet.html:37
+msgid "Phone"
+msgstr ""
+
+#: templates/member/list.html:100
+msgid "verified"
+msgstr ""
+
+#: templates/member/list.html:107
+msgid "No results"
+msgstr ""
+
+#: templates/member/stubs/infosheet.html:47
+msgid "Groups"
+msgstr ""
+
+#: templates/member/verify.html:12
+msgid ""
+"You are currently not a member. Please note that by signing up, you are "
+"becoming a member of Pirate Party Iceland."
+msgstr ""
+
+#: templates/message/add.html:47 templates/message/edit.html:41
+msgid "Ready to send"
+msgstr ""
+
+#: templates/message/delete.html:9
+msgid ""
+"Are you absolutely certain that you wish to delete the following message?"
+msgstr ""
+
+#: templates/message/interactive_edit.html:17
+#: templates/message/interactive_list.html:10
+msgid "Purpose"
+msgstr ""
+
+#: templates/message/interactive_list.html:12 templates/message/list.html:11
+#: templates/message/stubs/infosheet.html:13
+#: templates/message/stubs/interactive_infosheet.html:13
+msgid "Subject"
+msgstr ""
+
+#: templates/message/interactive_list.html:13 templates/message/list.html:16
+#: templates/message/stubs/infosheet.html:57
+#: templates/message/stubs/interactive_infosheet.html:23
+msgid "Author"
+msgstr ""
+
+#: templates/message/interactive_list.html:32
+msgid "Add Interactive Message"
+msgstr ""
+
+#: templates/message/list.html:12 templates/message/stubs/infosheet.html:23
+msgid "Ready"
+msgstr ""
+
+#: templates/message/list.html:13 templates/message/stubs/infosheet.html:27
+msgid "Send Start"
+msgstr ""
+
+#: templates/message/list.html:14 templates/message/stubs/infosheet.html:31
+msgid "Send Complete"
+msgstr ""
+
+#: templates/message/list.html:15 templates/message/stubs/infosheet.html:35
+msgid "Targets"
+msgstr ""
+
+#: templates/message/list.html:29 templates/message/stubs/infosheet.html:42
+msgid "Everyone"
+msgstr ""
+
+#: templates/message/stubs/infosheet.html:6
+#: templates/message/stubs/interactive_infosheet.html:6
+msgid "Message added at"
+msgstr ""
+
+#: templates/message/stubs/infosheet.html:17
+#: templates/message/stubs/interactive_infosheet.html:17
+msgid "Body"
+msgstr ""
+
+#: templates/message/stubs/infosheet.html:38
+msgid "Wasa2il users only"
+msgstr ""
+
+#: templates/message/stubs/infosheet.html:40
+msgid "Wasa2il non-users only"
+msgstr ""
+
+#: templates/message/stubs/infosheet.html:51
+msgid "Recipients"
+msgstr ""
+
+#: templates/registration/login.html:19
+msgid "Log in"
+msgstr ""
+
+#: templates/registration/login.html:21
+msgid "Sign up"
+msgstr ""
+
+#: templates/registration/login.html:22
+msgid "Password reset"
+msgstr ""
