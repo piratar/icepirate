@@ -1,3 +1,5 @@
+# CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
+'''
 from datetime import datetime
 
 from django.http import HttpResponse
@@ -52,4 +54,4 @@ def list(request, group_techname=None, location_code=None, combined=False):
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     return response
-
+'''

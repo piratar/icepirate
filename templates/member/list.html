@@ -27,7 +27,10 @@ $(document).ready(function() {
 </script>
 
 <div class="list-top-buttons">
+    {% comment %}
+    <!-- CSV: Disabled to reduce risk and exposure, but may be redesigned in the future. -->
     <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
+    {% endcomment %}
     {% if groups.count or location_codes.count %}
     <select id="group-techname">
         <option value="">{% trans '- All Groups -' %}</option>
