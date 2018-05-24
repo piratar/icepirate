@@ -2,7 +2,6 @@ from django.forms import CharField
 from django.forms import CheckboxSelectMultiple
 from django.forms import ModelForm
 from django.forms import ModelMultipleChoiceField
-from django.forms import TextInput
 
 from member.models import Member
 from group.models import Group
