@@ -6,6 +6,12 @@
 <script language="javascript" type="text/javascript">
 $(document).ready(function() {
 
+    var $search = $('#id_search_string');
+    $search.focus();
+    var tmpStr = $search.val();
+    $search.val('');
+    $search.val(tmpStr);
+
     $('#export-csv').click(function() {
         location.pathname = (location.pathname.substring(0, 7) + '/csv' + 
                              location.pathname.substring(7));
@@ -45,10 +51,10 @@ $(document).ready(function() {
 <div class="list-top-stats">
     <span class="stats-field">
         <span class="stats-label">{% trans 'Count' %}:</span>
-        <span class="stats-value">{{ members.count }}</span>
+        <span class="stats-value">{{ member_count }}</span>
         &nbsp; &nbsp;
         <span class="stats-label">{% trans 'Have username' %}:</span>
-        <span class="stats-value">{{ have_username.count }}</span>
+        <span class="stats-value">{{ have_username_count }}</span>
         &nbsp; &nbsp;
         {% if not group_techname and not location_code %}
         (<a href="/member/count">{% trans 'History' %}</a>,
@@ -57,37 +63,52 @@ $(document).ready(function() {
     </span>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>{% trans 'SSN' %}</th>
-            <th>{% trans 'Name' %}</th>
-            <th>{% trans 'Username' %}</th>
-            <th>{% trans 'Email' %}</th>
-            <th>{% trans 'Phone' %}</th>
-            <th>{% trans 'Added' %}</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for member in members %}
-        <tr>
-            <td><a href="/member/view/{{ member.ssn }}">{{ member.ssn }}</a></td>
-            <td>
-                {{ member.name }}
-                {% if member.legal_name and member.name != member.legal_name %}
-                    <small>({{ member.legal_name }})</small>
-                {% endif %}
-            </td>
-            <td>{% if member.username %}{{ member.username }}{% endif %}</td>
-            <td>
-                <a href="mailto:{{ member.email }}">{{ member.email }}</a>
-                {% if member.email_verified %}<small>({% trans 'verified' %})</small>{% endif %}
-            </td>
-            <td>{{ member.phone }}</td>
-            <td>{{ member.added }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<div class="formbuttons">
+    <button type="submit">{% trans 'Search' %}</button>
+    <button type="button" href="{{ request.path }}">{% trans 'Clear' %}</button>
+</div>
+</form>
+
+{% if request.method == 'POST' and not form.errors %}
+    <table style="clear: both;">
+        <thead>
+            <tr>
+                <th>{% trans 'SSN' %}</th>
+                <th>{% trans 'Name' %}</th>
+                <th>{% trans 'Username' %}</th>
+                <th>{% trans 'Email' %}</th>
+                <th>{% trans 'Phone' %}</th>
+                <th>{% trans 'Added' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for member in found_members %}
+            <tr>
+                <td><a href="/member/view/{{ member.ssn }}">{{ member.ssn }}</a></td>
+                <td>
+                    {{ member.name }}
+                    {% if member.legal_name and member.name != member.legal_name %}
+                        <small>({{ member.legal_name }})</small>
+                    {% endif %}
+                </td>
+                <td>{% if member.username %}{{ member.username }}{% endif %}</td>
+                <td>
+                    <a href="mailto:{{ member.email }}">{{ member.email }}</a>
+                    {% if member.email_verified %}<small>({% trans 'verified' %})</small>{% endif %}
+                </td>
+                <td>{{ member.phone }}</td>
+                <td>{{ member.added }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">{% trans 'No results' %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
 
 {% endblock %}

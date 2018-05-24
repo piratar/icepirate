@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.conf import settings
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import Http404
@@ -9,11 +10,13 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 from group.models import Group
 from member.models import Member
 from locationcode.models import LocationCode
 from member.forms import MemberForm
+from member.forms import SearchForm
 
 from member import ssn
 
@@ -45,9 +48,41 @@ def list(request, group_techname=None, location_code=None, combined=False):
     groups = Group.objects.all()
     location_codes = LocationCode.objects.all()
 
+    # Handle search.
+    found_members = None
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data['search_string']
+
+            found_members = members
+
+            for part in search.split(' '):
+                found_members = found_members.filter(
+                    Q(ssn__icontains=part)
+                    | Q(name__icontains=part)
+                    | Q(username__icontains=part)
+                    | Q(email__icontains=part)
+                    | Q(phone__icontains=part)
+                    | Q(added__icontains=part)
+                    #| Q(legal_name__icontains=part)
+                    #| Q(legal_zone__icontains=part)
+                )
+
+            if settings.MAX_MEMBERS_SHOWN > -1 and found_members.count() > settings.MAX_MEMBERS_SHOWN:
+                found_members = None
+                form.add_error(None, _(
+                    'Please narrow the search down to %d results or less.' % settings.MAX_MEMBERS_SHOWN
+                ))
+
+    else:
+        form = SearchForm()
+
     context = {
-        'members': members,
-        'have_username': members.filter(username__isnull=False),
+        'form': form,
+        'found_members': found_members,
+        'member_count': members.count(),
+        'have_username_count': members.filter(username__isnull=False).count(),
         'groups': groups,
         'location_codes': location_codes,
         'group_techname': group_techname,

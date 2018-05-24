@@ -16,6 +16,12 @@ WASA2IL_REGISTRATION_URL = 'https://x.piratar.is/accounts/register/'
 WASA2IL_LOGIN_URL = 'https://x.piratar.is/accounts/login/'
 WASA2IL_HOME_URL = 'https://x.piratar.is/'
 
+# When looking up members, this defines the maximum allowed members to be
+# shown at a time. If a member search finds more members than corresponding to
+# this number, then no results will be shown. This is to reduce the exposure
+# of personal data. Leave at -1 if no limit should be set.
+MAX_MEMBERS_SHOWN = 5
+
 # Authentication URL (Icekey)
 AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
 AUTH_ISLAND = {
