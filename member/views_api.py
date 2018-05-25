@@ -37,9 +37,7 @@ def member_to_dict(member):
         'email': member.email,
         'email_wanted': member.email_wanted,
         'phone': member.phone,
-        'partake': member.partake,
         'added': member.added.strftime('%Y-%m-%d %H:%M:%S'),
-        'mailing': member.mailing,
         'verified': member.verified,
         'groups': []
     }

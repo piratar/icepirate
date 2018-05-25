@@ -32,9 +32,7 @@ class Member(models.Model):
     email_wanted = models.NullBooleanField(default=None)
 
     phone = models.CharField(max_length=30, blank=True)
-    partake = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)
-    mailing = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
     auth_token = models.CharField(max_length=100, unique=True, null=True)
     auth_timing = models.DateTimeField(null=True)
