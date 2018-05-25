@@ -42,6 +42,8 @@ def member_to_dict(member):
     }
 
     for key, val in (
+            ('legal_name', member.legal_name),
+            ('legal_address', member.legal_address),
             ('legal_zip_code', member.legal_zip_code),
             ('legal_municipality_code', member.legal_municipality_code)):
         if val:
