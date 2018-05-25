@@ -38,7 +38,6 @@ def member_to_dict(member):
         'email_wanted': member.email_wanted,
         'phone': member.phone,
         'added': member.added.strftime('%Y-%m-%d %H:%M:%S'),
-        'verified': member.verified,
         'groups': []
     }
 
