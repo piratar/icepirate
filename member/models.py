@@ -28,7 +28,9 @@ class Member(models.Model):
     # field will become useless and shall then be removed.
     email_unwanted = models.BooleanField(default=False)
 
-    email_wanted = models.BooleanField(default=False)
+    # Null means question unanswered. True/False dictate consent.
+    email_wanted = models.NullBooleanField(default=None)
+
     phone = models.CharField(max_length=30, blank=True)
     partake = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)

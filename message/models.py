@@ -7,6 +7,7 @@ from markdown import markdown
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -60,7 +61,7 @@ class Message(models.Model):
                 q = q.filter(username__isnull=False)
             elif message.wasa2il_usage == message.WASA2IL_NON_USERS:
                 q = q.filter(username__isnull=True)
-            return q.filter(email_wanted=True)
+            return q.filter(Q(email_wanted=True) | Q(email_wanted=None, email_unwanted=False))
 
         recipients = []
         if message.send_to_all:
