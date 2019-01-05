@@ -1,7 +1,0 @@
-Django==1.8.10
-MySQL-python
-django-registration-redux
-lxml
-suds
-python-dateutil
-pytz
