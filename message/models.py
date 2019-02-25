@@ -32,6 +32,7 @@ class Message(models.Model):
 
     send_to_all = models.BooleanField(default=True)
     groups = models.ManyToManyField(Group)
+    membergroups = models.ManyToManyField('member.MemberGroup')
     groups_include_subgroups = models.BooleanField(default=True)
     groups_include_locations = models.BooleanField(default=True)
     locations = models.ManyToManyField(LocationCode, blank=True)

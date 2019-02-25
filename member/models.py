@@ -5,6 +5,8 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 
+from locationcode.models import LocationCode
+
 from group.models import Group
 
 
@@ -50,6 +52,7 @@ class Member(models.Model):
     temporary_web_id_timing = models.DateTimeField(null=True)
 
     groups = models.ManyToManyField(Group, related_name='members')
+    membergroups = models.ManyToManyField('MemberGroup', related_name='members')
 
     class Meta:
         ordering = ['added', 'name']
@@ -89,3 +92,53 @@ class Member(models.Model):
     def wasa2il_url(self, *args, **kwargs):
         from icepirate.utils import wasa2il_url
         return wasa2il_url(self, *args, **kwargs)
+
+
+class MemberGroup(models.Model):
+    COMBINATION_METHODS = (
+        ('union', 'Union'),
+        ('intersection', 'Intersection')
+    )
+
+    name = models.CharField(max_length=50, unique=True)
+    techname = models.CharField(max_length=50, unique=True)
+    # max_length 191 because of some MySQL indexing limitation.
+    email = models.EmailField(max_length=191, unique=True)
+    added = models.DateTimeField(default=datetime.now)
+
+    auto_subgroups = models.ManyToManyField(
+        'MemberGroup',
+        related_name='auto_parent_membergroups'
+    )
+    auto_locations = models.ManyToManyField(
+        LocationCode,
+        related_name='auto_location_membergroups'
+    )
+    combination_method = models.CharField(
+        max_length=30,
+        verbose_name="Combination method",
+        choices=COMBINATION_METHODS,
+        default=COMBINATION_METHODS[0][0]
+    )
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return self.name
+
+    def get_members(self, subgroups=True, locations=True):
+
+        group_ids = set([self.id])
+        if subgroups:
+            group_ids |= set(self.auto_subgroups.values_list('id', flat=True))
+        mQs = models.Q(groups__id__in = group_ids)
+
+        if locations:
+            for locCode in self.auto_locations.all():
+                if self.combination_method == 'intersection':
+                    mQs &= locCode.get_member_model_Qs()
+                else:
+                    mQs |= locCode.get_member_model_Qs()
+
+        return Member.objects.filter(mQs).distinct()
