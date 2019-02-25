@@ -2,48 +2,48 @@
 
 <div class="infosheet">
     <div class="header">
-        {{ group.name }}
+        {{ membergroup.name }}
     </div>
     <div class="line">
         <p class="label">{% trans 'Name' %}:</p>
-        <p class="value">{{ group.name }}</p>
+        <p class="value">{{ membergroup.name }}</p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Technical name' %}:</p>
-        <p class="value">{{ group.techname }}</p>
+        <p class="value">{{ membergroup.techname }}</p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Email' %}:</p>
-        <p class="value"><a href="mailto:{{ group.email }}">{{ group.email }}</a></p>
+        <p class="value"><a href="mailto:{{ membergroup.email }}">{{ membergroup.email }}</a></p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Added' %}:</p>
-        <p class="value">{{ group.added }}</p>
+        <p class="value">{{ membergroup.added }}</p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Subgroups' %}:</p>
-        <p class="value">{% if group.auto_subgroups.count %}
-            {% include 'group/stubs/shortlist.html' with groups=group.auto_subgroups.all nolinebr=True %}
+        <p class="value">{% if membergroup.auto_subgroups.count %}
+            {% include 'group/stubs/shortlist.html' with membergroups=membergroup.auto_subgroups.all nolinebr=True %}
         {% else %}
             <i>{% trans 'none' %}</i>
         {% endif %}</p>
     </div>
     <div class="line">
         <p class="label">{% trans 'Locations' %}:</p>
-        <p class="value">{% if group.auto_locations.count %}
-            {% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}
-            ({{ group.combination_method }})
+        <p class="value">{% if membergroup.auto_locations.count %}
+            {% include 'locationcode/stubs/shortlist.html' with locationcodes=membergroup.auto_locations.all nolinebr=True %}
+            ({{ membergroup.combination_method }})
         {% else %}
             <i>{% trans 'none' %}</i>
         {% endif %}</p>
     </div>
-    {% if group.members.count %}
+    {% if membergroup.members.count %}
     <div class="line">
         <p class="label">{% trans 'Members' %}:</p>
-        <p class="value"><a href="/member/list/{{ group.techname }}">
-            {{ group.members.count }}
-        </a>(<a href="/member/list/{{ group.techname }}/combined">
-            {{ group.get_members.count }} combined
+        <p class="value"><a href="/member/list/{{ membergroup.techname }}">
+            {{ membergroup.members.count }}
+        </a>(<a href="/member/list/{{ membergroup.techname }}/combined">
+            {{ membergroup.get_members.count }} combined
         </a>)</p>
     </div>
     {% endif %}

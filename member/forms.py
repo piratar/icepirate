@@ -4,15 +4,27 @@ from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelMultipleChoiceField
 
+from locationcode.models import LocationCode
+
 from member.models import Member
-from group.models import Group
+from member.models import MemberGroup
 
 class MemberForm(ModelForm):
-    groups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=Group.objects.all())
+    membergroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
 
     class Meta:
         model = Member
-        fields = ['ssn', 'name', 'email', 'email_wanted', 'phone', 'added', 'groups']
+        fields = ['ssn', 'name', 'email', 'email_wanted', 'phone', 'added', 'membergroups']
+
+
+class MemberGroupForm(ModelForm):
+    auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
+    auto_locations = ModelMultipleChoiceField(required=False, queryset=LocationCode.objects.all())
+
+    class Meta:
+        model = MemberGroup
+        fields = ['name', 'email', 'added',
+                  'auto_subgroups', 'auto_locations', 'combination_method']
 
 
 class SearchForm(Form):

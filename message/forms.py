@@ -2,16 +2,17 @@ from django.forms import ModelForm, EmailField, ModelMultipleChoiceField, Checkb
 from django.forms import EmailField
 from django.forms import ValidationError
 
+from member.models import MemberGroup
+
 from message.models import InteractiveMessage
 from message.models import Message
-from group.models import Group
 
 class MessageForm(ModelForm):
-    groups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=Group.objects.all())
+    membergroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
 
     class Meta:
         model = Message
-        fields = ['from_address', 'subject', 'body', 'send_to_all', 'groups',
+        fields = ['from_address', 'subject', 'body', 'send_to_all', 'membergroups',
                   'groups_include_subgroups', 'groups_include_locations',
                   'locations', 'wasa2il_usage', 'generate_html_mail']
 

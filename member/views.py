@@ -12,8 +12,8 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
-from group.models import Group
 from member.models import Member
+from member.models import MemberGroup
 from locationcode.models import LocationCode
 from member.forms import MemberForm
 from member.forms import SearchForm
@@ -27,7 +27,7 @@ def list(request, group_techname=None, location_code=None, combined=False):
 
     group = None
     if group_techname:
-        group = Group.objects.get(techname=group_techname)
+        group = MemberGroup.objects.get(techname=group_techname)
         if combined:
             members = group.get_members()
             if members.count() == group.members.count():
@@ -45,7 +45,7 @@ def list(request, group_techname=None, location_code=None, combined=False):
         members = Member.objects.all()
         combined = False
 
-    groups = Group.objects.all()
+    membergroups = MemberGroup.objects.all()
     location_codes = LocationCode.objects.all()
 
     # Handle search.
@@ -83,7 +83,7 @@ def list(request, group_techname=None, location_code=None, combined=False):
         'found_members': found_members,
         'member_count': members.count(),
         'have_username_count': members.filter(username__isnull=False).count(),
-        'groups': groups,
+        'membergroups': membergroups,
         'location_codes': location_codes,
         'group_techname': group_techname,
         'group': group,
@@ -142,7 +142,7 @@ def edit(request, ssn):
     member = get_object_or_404(Member, ssn=ssn)
 
     if request.method == 'POST':
-        member.groups = request.POST.getlist('groups')
+        member.membergroups = request.POST.getlist('membergroups')
         form = MemberForm(request.POST, instance=member)
 
         if form.is_valid():

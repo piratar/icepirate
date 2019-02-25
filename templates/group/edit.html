@@ -9,13 +9,13 @@ $(document).ready(function() {
 });
 </script>
 
-<form action="/group/edit/{{ group.techname }}" method="POST">
+<form action="/group/edit/{{ membergroup.techname }}" method="POST">
 {% csrf_token %}
 {{ form.as_p }}
-<input type="hidden" name="next" value="/group/view/{{ group.techname }}" />
+<input type="hidden" name="next" value="/group/view/{{ membergroup.techname }}" />
 <div class="formbuttons">
     <button type="submit">{% trans 'Save' %}</button>
-    <button type="button" href="/group/view/{{ group.techname }}">{% trans 'Cancel' %}</button>
+    <button type="button" href="/group/view/{{ membergroup.techname }}">{% trans 'Cancel' %}</button>
 </div>
 </form>
 

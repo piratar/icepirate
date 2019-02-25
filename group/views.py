@@ -7,17 +7,17 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
-from group.models import Group
-from group.forms import GroupForm
+from member.models import MemberGroup
+from member.forms import MemberGroupForm
 
 from icepirate.utils import techify
 
 @login_required
 def list(request):
 
-    groups = Group.objects.all().order_by('name')
+    membergroups = MemberGroup.objects.all().order_by('name')
 
-    return render(request, 'group/list.html', { 'groups': groups})
+    return render(request, 'group/list.html', { 'membergroups': membergroups})
 
 @login_required
 def stats(request, as_csv=False):
@@ -35,15 +35,15 @@ def stats(request, as_csv=False):
 
     # Grab per-group stats
     stats = []
-    for group in Group.objects.all().order_by('name'):
+    for membergroup in MemberGroup.objects.all().order_by('name'):
         joined = []
         for i, date in enumerate(dates[1:]):
-            joined.append(group.get_members().filter(
+            joined.append(membergroup.get_members().filter(
                 added__gte=dates[i], added__lt=date).count())
         stats.append({
-            'group': group,
+            'group': membergroup,
             'joined': joined,
-            'total': group.get_members().count()})
+            'total': membergroup.get_members().count()})
 
     # Grab totals (not everyone joins a group)
     joined = []
@@ -74,50 +74,50 @@ def stats(request, as_csv=False):
 def add(request):
 
     if request.method == 'POST':
-        form = GroupForm(request.POST)
+        form = MemberGroupForm(request.POST)
 
         if form.is_valid():
             form.instance.techname = techify(form.cleaned_data['name'])
-            group = form.save()
-            return HttpResponseRedirect('/group/view/%s' % group.techname)
+            membergroup = form.save()
+            return HttpResponseRedirect('/group/view/%s' % membergroup.techname)
 
     else:
-        form = GroupForm()
+        form = MemberGroupForm()
 
     return render(request, 'group/add.html', { 'form': form })
 
 @login_required
 def edit(request, techname):
 
-    group = get_object_or_404(Group, techname=techname)
+    membergroup = get_object_or_404(MemberGroup, techname=techname)
 
     if request.method == 'POST':
-        form = GroupForm(request.POST, instance=group)
+        form = MemberGroupForm(request.POST, instance=membergroup)
 
         if form.is_valid():
             form.instance.techname = techify(form.cleaned_data['name'])
-            group = form.save()
-            return HttpResponseRedirect('/group/view/%s/' % group.techname)
+            membergroup = form.save()
+            return HttpResponseRedirect('/group/view/%s/' % membergroup.techname)
 
     else:
-        form = GroupForm(instance=group)
+        form = MemberGroupForm(instance=membergroup)
 
-    return render(request, 'group/edit.html', { 'form': form, 'group': group })
+    return render(request, 'group/edit.html', { 'form': form, 'membergroup': membergroup })
 
 @login_required
 def delete(request, techname):
 
-    group = get_object_or_404(Group, techname=techname)
+    membergroup = get_object_or_404(MemberGroup, techname=techname)
 
     if request.method == 'POST':
-        group.delete()
+        membergroup.delete()
         return HttpResponseRedirect('/group/list/')
 
-    return render(request, 'group/delete.html', { 'group': group })
+    return render(request, 'group/delete.html', { 'membergroup': membergroup })
 
 @login_required
 def view(request, techname):
-    group = get_object_or_404(Group, techname=techname)
+    membergroup = get_object_or_404(MemberGroup, techname=techname)
 
-    return render(request, 'group/view.html', { 'group': group })
+    return render(request, 'group/view.html', { 'membergroup': membergroup })
 

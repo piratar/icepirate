@@ -11,7 +11,6 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from group.models import Group
 from icepirate.utils import generate_unique_random_string, wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
@@ -31,7 +30,6 @@ class Message(models.Model):
     body = models.TextField()
 
     send_to_all = models.BooleanField(default=True)
-    groups = models.ManyToManyField(Group)
     membergroups = models.ManyToManyField('member.MemberGroup')
     groups_include_subgroups = models.BooleanField(default=True)
     groups_include_locations = models.BooleanField(default=True)
@@ -68,8 +66,8 @@ class Message(models.Model):
         if message.send_to_all:
             recipients = rcpt_filter(Member.objects)
         else:
-            for group in message.groups.all():
-                recipients.extend(rcpt_filter(group.get_members(
+            for membergroup in message.membergroups.all():
+                recipients.extend(rcpt_filter(membergroup.get_members(
                     subgroups=message.groups_include_subgroups,
                     locations=message.groups_include_locations)))
 

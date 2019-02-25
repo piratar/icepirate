@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
-from group.models import Group
+from member.models import MemberGroup
 
 def require_login_or_key(request):
     return request.user.is_authenticated() or request.GET.get('json_api_key') == settings.JSON_API_KEY
@@ -28,7 +28,7 @@ def list(request):
     if not require_login_or_key(request):
         return redirect('/')
 
-    groups = Group.objects.all().order_by('name')
+    groups = MemberGroup.objects.all().order_by('name')
 
     response_data = {
         'success': True,

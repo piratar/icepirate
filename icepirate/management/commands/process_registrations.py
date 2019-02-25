@@ -61,7 +61,6 @@ from datetime import datetime
 from datetime import timedelta
 from dateutil import parser as dateparser
 
-from group.models import Group
 from icepirate.utils import quick_mail
 from icepirate.utils import generate_random_string
 from icepirate.utils import techify
@@ -69,6 +68,7 @@ from icepirate.utils import validate_ssn
 from icepirate.utils import lookup_national_registry
 from icepirate.utils import merge_national_registry_info
 from member.models import Member
+from member.models import MemberGroup
 from message.models import InteractiveMessage
 from message.models import InteractiveMessageDelivery
 
@@ -362,10 +362,10 @@ class Command(BaseCommand):
     # Put member in appropriate groups
     def process_groups(self, reg, member):
         added_to_groups = False
-        for group in Group.objects.filter(name__in=reg['member_assoc']).exclude(members=member):
-            stdout.write('* Adding member to group: %s...' % group.name)
+        for membergroup in MemberGroup.objects.filter(name__in=reg['member_assoc']).exclude(members=member):
+            stdout.write('* Adding member to group: %s...' % membergroup.name)
             stdout.flush()
-            group.members.add(member)
+            membergroup.members.add(member)
             stdout.write(' done\n')
 
             added_to_groups = True

@@ -17,19 +17,19 @@
 		</tr>
 	</thead>
 	<tbody>
-	{% for group in groups %}
+	{% for membergroup in membergroups %}
 		<tr>
-			<td><a href="/group/view/{{ group.techname }}">{{ group.name }}</a></td>
-            <td>{{ group.techname }}</td>
-            <td><a href="mailto:{{ group.email }}">{{ group.email }}</a></td>
-			<td>{{ group.added }}</td>
-			<td><a href="/member/list/{{ group.techname }}">{{ group.members.count }}</a></td>
-			<td>{% include 'group/stubs/shortlist.html' with groups=group.auto_subgroups.all nolinebr=True %}</td>
-			<td>{% if group.auto_locations.count %}
-                          {{ group.combination_method }} with:
-                          {% include 'locationcode/stubs/shortlist.html' with locationcodes=group.auto_locations.all nolinebr=True %}
+			<td><a href="/group/view/{{ membergroup.techname }}">{{ membergroup.name }}</a></td>
+            <td>{{ membergroup.techname }}</td>
+            <td><a href="mailto:{{ membergroup.email }}">{{ membergroup.email }}</a></td>
+			<td>{{ membergroup.added }}</td>
+			<td><a href="/member/list/{{ membergroup.techname }}">{{ membergroup.members.count }}</a></td>
+			<td>{% include 'group/stubs/shortlist.html' with membergroups=membergroup.auto_subgroups.all nolinebr=True %}</td>
+			<td>{% if membergroup.auto_locations.count %}
+                          {{ membergroup.combination_method }} with:
+                          {% include 'locationcode/stubs/shortlist.html' with locationcodes=membergroup.auto_locations.all nolinebr=True %}
                         {% endif %}</td>
-			<td><a href="/member/list/{{ group.techname }}/combined">{{ group.get_members.count }}</a></td>
+			<td><a href="/member/list/{{ membergroup.techname }}/combined">{{ membergroup.get_members.count }}</a></td>
 		</tr>
 	{% endfor %}
 	</tbody>

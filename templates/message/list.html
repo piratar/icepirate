@@ -28,7 +28,7 @@
                 {% if message.send_to_all %}
                     {% trans 'Everyone' %}
                 {% else %}
-                    {% include 'group/stubs/shortlist.html' with groups=message.groups.all nolinebr=True %}
+                    {% include 'group/stubs/shortlist.html' with membergroups=message.membergroups.all nolinebr=True %}
                     {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all nolinebr=True %}
                 {% endif %}
             </td>

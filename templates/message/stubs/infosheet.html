@@ -42,7 +42,7 @@
                 {% trans 'Everyone' %}
             {% endif %}
             {% if not message.send_to_all %}
-                {% include 'group/stubs/shortlist.html' with groups=message.groups.all %}
+                {% include 'group/stubs/shortlist.html' with membergroups=message.membergroups.all %}
                 {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all %}
             {% endif %}
         </p>

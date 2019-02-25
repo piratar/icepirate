@@ -42,11 +42,11 @@
         <p class="label">{% trans 'Added' %}:</p>
         <p class="value">{{ member.added }}</p>
     </div>
-    {% if member.groups.count %}
+    {% if member.membergroups.count %}
     <div class="line">
         <p class="label">{% trans 'Groups' %}:</p>
         <p class="value">
-            {% include 'group/stubs/shortlist.html' with groups=member.groups.all %}
+            {% include 'group/stubs/shortlist.html' with membergroups=member.membergroups.all %}
         </p>
     </div>
     {% endif %}

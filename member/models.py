@@ -7,8 +7,6 @@ from datetime import datetime
 
 from locationcode.models import LocationCode
 
-from group.models import Group
-
 
 class Member(models.Model):
     ssn = models.CharField(max_length=30, unique=True)
@@ -51,7 +49,6 @@ class Member(models.Model):
     temporary_web_id = models.CharField(max_length=40, unique=True, null=True)
     temporary_web_id_timing = models.DateTimeField(null=True)
 
-    groups = models.ManyToManyField(Group, related_name='members')
     membergroups = models.ManyToManyField('MemberGroup', related_name='members')
 
     class Meta:
@@ -129,10 +126,10 @@ class MemberGroup(models.Model):
 
     def get_members(self, subgroups=True, locations=True):
 
-        group_ids = set([self.id])
+        membergroup_ids = set([self.id])
         if subgroups:
-            group_ids |= set(self.auto_subgroups.values_list('id', flat=True))
-        mQs = models.Q(groups__id__in = group_ids)
+            membergroup_ids |= set(self.auto_subgroups.values_list('id', flat=True))
+        mQs = models.Q(membergroups__id__in = membergroup_ids)
 
         if locations:
             for locCode in self.auto_locations.all():

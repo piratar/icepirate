@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from icepirate.utils import json_error
 
 from member.models import Member
-from group.models import Group
+from member.models import MemberGroup
 
 
 def require_login_or_key(request):
@@ -180,8 +180,8 @@ def add(request):
         member.refresh_from_db()
         for group in groups:
             try:
-                member.groups.add(Group.objects.get(techname=group))
-            except Group.DoesNotExist:
+                member.groups.add(MemberGroup.objects.get(techname=group))
+            except MemberGroup.DoesNotExist:
                 # Nothing to see here. Move along.
                 pass
     except Exception as e:

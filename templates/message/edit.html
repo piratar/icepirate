@@ -8,7 +8,7 @@
 function check_send_to_all() {
     var checked = $('#id_send_to_all').is(':checked');
 
-    $boxes = $('#id_groups input[type="checkbox"]')
+    $boxes = $('#id_membergroups input[type="checkbox"]')
 
     if (!checked) {
         $boxes.removeAttr('disabled');

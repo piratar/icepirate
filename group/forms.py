@@ -2,11 +2,11 @@ from django.forms import ModelForm
 from django.forms import CheckboxSelectMultiple
 from django.forms import ModelMultipleChoiceField
 
-from group.models import Group
+from member.models import MemberGroup
 from locationcode.models import LocationCode
 
-class GroupForm(ModelForm):
-    auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=Group.objects.all())
+class MemberGroupForm(ModelForm):
+    auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
     auto_locations = ModelMultipleChoiceField(required=False, queryset=LocationCode.objects.all())
 
     class Meta:

@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form action="/group/delete/{{ group.techname }}" method="POST">
+<form action="/group/delete/{{ membergroup.techname }}" method="POST">
 {% csrf_token %}
 
 <p class="warning">{% trans 'Are you absolutely certain that you wish to delete the following group?' %}</p>
@@ -15,7 +15,7 @@
 
 <div class="formbuttons">
     <button type="sumbit">{% trans 'DELETE FOREVER!' %}</button>
-    <button type="button" href="/group/view/{{ group.techname }}">{% trans 'Cancel' %}</button>
+    <button type="button" href="/group/view/{{ membergroup.techname }}">{% trans 'Cancel' %}</button>
 </div>
 
 <form>
