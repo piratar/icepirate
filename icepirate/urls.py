@@ -3,6 +3,8 @@ from django.conf.urls import url
 from django.views.generic.base import RedirectView
 from django.contrib.auth.views import logout
 
+from member import views as member_views
+
 from message.views import short_url_redirect
 
 # Uncomment the next two lines to enable the admin:
@@ -17,7 +19,13 @@ urlpatterns = [
     url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
 
     url(r'^member/', include('member.urls')),
-    url(r'^group/', include('group.urls')),
+    url(r'^group/list/', member_views.membergroup_list, name='membergroup_list'),
+    url(r'^group/stats/(?P<as_csv>csv)/', member_views.membergroup_stats, name='membergroup_stats'),
+    url(r'^group/stats/', member_views.membergroup_stats, name='membergroup_stats'),
+    url(r'^group/add/', member_views.membergroup_add, name='membergroup_add'),
+    url(r'^group/edit/(?P<techname>[^/]+)', member_views.membergroup_edit, name='membergroup_edit'),
+    url(r'^group/delete/(?P<techname>[^/]+)', member_views.membergroup_delete, name='membergroup_delete'),
+    url(r'^group/view/(?P<techname>[^/]+)', member_views.membergroup_view, name='membergroup_view'),
 
     url(r'^message/', include('message.urls')),
     url(r'^r/(?P<code>[^/]+)/?$', short_url_redirect),
