@@ -28,17 +28,17 @@ from icepirate.saml import authenticate
 from icepirate.utils import techify
 
 @login_required
-def list(request, group_techname=None, location_code=None, combined=False):
+def list(request, membergroup_techname=None, location_code=None, combined=False):
 
-    group = None
-    if group_techname:
-        group = MemberGroup.objects.get(techname=group_techname)
+    membergroup = None
+    if membergroup_techname:
+        membergroup = MemberGroup.objects.get(techname=membergroup_techname)
         if combined:
-            members = group.get_members()
-            if members.count() == group.members.count():
+            members = membergroup.get_members()
+            if members.count() == membergroup.members.count():
                 combined = False
         else:
-            members = group.members.all()
+            members = membergroup.members.all()
         location_code = None
 
     elif location_code:
@@ -90,8 +90,8 @@ def list(request, group_techname=None, location_code=None, combined=False):
         'have_username_count': members.filter(username__isnull=False).count(),
         'membergroups': membergroups,
         'location_codes': location_codes,
-        'group_techname': group_techname,
-        'group': group,
+        'membergroup_techname': membergroup_techname,
+        'membergroup': membergroup,
         'location_code': location_code,
         'combined': combined
     }

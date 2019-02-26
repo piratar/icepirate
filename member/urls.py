@@ -25,8 +25,8 @@ urlpatterns = [
 
     # General stuff.
     url(r'^list/in/(?P<location_code>[^/]*)', views.list),
-    url(r'^list/(?P<group_techname>.+)/(?P<combined>combined)', views.list, name='list'),
-    url(r'^list/(?P<group_techname>.*)', views.list, name='list'),
+    url(r'^list/(?P<membergroup_techname>.+)/(?P<combined>combined)', views.list, name='list'),
+    url(r'^list/(?P<membergroup_techname>.*)', views.list, name='list'),
     url(r'^add/', views.add, name='add'),
     url(r'^edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
     url(r'^delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
