@@ -66,19 +66,19 @@ class Member(models.Model):
             models.Q(auto_location_codes__location_code__in=codes)
             ).distinct()
 
-    def get_groups(self, parent_groups=True, location_groups=True):
-        groups = set([])
+    def get_membergroups(self, parent_membergroups=True, location_membergroups=True):
+        membergroups = set([])
 
-        for group in self.groups.all():
-            groups.add(group)
-            if parent_groups:
-                groups |= set(group.auto_parent_groups.all())
+        for membergroup in self.membergroups.all():
+            membergroups.add(membergroup)
+            if parent_membergroups:
+                membergroups |= set(membergroup.auto_parent_membergroups.all())
 
-        if location_groups:
+        if location_membergroups:
             for lc in self.get_location_codes():
-                groups |= set(lc.auto_location_groups.all())
+                membergroups |= set(lc.auto_location_membergroups.all())
 
-        return groups
+        return membergroups
 
     def email_sig(self):
         ts = '%x/' % time.time()

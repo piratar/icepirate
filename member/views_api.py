@@ -49,12 +49,12 @@ def member_to_dict(member):
         if val:
             result[key] = val
 
-    all_groups = member.get_groups()
-    main_groups = member.groups.all()
+    all_membergroups = member.get_membergroups()
+    main_membergroups = member.membergroups.all()
 
-    result['groups'] = dict([(g.techname, g.name) for g in all_groups])
-    result['main_groups'] = dict([(g.techname, g.name) for g in main_groups])
-    result['auto_groups'] = dict([(g.techname, g.name) for g in (set(all_groups) - set(main_groups))])
+    result['groups'] = dict([(g.techname, g.name) for g in all_membergroups])
+    result['main_groups'] = dict([(g.techname, g.name) for g in main_membergroups])
+    result['auto_groups'] = dict([(g.techname, g.name) for g in (set(all_membergroups) - set(main_membergroups))])
 
     return result
 
