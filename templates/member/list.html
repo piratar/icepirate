@@ -18,8 +18,8 @@ $(document).ready(function() {
     });
 
     // Group selection drop-down list
-    $('#group-techname, #combined').change(function() {
-        location.href = '/member/list/' + $('#group-techname').val() +
+    $('#membergroup-techname, #combined').change(function() {
+        location.href = '/member/list/' + $('#membergroup-techname').val() +
                         ($('#combined').is(':checked') ? '/combined' : '');
     });
 
@@ -31,11 +31,11 @@ $(document).ready(function() {
     <!-- CSV: Disabled to reduce risk and exposure, but may be redesigned in the future. -->
     <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
     {% endcomment %}
-    {% if groups.count or location_codes.count %}
-    <select id="group-techname">
+    {% if membergroups.count or location_codes.count %}
+    <select id="membergroup-techname">
         <option value="">{% trans '- All Groups -' %}</option>
-        {% for group in groups %}
-            <option value="{{ group.techname }}" {% if group.techname == group_techname %}selected="1"{% endif %}>{{ group }}</option>
+        {% for membergroup in membergroups %}
+            <option value="{{ membergroup.techname }}" {% if membergroup.techname == membergroup_techname %}selected="1"{% endif %}>{{ membergroup }}</option>
         {% endfor %}
         <option value="">----</option>
         {% for lc in location_codes %}
@@ -43,8 +43,8 @@ $(document).ready(function() {
         {% endfor %}
     </select>
     {% endif %}
-    {% if group %}
-        {% if combined or group.auto_subgroups.count or group.auto_locations.count %}
+    {% if membergroup %}
+        {% if combined or membergroup.auto_subgroups.count or group.auto_locations.count %}
             <input type=checkbox id="combined"{% if combined %}checked{% endif %}>
             {% trans "Include location-based membership and/or subgroups" %}
         {% endif %}
@@ -59,7 +59,7 @@ $(document).ready(function() {
         <span class="stats-label">{% trans 'Have username' %}:</span>
         <span class="stats-value">{{ have_username_count }}</span>
         &nbsp; &nbsp;
-        {% if not group_techname and not location_code %}
+        {% if not membergroup_techname and not location_code %}
         (<a href="/member/count">{% trans 'History' %}</a>,
          <a href="/member/count/location/">{% trans 'Locations' %}</a>)
         {% endif %}
