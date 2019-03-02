@@ -24,15 +24,15 @@ urlpatterns = [
     # ------------------------------------------------------------------#
 
     # General stuff.
-    url(r'^list/in/(?P<location_code>[^/]*)', views.list),
-    url(r'^list/(?P<membergroup_techname>.+)/(?P<combined>combined)', views.list, name='list'),
+    #url(r'^list/in/(?P<location_code>[^/]*)', views.list),
+    #url(r'^list/(?P<membergroup_techname>.+)/(?P<combined>combined)', views.list, name='list'),
     url(r'^list/(?P<membergroup_techname>.*)', views.list, name='list'),
     url(r'^add/', views.add, name='add'),
     url(r'^edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
     url(r'^delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
     url(r'^view/(?P<ssn>[^/]+)', views.view, name='view'),
-    url(r'^count/location/(?P<grep>[^/]*)', views.location_count, name='location_count'),
-    url(r'^count/(?P<grep>[^/]*)', views.count, name='count'),
+    #url(r'^count/location/(?P<grep>[^/]*)', views.location_count, name='location_count'),
+    #url(r'^count/(?P<grep>[^/]*)', views.count, name='count'),
 
     # Verification
     url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),

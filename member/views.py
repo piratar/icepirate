@@ -97,6 +97,11 @@ def list(request, membergroup_techname=None, location_code=None, combined=False)
     }
     return render(request, 'member/list.html', context)
 
+'''
+# Disabled because this mechanism doesn't give correct numbers. This way of
+# counting members assumes that no one has ever left the organization. The
+# proper way to create this statistic is to collect numbers every month and
+# write them down somewhere.
 @login_required
 def count(request, grep=None):
     members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
@@ -113,7 +118,10 @@ def count(request, grep=None):
         'data': sorted(results.iteritems())
     }
     return render(request, 'member/count.html', context)
+'''
 
+'''
+# Disabled alongside the location mechanism altogether.
 @login_required
 def location_count(request, grep=None):
     results = {}
@@ -125,6 +133,7 @@ def location_count(request, grep=None):
         'data': sorted(results.iteritems())
     }
     return render(request, 'member/count.html', context)
+'''
 
 @login_required
 def add(request):

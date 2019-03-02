@@ -50,6 +50,8 @@
         </p>
     </div>
     {% endif %}
+    {% comment %}
+    <!-- Disabled since data is old and unreliable, but might be fixed later. -->
     {% if member.get_location_codes %}
     <div class="line">
         <p class="label">{% trans 'Locations' %}:</p>
@@ -58,5 +60,6 @@
         </p>
     </div>
     {% endif %}
+    {% endcomment %}
 </div>
 

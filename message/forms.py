@@ -12,9 +12,18 @@ class MessageForm(ModelForm):
 
     class Meta:
         model = Message
-        fields = ['from_address', 'subject', 'body', 'send_to_all', 'membergroups',
-                  'groups_include_subgroups', 'groups_include_locations',
-                  'locations', 'wasa2il_usage', 'generate_html_mail']
+        fields = [
+            'from_address',
+            'subject',
+            'body',
+            'send_to_all',
+            'membergroups',
+            'groups_include_subgroups',
+            #'groups_include_locations',
+            #'locations',
+            'wasa2il_usage',
+            'generate_html_mail'
+        ]
 
 
 class InteractiveMessageForm(ModelForm):

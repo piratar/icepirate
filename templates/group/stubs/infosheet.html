@@ -28,6 +28,8 @@
             <i>{% trans 'none' %}</i>
         {% endif %}</p>
     </div>
+    {% comment %}
+    <!-- Disabled since data is old and unreliable, but might be fixed later. -->
     <div class="line">
         <p class="label">{% trans 'Locations' %}:</p>
         <p class="value">{% if membergroup.auto_locations.count %}
@@ -37,14 +39,20 @@
             <i>{% trans 'none' %}</i>
         {% endif %}</p>
     </div>
+    {% endcomment %}
     {% if membergroup.members.count %}
     <div class="line">
         <p class="label">{% trans 'Members' %}:</p>
         <p class="value"><a href="/member/list/{{ membergroup.techname }}">
             {{ membergroup.members.count }}
-        </a>(<a href="/member/list/{{ membergroup.techname }}/combined">
+        </a>
+        {% comment %}
+        <!-- Disabled since data is old and unreliable, but might be fixed later. -->
+        (<a href="/member/list/{{ membergroup.techname }}/combined">
             {{ membergroup.get_members.count }} combined
-        </a>)</p>
+        </a>)
+        {% endcomment %}
+        </p>
     </div>
     {% endif %}
 </div>

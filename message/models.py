@@ -32,7 +32,7 @@ class Message(models.Model):
     send_to_all = models.BooleanField(default=True)
     membergroups = models.ManyToManyField('member.MemberGroup')
     groups_include_subgroups = models.BooleanField(default=True)
-    groups_include_locations = models.BooleanField(default=True)
+    groups_include_locations = models.BooleanField(default=False)
     locations = models.ManyToManyField(LocationCode, blank=True)
 
     wasa2il_usage = models.CharField(max_length=12,

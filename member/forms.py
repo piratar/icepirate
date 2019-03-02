@@ -19,12 +19,18 @@ class MemberForm(ModelForm):
 
 class MemberGroupForm(ModelForm):
     auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
-    auto_locations = ModelMultipleChoiceField(required=False, queryset=LocationCode.objects.all())
+    #auto_locations = ModelMultipleChoiceField(required=False, queryset=LocationCode.objects.all())
 
     class Meta:
         model = MemberGroup
-        fields = ['name', 'email', 'added',
-                  'auto_subgroups', 'auto_locations', 'combination_method']
+        fields = [
+            'name',
+            'email',
+            'added',
+            'auto_subgroups',
+            #'auto_locations',
+            #'combination_method',
+        ]
 
 
 class SearchForm(Form):

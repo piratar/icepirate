@@ -12,10 +12,12 @@ $(document).ready(function() {
     $search.val('');
     $search.val(tmpStr);
 
+    /* CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
     $('#export-csv').click(function() {
         location.pathname = (location.pathname.substring(0, 7) + '/csv' + 
                              location.pathname.substring(7));
     });
+    */
 
     // Group selection drop-down list
     $('#membergroup-techname, #combined').change(function() {
@@ -37,18 +39,25 @@ $(document).ready(function() {
         {% for membergroup in membergroups %}
             <option value="{{ membergroup.techname }}" {% if membergroup.techname == membergroup_techname %}selected="1"{% endif %}>{{ membergroup }}</option>
         {% endfor %}
+        {% comment %}
+
         <option value="">----</option>
+        <!-- Disabled since data is old and unreliable, but might be fixed later. -->
         {% for lc in location_codes %}
             <option value="in/{{ lc.location_code }}" {% if lc == location_code %}selected{% endif %}>{{ lc|truncatechars:40 }}</option>
         {% endfor %}
+        {% endcomment %}
     </select>
     {% endif %}
+    {% comment %}
+    <!-- Disabled since data is old and unreliable, but might be fixed later. -->
     {% if membergroup %}
         {% if combined or membergroup.auto_subgroups.count or group.auto_locations.count %}
             <input type=checkbox id="combined"{% if combined %}checked{% endif %}>
             {% trans "Include location-based membership and/or subgroups" %}
         {% endif %}
     {% endif %}
+    {% endcomment %}
 </div>
 
 <div class="list-top-stats">
@@ -58,11 +67,13 @@ $(document).ready(function() {
         &nbsp; &nbsp;
         <span class="stats-label">{% trans 'Have username' %}:</span>
         <span class="stats-value">{{ have_username_count }}</span>
+        {% comment %}
+        <!-- Disabled since data is old and unreliable, but might be fixed later. -->
         &nbsp; &nbsp;
         {% if not membergroup_techname and not location_code %}
-        (<a href="/member/count">{% trans 'History' %}</a>,
-         <a href="/member/count/location/">{% trans 'Locations' %}</a>)
+        (<a href="/member/count/location/">{% trans 'Locations' %}</a>)
         {% endif %}
+        {% endcomment %}
     </span>
 </div>
 
