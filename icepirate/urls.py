@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
@@ -32,3 +33,13 @@ urlpatterns = [
 
     url(r'^$', RedirectView.as_view(url='/accounts/login/')),
 ]
+
+if settings.DEBUG:
+    if 'debug_toolbar.apps.DebugToolbarConfig' in settings.INSTALLED_APPS:
+        try:
+            import debug_toolbar
+            urlpatterns += [
+                url(r'^__debug__/', include(debug_toolbar.urls)),
+            ]
+        except:
+            pass
