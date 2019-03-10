@@ -23,12 +23,13 @@ WASA2IL_HOME_URL = 'https://x.piratar.is/'
 MAX_MEMBERS_SHOWN = 5
 
 # Authentication URL (Icekey)
-AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
-AUTH_ISLAND = {
-    'wsdl': 'https://egov.webservice.is/sst/runtime.asvc/com.actional.soapstation.eGOVDKM_AuthConsumer.AccessPoint?WSDL',
-    'login': 'some_username',
-    'password': 'some_password',
-}
+# Commented because not in use, seems incomplete and isn't documented.
+#AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
+#AUTH_ISLAND = {
+#    'wsdl': 'https://egov.webservice.is/sst/runtime.asvc/com.actional.soapstation.eGOVDKM_AuthConsumer.AccessPoint?WSDL',
+#    'login': 'some_username',
+#    'password': 'some_password',
+#}
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '1234567890abcdefghijklm9876543210nopqrstuvwxyz1234567890'

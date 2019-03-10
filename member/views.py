@@ -186,29 +186,30 @@ def view(request, ssn):
 
     return render(request, 'member/view.html', { 'member': member })
 
-def verify(request):
-
-    member = None
-
-    ssn = request.session.get('ssn', None)
-    if ssn:
-        member = Member.objects.get(ssn=ssn)
-
-    if member is None:
-        auth = authenticate(request, settings.AUTH_URL)
-        try:
-            member = Member.objects.get(ssn=auth['ssn'])
-            member.verified = True
-            member.auth_token = request.GET['token']
-            member.auth_timing = datetime.now()
-            member.save()
-
-            request.session['ssn'] = member.ssn
-            return redirect('/member/verify/')
-        except:
-            pass
-
-    return render(request, 'member/verify.html', { 'member': member, })
+# Commented because not in use, seems incomplete and isn't documented.
+#def verify(request):
+#
+#    member = None
+#
+#    ssn = request.session.get('ssn', None)
+#    if ssn:
+#        member = Member.objects.get(ssn=ssn)
+#
+#    if member is None:
+#        auth = authenticate(request, settings.AUTH_URL)
+#        try:
+#            member = Member.objects.get(ssn=auth['ssn'])
+#            member.verified = True
+#            member.auth_token = request.GET['token']
+#            member.auth_timing = datetime.now()
+#            member.save()
+#
+#            request.session['ssn'] = member.ssn
+#            return redirect('/member/verify/')
+#        except:
+#            pass
+#
+#    return render(request, 'member/verify.html', { 'member': member, })
 
 @login_required
 def membergroup_list(request):

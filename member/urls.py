@@ -35,8 +35,9 @@ urlpatterns = [
     #url(r'^count/(?P<grep>[^/]*)', views.count, name='count'),
 
     # Verification
-    url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
-    url(r'^verify/', views.verify, name='verify'),
+    # Commented because not in use, seems incomplete and isn't documented.
+    #url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
+    #url(r'^verify/', views.verify, name='verify'),
 
     # CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
     #url(r'^csv/list/in/(?P<location_code>[^/]*)', views_csv.list),
