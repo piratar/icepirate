@@ -65,7 +65,7 @@ def delete(request, message_id):
 
 @login_required
 def list(request):
-    messages = Message.objects.all()
+    messages = Message.objects.select_related('author').prefetch_related('membergroups', 'locations').all()
 
     return render(request, 'message/list.html', { 'messages': messages })
 
