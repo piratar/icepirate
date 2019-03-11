@@ -9,19 +9,13 @@ function check_send_to_all() {
     var checked = $('#id_send_to_all').is(':checked');
 
     $boxes = $('#id_membergroups input[type="checkbox"]')
-    $subgroups = $('#id_membergroups, label[for="id_membergroups_0"], ' +
-                   '#id_membergroups_include_subgroups, label[for="id_membergroups_include_subgroups"],' +
-                   '#id_membergroups_include_locations, label[for="id_membergroups_include_locations"],' +
-                   '#id_locations, label[for="id_locations"]')
 
     if (!checked) {
         $boxes.removeAttr('disabled');
-        $subgroups.show();
     }
     else {
         $boxes.attr('checked', false);
         $boxes.attr('disabled', true);
-        $subgroups.hide();
     }
 }
 
