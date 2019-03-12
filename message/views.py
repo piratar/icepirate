@@ -19,7 +19,7 @@ from message.models import Message, ShortURL
 def add(request):
 
     if request.method == 'POST':
-        form = MessageForm(request.POST)
+        form = MessageForm(request.user, request.POST)
 
         if form.is_valid():
             form.instance.author = request.user
@@ -28,17 +28,23 @@ def add(request):
             return HttpResponseRedirect('/message/view/%d' % message.id)
 
     else:
-        form = MessageForm()
+        form = MessageForm(request.user,)
 
     return render(request, 'message/add.html', { 'form': form })
 
 @login_required
 def edit(request, message_id):
 
-    message = get_object_or_404(Message, id=message_id)
+    try:
+        message = Message.objects.safe(request.user).get(id=message_id, sending_started=None)
+    except Message.DoesNotExist:
+        raise Http404
+
+    if not message.populate_full_administration(request.user):
+        raise Http404
 
     if request.method == 'POST' and not message.sending_started:
-        form = MessageForm(request.POST, instance=message)
+        form = MessageForm(request.user, request.POST, instance=message)
 
         if form.is_valid():
             form.instance.author = request.user
@@ -47,14 +53,20 @@ def edit(request, message_id):
             return HttpResponseRedirect('/message/view/%d/' % message.id)
 
     else:
-        form = MessageForm(instance=message)
+        form = MessageForm(request.user, instance=message)
 
     return render(request, 'message/edit.html', { 'form': form, 'message': message })
 
 @login_required
 def delete(request, message_id):
 
-    message = get_object_or_404(Message, id=message_id)
+    try:
+        message = Message.objects.safe(request.user).get(id=message_id, sending_started=None)
+    except Message.DoesNotExist:
+        raise Http404
+
+    if not message.populate_full_administration(request.user):
+        raise Http404
 
     if request.method == 'POST' and not message.sending_started:
         message.delete()
@@ -65,18 +77,36 @@ def delete(request, message_id):
 
 @login_required
 def list(request):
-    messages = Message.objects.select_related('author').prefetch_related('membergroups', 'locations').all()
+
+    messages = Message.objects.safe(
+        request.user
+    ).select_related(
+        'author'
+    ).prefetch_related(
+        'membergroups',
+        'locations'
+    ).all()
 
     return render(request, 'message/list.html', { 'messages': messages })
 
 @login_required
 def view(request, message_id):
-    message = get_object_or_404(Message, id=message_id)
+
+    try:
+        message = Message.objects.safe(request.user).get(id=message_id)
+    except Message.DoesNotExist:
+        raise Http404
+
+    message.populate_full_administration(request.user)
 
     return render(request, 'message/view.html', { 'message': message })
 
 @login_required
 def interactive_list(request):
+
+    if not request.user.is_superuser:
+        raise Http404
+
     interactive_messages = InteractiveMessage.objects.filter(active=True)
 
     display_struct = {}
@@ -96,6 +126,9 @@ def interactive_list(request):
 
 @login_required
 def interactive_edit(request, interactive_type):
+
+    if not request.user.is_superuser:
+        raise Http404
 
     if interactive_type not in dict(InteractiveMessage.INTERACTIVE_TYPES):
         raise Exception('Interactive type "%s" not recognized' % interactive_type)
@@ -138,6 +171,10 @@ def interactive_edit(request, interactive_type):
 
 @login_required
 def interactive_view(request, interactive_type):
+
+    if not request.user.is_superuser:
+        raise Http404
+
     interactive_message = get_object_or_404(InteractiveMessage, interactive_type=interactive_type, active=True)
 
     # This example code is only to make the URLs seem more realistic when they are being viewed. It is not a secret.

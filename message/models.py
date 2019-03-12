@@ -11,12 +11,15 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from icepirate.models import SafetyManager
 from icepirate.utils import generate_unique_random_string, wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
 
 
 class Message(models.Model):
+    objects = SafetyManager()
+
     WASA2IL_ANY = 'any'
     WASA2IL_USERS = 'are_users'
     WASA2IL_NON_USERS = 'not_users'
@@ -51,6 +54,36 @@ class Message(models.Model):
     sending_complete = models.DateTimeField(null=True) # Marked when processing ends
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
+
+    # Determines whether the user is an admin over every single membergroup
+    # that the message is sent to. Only such users can edit or delete such
+    # messages. Will also return True if user is a superuser, because
+    # superusers can do anything they want.
+    #
+    # Usage: In a view, call this function on a message with the currently
+    # logged in user as an argument. From that point on, you may check
+    # `message.full_administration` to retrieve the result. The value is also
+    # returned so that the function can be used independently without regard
+    # for the self.full_administration property.
+    def populate_full_administration(self, user):
+
+        # Only superusers can see messages that should go to everyone.
+        if self.send_to_all:
+            self.full_administration = user.is_superuser
+            return self.full_administration
+
+        # Otherwise, we'll have to make sure that the user is a member of
+        # every group to which the message is addressed to.
+        user_mgs = user.membergroup_administrations.all()
+        message_mgs = self.membergroups.all()
+        for message_mg in message_mgs:
+            if message_mg not in user_mgs:
+                self.full_administration = False
+                return self.full_administration
+
+        self.full_administration = True
+        return self.full_administration
+
 
     def get_recipients(message):
         def rcpt_filter(q):

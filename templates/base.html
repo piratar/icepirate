@@ -22,15 +22,19 @@
             <!-- Disabled since data is old and unreliable, but might be fixed later. -->
             <li><a href="/group/stats">{% trans 'Group Stats' %}</a></li>
             {% endcomment %}
-            <li><a href="/group/add">{% trans 'Add Group' %}</a></li>
+            {% if user.is_superuser %}
+                <li><a href="/group/add">{% trans 'Add Group' %}</a></li>
+            {% endif %}
         </ul>
         <ul class="control">
             <li><a href="/message/list/">{% trans 'Message List' %}</a></li>
             <li><a href="/message/add/">{% trans 'Add Message' %}</a></li>
         </ul>
-        <ul class="control">
-            <li><a href="/message/interactive/list/">{% trans 'Interactive Message List' %}</a></li>
-        </ul>
+        {% if user.is_superuser %}
+            <ul class="control">
+                <li><a href="/message/interactive/list/">{% trans 'Interactive Message List' %}</a></li>
+            </ul>
+        {% endif %}
         {% block control %}{% endblock %}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <ul class="control-control">

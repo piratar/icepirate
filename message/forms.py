@@ -1,5 +1,9 @@
-from django.forms import ModelForm, EmailField, ModelMultipleChoiceField, CheckboxSelectMultiple
+from django.contrib.auth.models import User
+from django.forms import CheckboxSelectMultiple
 from django.forms import EmailField
+from django.forms import HiddenInput
+from django.forms import ModelForm
+from django.forms import ModelMultipleChoiceField
 from django.forms import ValidationError
 
 from member.models import MemberGroup
@@ -8,7 +12,52 @@ from message.models import InteractiveMessage
 from message.models import Message
 
 class MessageForm(ModelForm):
-    membergroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
+
+    user = None
+    shown_membergroups = None
+
+    membergroups = ModelMultipleChoiceField(
+        required=False,
+        widget=CheckboxSelectMultiple(),
+        queryset=MemberGroup.objects.none()
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.exclude = ['send_to_all']
+        if user.__class__ is not User:
+            raise AttributeError('First argument of MessageForm must be user')
+
+        super(MessageForm, self).__init__(*args, **kwargs)
+
+        # Only superuser can send to all.
+        if not user.is_superuser:
+            self.fields['send_to_all'].widget = HiddenInput()
+
+        # Save the user for later.
+        self.user = user
+
+        # These are the membergroups that the currently logged in user (given
+        # by the "user" argument) has the authority to manipulate.
+        self.shown_membergroups = MemberGroup.objects.safe(user).all()
+
+        self.fields['membergroups'].queryset = self.shown_membergroups
+
+    def clean_send_to_all(self):
+        send_to_all = self.cleaned_data['send_to_all']
+
+        # Only superuser can send to all.
+        if not self.user.is_superuser:
+            return False
+
+        return send_to_all
+
+    def clean_membergroups(self):
+        membergroups = self.cleaned_data['membergroups']
+
+        if not self.user.is_superuser and len(membergroups) == 0:
+            raise ValidationError('At least one membergroup must be selected')
+
+        return membergroups
 
     class Meta:
         model = Message

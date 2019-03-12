@@ -5,17 +5,21 @@
 
 <form action="/group/view/{{ membergroup.techname }}" method="POST">
 
-<div class="formbuttons-top">
-    <button type="button" href="/group/delete/{{ membergroup.techname }}">{% trans 'Delete' %}</button>
-</div>
+{% if user.is_superuser %}
+    <div class="formbuttons-top">
+        <button type="button" href="/group/delete/{{ membergroup.techname }}">{% trans 'Delete' %}</button>
+    </div>
+{% endif %}
 
 <div class="infosheet-container">
 {% include 'group/stubs/infosheet.html' %}
 </div>
 
-<div class="formbuttons">
-    <button type="button" href="/group/edit/{{ membergroup.techname }}">{% trans 'Edit' %}</button>
-</div>
+{% if user.is_superuser %}
+    <div class="formbuttons">
+        <button type="button" href="/group/edit/{{ membergroup.techname }}">{% trans 'Edit' %}</button>
+    </div>
+{% endif %}
 
 </form>
 

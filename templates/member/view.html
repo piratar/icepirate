@@ -5,9 +5,11 @@
 
 <form action="/member/view/{{ member.ssn }}" method="POST">
 
-<div class="formbuttons-top">
-    <button type="button" href="/member/delete/{{ member.ssn }}">{% trans 'Delete' %}</button>
-</div>
+{% if user.is_superuser %}
+    <div class="formbuttons-top">
+        <button type="button" href="/member/delete/{{ member.ssn }}">{% trans 'Delete' %}</button>
+    </div>
+{% endif %}
 
 <div class="infosheet-container">
 {% include 'member/stubs/infosheet.html' %}

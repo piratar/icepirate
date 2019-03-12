@@ -6,7 +6,7 @@
 <form action="/message/view/{{ message.id }}" method="POST">
 
 <div class="formbuttons-top">
-    <button type="button" href="/message/delete/{{ message.id }}/" {% if message.sending_complete %}disabled="disabled"{% endif %}>{% trans 'Delete' %}</button>
+    <button type="button" href="/message/delete/{{ message.id }}/" {% if message.sending_started or not message.full_administration %}disabled="disabled"{% endif %}>{% trans 'Delete' %}</button>
 </div>
 
 <div class="infosheet-container">
@@ -14,7 +14,7 @@
 </div>
 
 <div class="formbuttons">
-    <button type="button" href="/message/edit/{{ message.id }}/" {% if message.sending_started %}disabled="disabled"{% endif %}>{% trans 'Edit' %}</button>
+    <button type="button" href="/message/edit/{{ message.id }}/" {% if message.sending_started or not message.full_administration %}disabled="disabled"{% endif %}>{% trans 'Edit' %}</button>
 </div>
 
 </form>

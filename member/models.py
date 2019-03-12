@@ -5,10 +5,14 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 
+from icepirate.models import SafetyManager
+
 from locationcode.models import LocationCode
 
 
 class Member(models.Model):
+    objects = SafetyManager()
+
     ssn = models.CharField(max_length=30, unique=True)
     name = models.CharField(max_length=63)
     username = models.CharField(max_length=50, unique=True, null=True, blank=True)
@@ -92,6 +96,8 @@ class Member(models.Model):
 
 
 class MemberGroup(models.Model):
+    objects = SafetyManager()
+
     COMBINATION_METHODS = (
         ('union', 'Union'),
         ('intersection', 'Intersection')
@@ -102,6 +108,8 @@ class MemberGroup(models.Model):
     # max_length 191 because of some MySQL indexing limitation.
     email = models.EmailField(max_length=191, unique=True)
     added = models.DateTimeField(default=datetime.now)
+
+    admins = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='membergroup_administrations')
 
     auto_subgroups = models.ManyToManyField(
         'MemberGroup',

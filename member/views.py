@@ -28,6 +28,68 @@ from icepirate.saml import authenticate
 from icepirate.utils import techify
 
 @login_required
+def list(request, membergroup_techname=None):
+
+    membergroups = MemberGroup.objects.safe(request.user).all()
+
+    if membergroup_techname:
+        try:
+            membergroup = membergroups.get(techname=membergroup_techname)
+        except MemberGroup.DoesNotExist:
+            raise Http404
+
+        members = Member.objects.safe(request.user).filter(membergroups=membergroup)
+    else:
+        membergroup = None
+        members = Member.objects.safe(request.user).all()
+
+    # Handle search.
+    found_members = None
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data['search_string']
+
+            found_members = members
+
+            for part in search.split(' '):
+                found_members = found_members.filter(
+                    Q(ssn__icontains=part)
+                    | Q(name__icontains=part)
+                    | Q(username__icontains=part)
+                    | Q(email__icontains=part)
+                    | Q(phone__icontains=part)
+                    | Q(added__icontains=part)
+                    #| Q(legal_name__icontains=part)
+                    #| Q(legal_zone__icontains=part)
+                )
+
+            if settings.MAX_MEMBERS_SHOWN > -1 and found_members.count() > settings.MAX_MEMBERS_SHOWN:
+                found_members = None
+                form.add_error(None, _(
+                    'Please narrow the search down to %d results or less.' % settings.MAX_MEMBERS_SHOWN
+                ))
+
+    else:
+        form = SearchForm()
+
+    context = {
+        'form': form,
+        'found_members': found_members,
+        'member_count': members.count(),
+        'have_username_count': members.filter(username__isnull=False).count(),
+        'membergroups': membergroups,
+        'membergroup_techname': membergroup_techname,
+        'membergroup': membergroup,
+    }
+    return render(request, 'member/list.html', context)
+
+
+'''
+# Old version, retained here only in case the location-code thing will be
+# remade in the future. Until then, it has been replaced with a new function
+# with the same function.
+@login_required
 def list(request, membergroup_techname=None, location_code=None, combined=False):
 
     membergroup = None
@@ -96,6 +158,7 @@ def list(request, membergroup_techname=None, location_code=None, combined=False)
         'combined': combined
     }
     return render(request, 'member/list.html', context)
+'''
 
 '''
 # Disabled because this mechanism doesn't give correct numbers. This way of
@@ -139,37 +202,42 @@ def location_count(request, grep=None):
 def add(request):
 
     if request.method == 'POST':
-        form = MemberForm(request.POST)
+        form = MemberForm(request.user, request.POST)
 
         if form.is_valid():
             member = form.save()
             return HttpResponseRedirect('/member/view/%s' % member.ssn)
 
     else:
-        form = MemberForm()
+        form = MemberForm(request.user)
 
     return render(request, 'member/add.html', { 'form': form })
 
 @login_required
 def edit(request, ssn):
 
-    member = get_object_or_404(Member, ssn=ssn)
+    try:
+        member = Member.objects.safe(request.user).get(ssn=ssn)
+    except Member.DoesNotExist:
+        raise Http404
 
     if request.method == 'POST':
-        member.membergroups = request.POST.getlist('membergroups')
-        form = MemberForm(request.POST, instance=member)
+        form = MemberForm(request.user, request.POST, instance=member)
 
         if form.is_valid():
             member = form.save()
             return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 
     else:
-        form = MemberForm(instance=member)
+        form = MemberForm(request.user, instance=member)
 
     return render(request, 'member/edit.html', { 'form': form, 'member': member })
 
 @login_required
 def delete(request, ssn):
+
+    if not request.user.is_superuser:
+        raise Http404
 
     member = get_object_or_404(Member, ssn=ssn)
 
@@ -182,7 +250,10 @@ def delete(request, ssn):
 @login_required
 def view(request, ssn):
 
-    member = get_object_or_404(Member, ssn=ssn)
+    try:
+        member = Member.objects.safe(request.user).get(ssn=ssn)
+    except Member.DoesNotExist:
+        raise Http404
 
     return render(request, 'member/view.html', { 'member': member })
 
@@ -214,7 +285,7 @@ def view(request, ssn):
 @login_required
 def membergroup_list(request):
 
-    membergroups = MemberGroup.objects.all().order_by('name')
+    membergroups = MemberGroup.objects.safe(request.user).all()
 
     return render(request, 'group/list.html', { 'membergroups': membergroups})
 
@@ -272,6 +343,9 @@ def membergroup_stats(request, as_csv=False):
 @login_required
 def membergroup_add(request):
 
+    if not request.user.is_superuser:
+        raise Http404
+
     if request.method == 'POST':
         form = MemberGroupForm(request.POST)
 
@@ -287,6 +361,9 @@ def membergroup_add(request):
 
 @login_required
 def membergroup_edit(request, techname):
+
+    if not request.user.is_superuser:
+        raise Http404
 
     membergroup = get_object_or_404(MemberGroup, techname=techname)
 
@@ -306,6 +383,9 @@ def membergroup_edit(request, techname):
 @login_required
 def membergroup_delete(request, techname):
 
+    if not request.user.is_superuser:
+        raise Http404
+
     membergroup = get_object_or_404(MemberGroup, techname=techname)
 
     if request.method == 'POST':
@@ -316,7 +396,11 @@ def membergroup_delete(request, techname):
 
 @login_required
 def membergroup_view(request, techname):
-    membergroup = get_object_or_404(MemberGroup, techname=techname)
+
+    try:
+        membergroup = MemberGroup.objects.safe(request.user).get(techname=techname)
+    except Member.DoesNotExist:
+        raise Http404
 
     return render(request, 'group/view.html', { 'membergroup': membergroup })
 
