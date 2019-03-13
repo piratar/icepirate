@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<strong>{% trans 'User management currently only supports displaying users and their rights to ease oversight.' %}</strong><br />
+<strong>{% trans 'Actual management must still be done in the admin-interface.' %}</strong>
+
+<table>
+    <thead>
+        <tr>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Username' %}</th>
+            <th class="center">{% trans 'Superuser' %}</th>
+            <th>{% trans 'Administrations' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            {% ifchanged user.is_active %}
+            <tr>
+                <th colspan="5">
+                    {% if user.is_active %}{% trans 'Active users' %}{% else %}{% trans 'Inactive users' %}{% endif %}
+                </td>
+            </tr>
+            {% endifchanged %}
+            <tr>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.username }}</td>
+                <td class="center">
+                    {% if user.is_superuser %}
+                        <strong>{% trans 'Yes' %}</strong>
+                    {% else %}
+                        {% trans 'No' %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for ma in user.membergroup_administrations.all %}{% if not forloop.first %}, {% endif %}<a href="{% url 'list' ma.techname %}">{{ ma }}</a>{% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

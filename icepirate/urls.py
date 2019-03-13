@@ -8,6 +8,8 @@ from member import views as member_views
 
 from message.views import short_url_redirect
 
+from core import views as core_views
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -18,6 +20,7 @@ urlpatterns = [
     url(r'^accounts/logout/$', logout, { 'next_page': '/accounts/login' }),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
+    url(r'^user-management/$', core_views.user_management, name='user_management'),
 
     url(r'^member/', include('member.urls')),
     url(r'^group/list/', member_views.membergroup_list, name='membergroup_list'),

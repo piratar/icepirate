@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'registration',
 
     'icepirate',
+    'core',
     'locationcode',
     'member',
     'message',
