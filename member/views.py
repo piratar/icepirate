@@ -15,6 +15,8 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
+from core.models import ActionEvent
+
 from member.models import Member
 from member.models import MemberGroup
 from locationcode.models import LocationCode
@@ -65,10 +67,18 @@ def list(request, membergroup_techname=None):
                 )
 
             if settings.MAX_MEMBERS_SHOWN > -1 and found_members.count() > settings.MAX_MEMBERS_SHOWN:
-                found_members = None
+                found_members = []
                 form.add_error(None, _(
                     'Please narrow the search down to %d results or less.' % settings.MAX_MEMBERS_SHOWN
                 ))
+
+            # Log the action.
+            ActionEvent(
+                user=request.user,
+                action='member_search',
+                action_details=search,
+                affected_members=found_members
+            ).save()
 
     else:
         form = SearchForm()
@@ -206,6 +216,14 @@ def add(request):
 
         if form.is_valid():
             member = form.save()
+
+            # Log the action.
+            ActionEvent(
+                user=request.user,
+                action='member_add',
+                affected_members=[member]
+            ).save()
+
             return HttpResponseRedirect('/member/view/%s' % member.ssn)
 
     else:
@@ -226,6 +244,14 @@ def edit(request, ssn):
 
         if form.is_valid():
             member = form.save()
+
+            # Log the action.
+            ActionEvent(
+                user=request.user,
+                action='member_edit',
+                affected_members=[member]
+            ).save()
+
             return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 
     else:
@@ -242,7 +268,17 @@ def delete(request, ssn):
     member = get_object_or_404(Member, ssn=ssn)
 
     if request.method == 'POST':
+        member_id = member.id
+
         member.delete()
+
+        # Log the action.
+        ActionEvent(
+            user=request.user,
+            action='member_delete',
+            action_details='Deleted member had database ID "%d"' % member_id
+        ).save()
+
         return HttpResponseRedirect('/member/list/')
 
     return render(request, 'member/delete.html', { 'member': member })
@@ -254,6 +290,13 @@ def view(request, ssn):
         member = Member.objects.safe(request.user).get(ssn=ssn)
     except Member.DoesNotExist:
         raise Http404
+
+    # Log the action.
+    ActionEvent(
+        user=request.user,
+        action='member_view',
+        affected_members=[member]
+    ).save()
 
     return render(request, 'member/view.html', { 'member': member })
 
