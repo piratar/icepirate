@@ -28,12 +28,6 @@ class ActionEvent(models.Model):
     # search string of a member search.
     action_details = models.CharField(max_length=500, null=True)
 
-    # A list of members affected by the action. For example, the search result
-    # of a member search. Note that when a member is deleted, they are also
-    # deleted from here.
-    # DEPRECATED IN FAVOR OF `affected_member_ids`.
-    affected_members_deprecated = models.ManyToManyField('member.Member')
-
     # A comma-separated list of member row IDs that were affected by the
     # action. Information on the affected members is preserved in this manner
     # for two reasons. One is performance, because adding thousands of records
