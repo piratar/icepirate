@@ -270,14 +270,14 @@ def delete(request, ssn):
     if request.method == 'POST':
         member_id = member.id
 
-        member.delete()
-
         # Log the action.
         ActionEvent(
             user=request.user,
             action='member_delete',
-            action_details='Deleted member had database ID "%d"' % member_id
+            affected_members=[member]
         ).save()
+
+        member.delete()
 
         return HttpResponseRedirect('/member/list/')
 

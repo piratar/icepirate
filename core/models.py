@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 
+from member.models import Member
+
 class ActionEvent(models.Model):
     ACTIONS = (
         ('member_add', 'Member added'),
@@ -29,7 +31,18 @@ class ActionEvent(models.Model):
     # A list of members affected by the action. For example, the search result
     # of a member search. Note that when a member is deleted, they are also
     # deleted from here.
-    affected_members = models.ManyToManyField('member.Member')
+    # DEPRECATED IN FAVOR OF `affected_member_ids`.
+    affected_members_deprecated = models.ManyToManyField('member.Member')
+
+    # A comma-separated list of member row IDs that were affected by the
+    # action. Information on the affected members is preserved in this manner
+    # for two reasons. One is performance, because adding thousands of records
+    # every time something is done that affects the entire member database
+    # takes a very long time. The 2nd is to retain the IDs of those who were
+    # affected, even after they've been deleted from the database. That way,
+    # the data is in some sense more accurate, even though no information on
+    # the deleted member's information can be retrieved.
+    affected_member_ids = models.TextField(default='')
 
     # Auto-populated field for keeping track of how many users are needed.
     # Using this field is preferable to using `affected_members` in displaying
@@ -39,31 +52,42 @@ class ActionEvent(models.Model):
     # because members are removed from that field upon their deletion.
     affected_member_count = models.IntegerField(default=0)
 
+    # Returns the affected members, as objects.
+    def affected_members(self):
+        if self.affected_member_ids == '':
+            return []
+        else:
+            return Member.objects.filter(id__in=[int(m_id) for m_id in self.affected_member_ids.split(',')])
+
     def __init__(self, *args, **kwargs):
-        # Save the affected members temporarily for the save-function to have
-        # access to them. This is to support `affected_members` directly when
-        # creating a single action event with a one-liner.
+        # Must happen before super() because super() will not want
+        # affected_members in the kwargs.
         if 'affected_members' in kwargs:
-            self.temp_affected_members = kwargs.pop('affected_members')
+            affected_members = kwargs.pop('affected_members')
+        else:
+            affected_members = None
 
         super(ActionEvent, self).__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
-        if hasattr(self, 'temp_affected_members'):
-            # len() used instead to save on hit to the database.
-            self.affected_member_count = len(self.temp_affected_members)
+        # Must happen after super() because super() will initialize
+        # self.affected_member_ids.
+        if affected_members is not None:
+            self.affected_member_ids = ','.join([str(m.id) for m in affected_members])
 
+    def save(self, *args, **kwargs):
         # Only one user is ever deleted at a time, so we'll know that the
         # number of affected users was 1, even though we can't store
         # information on the deleted user for privacy reasons.
         if self.action == 'member_delete':
             self.affected_member_count = 1
+        else:
+            # Otherwise, we'll count the affected members, assuming there are any.
+            if self.affected_member_ids:
+                self.affected_member_count = len(self.affected_member_ids.split(','))
+            else:
+                self.affected_member_count = 0
 
         super(ActionEvent, self).save(*args, **kwargs)
-
-        if hasattr(self, 'temp_affected_members'):
-            for m in self.temp_affected_members:
-                self.affected_members.add(m)
 
     def __str__(self):
         message = '%s: User "%s", action "%s", affected users: %d' % (
