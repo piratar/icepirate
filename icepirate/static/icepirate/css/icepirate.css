@@ -9,6 +9,7 @@ a:hover { text-decoration: underline; color: #114477; }
 
 div.main-nav-container { float: left; padding: 0px; background: #c0d0e0; width: 100%; }
 div.stage-container { float: left; padding: 0px; width: 100%; border-top: 1px solid #000000; }
+div.global-warning { font-weight: bold; padding: 6px 6px 0px 6px; }
 div.stage { float: left; padding: 8px 8px 8px 8px; }
 
 /* Top navigation (messed up) */

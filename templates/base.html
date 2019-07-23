@@ -46,6 +46,11 @@
 {% endif %}
 
 <div class="stage-container">
+
+    <div class="global-warning">
+        {% trans 'Please note that every action in this system is logged and subject to an audit.' %}
+    </div>
+
     <div class="stage">
         {% block content %}[ Content section ]{% endblock %}
     </div>
