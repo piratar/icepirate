@@ -96,81 +96,6 @@ def list(request, membergroup_techname=None):
 
 
 '''
-# Old version, retained here only in case the location-code thing will be
-# remade in the future. Until then, it has been replaced with a new function
-# with the same function.
-@login_required
-def list(request, membergroup_techname=None, location_code=None, combined=False):
-
-    membergroup = None
-    if membergroup_techname:
-        membergroup = MemberGroup.objects.get(techname=membergroup_techname)
-        if combined:
-            members = membergroup.get_members()
-            if members.count() == membergroup.members.count():
-                combined = False
-        else:
-            members = membergroup.members.all()
-        location_code = None
-
-    elif location_code:
-        location_code = LocationCode.objects.get(location_code=location_code)
-        members = location_code.get_members()
-        combined = False
-
-    else:
-        members = Member.objects.all()
-        combined = False
-
-    membergroups = MemberGroup.objects.all()
-    location_codes = LocationCode.objects.all()
-
-    # Handle search.
-    found_members = None
-    if request.method == 'POST':
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            search = form.cleaned_data['search_string']
-
-            found_members = members
-
-            for part in search.split(' '):
-                found_members = found_members.filter(
-                    Q(ssn__icontains=part)
-                    | Q(name__icontains=part)
-                    | Q(username__icontains=part)
-                    | Q(email__icontains=part)
-                    | Q(phone__icontains=part)
-                    | Q(added__icontains=part)
-                    #| Q(legal_name__icontains=part)
-                    #| Q(legal_zone__icontains=part)
-                )
-
-            if settings.MAX_MEMBERS_SHOWN > -1 and found_members.count() > settings.MAX_MEMBERS_SHOWN:
-                found_members = None
-                form.add_error(None, _(
-                    'Please narrow the search down to %d results or less.' % settings.MAX_MEMBERS_SHOWN
-                ))
-
-    else:
-        form = SearchForm()
-
-    context = {
-        'form': form,
-        'found_members': found_members,
-        'member_count': members.count(),
-        'have_username_count': members.filter(username__isnull=False).count(),
-        'membergroups': membergroups,
-        'location_codes': location_codes,
-        'membergroup_techname': membergroup_techname,
-        'membergroup': membergroup,
-        'location_code': location_code,
-        'combined': combined
-    }
-    return render(request, 'member/list.html', context)
-'''
-
-'''
 # Disabled because this mechanism doesn't give correct numbers. This way of
 # counting members assumes that no one has ever left the organization. The
 # proper way to create this statistic is to collect numbers every month and
@@ -188,21 +113,6 @@ def count(request, grep=None):
                 results[added] = 1
     context = {
         'grouping': 'Year-Month',
-        'data': sorted(results.iteritems())
-    }
-    return render(request, 'member/count.html', context)
-'''
-
-'''
-# Disabled alongside the location mechanism altogether.
-@login_required
-def location_count(request, grep=None):
-    results = {}
-    for loc in LocationCode.objects.all():
-        if (not grep) or grep in unicode(loc):
-            results[unicode(loc)] = loc.get_members().count()
-    context = {
-        'grouping': 'LocationCode',
         'data': sorted(results.iteritems())
     }
     return render(request, 'member/count.html', context)
@@ -300,30 +210,6 @@ def view(request, ssn):
 
     return render(request, 'member/view.html', { 'member': member })
 
-# Commented because not in use, seems incomplete and isn't documented.
-#def verify(request):
-#
-#    member = None
-#
-#    ssn = request.session.get('ssn', None)
-#    if ssn:
-#        member = Member.objects.get(ssn=ssn)
-#
-#    if member is None:
-#        auth = authenticate(request, settings.AUTH_URL)
-#        try:
-#            member = Member.objects.get(ssn=auth['ssn'])
-#            member.verified = True
-#            member.auth_token = request.GET['token']
-#            member.auth_timing = datetime.now()
-#            member.save()
-#
-#            request.session['ssn'] = member.ssn
-#            return redirect('/member/verify/')
-#        except:
-#            pass
-#
-#    return render(request, 'member/verify.html', { 'member': member, })
 
 @login_required
 def membergroup_list(request):
