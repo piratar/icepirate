@@ -12,12 +12,10 @@ $(document).ready(function() {
     $search.val('');
     $search.val(tmpStr);
 
-    /* CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
     $('#export-csv').click(function() {
         location.pathname = (location.pathname.substring(0, 7) + '/csv' + 
                              location.pathname.substring(7));
     });
-    */
 
     // Group selection drop-down list
     $('#membergroup-techname, #combined').change(function() {
@@ -29,10 +27,6 @@ $(document).ready(function() {
 </script>
 
 <div class="list-top-buttons">
-    {% comment %}
-    <!-- CSV: Disabled to reduce risk and exposure, but may be redesigned in the future. -->
-    <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
-    {% endcomment %}
     {% if membergroups.count or location_codes.count %}
     <select id="membergroup-techname">
         <option value="">{% trans '- All Groups -' %}</option>
@@ -49,6 +43,12 @@ $(document).ready(function() {
         {% endcomment %}
     </select>
     {% endif %}
+
+    |
+
+    <button type="button" id="export-csv">{% trans 'Export to CSV' %}</button>
+    {% trans 'Warning: A CSV export can take a long time if lots of members are being exported. Please be patient.' %}
+
     {% comment %}
     <!-- Disabled since data is old and unreliable, but might be fixed later. -->
     {% if membergroup %}

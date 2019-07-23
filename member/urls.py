@@ -7,8 +7,7 @@ from django.utils.http import urlencode
 
 from member import views
 from member import views_api
-# CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
-#from member import views_csv
+from member import views_csv
 
 urlpatterns = [
     # Examples:
@@ -39,10 +38,9 @@ urlpatterns = [
     #url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
     #url(r'^verify/', views.verify, name='verify'),
 
-    # CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
     #url(r'^csv/list/in/(?P<location_code>[^/]*)', views_csv.list),
     #url(r'^csv/list/(?P<group_techname>[^/]*)/(?P<combined>[^/]+)', views_csv.list),
-    #url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
+    url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
 
     # API pages (JSON)
     url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)/', views_api.get, name='api_get'),

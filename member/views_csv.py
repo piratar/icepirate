@@ -1,57 +1,69 @@
-# CSV: Disabled to reduce risk and exposure, but may be redesigned in the future.
-'''
 from datetime import datetime
 
 from django.http import HttpResponse
 
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
-from group.models import Group
+from core.models import ActionEvent
+
 from member.models import Member
-from locationcode.models import LocationCode
+from member.models import MemberGroup
 
 @login_required
-def list(request, group_techname=None, location_code=None, combined=False):
+def list(request, group_techname=None):
+
+    members = Member.objects.safe(request.user).prefetch_related('membergroups')
+
     if group_techname:
-        group = Group.objects.get(techname=group_techname)
-        if combined:
-            members = group.get_members()
-        else:
-            members = group.members.all()
-    elif location_code:
-        location_code = LocationCode.objects.get(location_code=location_code)
-        members = location_code.get_members()
-    else:
-        members = Member.objects.all()
+        members = members.filter(membergroups__techname=group_techname)
     
     # NOTE: Apparently concatinating lists of strings is really efficient.
     lines = []
 
-    lines.append('#"SSN","Name","Username","Email","Email wanted","Phone","Added","Groups"')
+    # Construct header. Things are set up this way for easy
+    # commenting/uncommenting of particular fields, since needs are likely to
+    # change over time. Same with the values, below.
+    header_fields = [
+        _('SSN'),
+        #_('Name'),
+        #_('Username'),
+        #_('Email'),
+        #_('Email wanted'),
+        #_('Phone'),
+        #_('Added'),
+        #_('Groups'),
+    ]
+    lines.append('#%s' % ','.join(['"%s"' % field for field in header_fields]))
+
     for m in members:
-        line = '"%s","%s","%s","%s","%s","%s","%s","%s"' % (
+        field_values = [
             m.ssn,
-            m.name,
-            m.username,
-            m.email,
-            m.email_wanted,
-            m.phone,
-            m.added,
-            u', '.join([g.name for g in m.groups.all()])
-        )
-        lines.append(line)
+            #m.name,
+            #m.username,
+            #m.email,
+            #m.email_wanted,
+            #m.phone,
+            #m.added,
+            #u', '.join([g.name for g in m.membergroups.all()]),
+        ]
+        lines.append(','.join(['"%s"' % value for value in field_values]))
+
+    timing = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
 
     if group_techname:
-        fmt = 'Members-Combined.%s.%s.csv' if combined else 'Members.%s.%s.csv'
-        filename = fmt % (group_techname, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
-    elif location_code:
-        loc_name = unicode(location_code).replace(':', '-').replace(' ', '_')
-        filename = 'Members-%s.%s.csv' % (loc_name, datetime.now().strftime('%Y-%m-%d.%H-%M-%S'))
+        filename = 'Members.%s.%s.csv' % (group_techname, timing)
     else:
-        filename = 'Members.%s.csv' % datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
+        filename = 'Members.%s.csv' % timing
+
+    ActionEvent(
+        user=request.user,
+        action='csv_export',
+        action_details=group_techname if group_techname else _('All members'),
+        affected_members=members
+    ).save()
 
     response = HttpResponse("\n".join(lines), content_type='text/css; charset: utf-8')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     return response
-'''
