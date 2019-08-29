@@ -107,6 +107,8 @@ def update(request, ssn):
     try:
         username = input_vars.get('username', '')
         email = input_vars.get('email', '')
+        phone = input_vars.get('phone', '')
+
         if 'email_wanted' in input_vars:
             email_wanted = str(input_vars.get('email_wanted', '')).lower() == 'true'
         else:
@@ -126,6 +128,10 @@ def update(request, ssn):
         if email_wanted is not None and member.email_wanted != email_wanted:
             member.email_wanted = email_wanted
             updated_fields.append('email_wanted')
+
+        if phone and member.phone != phone:
+            member.phone = phone
+            updated_fields.append('phone')
 
         if len(updated_fields) > 0:
             member.save()
