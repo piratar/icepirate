@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
-from django.contrib.auth.views import logout
+from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from member import views as member_views
@@ -18,7 +18,7 @@ admin.autodiscover()
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    url(r'^accounts/logout/$', logout, { 'next_page': '/accounts/login' }),
+    url(r'^accounts/logout/$', LogoutView.as_view(), { 'next_page': '/accounts/login' }),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
     url(r'^user-management/$', core_views.user_management, name='user_management'),
