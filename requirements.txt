@@ -2,7 +2,6 @@ Django
 MySQL-python
 django-registration-redux
 lxml
-suds
 python-dateutil
 pytz
 markdown

@@ -26,7 +26,6 @@ from member.forms import SearchForm
 
 from member import ssn
 
-from icepirate.saml import authenticate
 from icepirate.utils import techify
 
 @login_required
