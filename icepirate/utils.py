@@ -88,7 +88,7 @@ def generate_unique_random_string():
     # Of course, we ARE assuming time never stands still or goes
     # backwards... but even if we're wrong about that: SHA1 ftw.
     #
-    now = long(time.time() * 0x7f01f) & 0xffffffffffff
+    now = int(time.time() * 0x7f01f) & 0xffffffffffff
     return (
         '%x%x%s' % (os.getpid(), now, generate_random_string())
         ).replace('.', '')[:40]
