@@ -67,9 +67,13 @@ class Message(models.Model):
     # for the self.full_administration property.
     def populate_full_administration(self, user):
 
-        # Only superusers can see messages that should go to everyone.
-        if self.send_to_all:
-            self.full_administration = user.is_superuser
+        if user.is_superuser:
+            # Superusers always have full administration.
+            self.full_administration = True
+            return self.full_administration
+        elif self.send_to_all:
+            # Messages sent to everyone required superuser privileges.
+            self.full_administration = False
             return self.full_administration
 
         # Otherwise, we'll have to make sure that the user is a member of
