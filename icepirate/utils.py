@@ -5,11 +5,11 @@ import json
 import os
 import sys
 import time
-import urllib
-import urllib2
 from lxml import etree
-from StringIO import StringIO
-
+from io import StringIO
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import urlopen
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
@@ -105,11 +105,11 @@ def get_http_response(web_url, data=None, quit_on_failure=False):
     success = False
     while not success and retry_count > 0:
         try:
-            response = urllib2.urlopen(web_url, data=data, timeout=5)
+            response = urlopen(web_url, data=data, timeout=5)
             success = True
-        except urllib2.HTTPError:
+        except HTTPError:
             break
-        except IOError, e:
+        except IOError as e:
             sys.stderr.write('Error, will retry: %s\n' % e)
             retry_count -= 1
             time.sleep(1)
@@ -128,31 +128,31 @@ def lookup_national_registry_lt(ssn):
     nr_password = settings.NATIONAL_REGISTRY['password']
     nr_xml_namespace = settings.NATIONAL_REGISTRY['xml_namespace']
 
-    nr_data = urllib.urlencode({
+    nr_data = urlencode({
         'username': nr_username,
         'password': nr_password,
         'regno': ssn,
         'requesterregno': '',
-    })
+    }).encode('utf-8')
 
     response = get_http_response(nr_url, data=nr_data, quit_on_failure=True)
     content = response.read()
     #sys.stderr.write('%s => %s\n' % (ssn, content.decode('utf-8')))
 
     # Parse the XML. Yes, it's painful to look at, and it should be, it's XML.
-    xmldoc = etree.parse(StringIO(content))
+    xmldoc = etree.fromstring(content)
     result = {
-        'is_individual': xmldoc.find('//ns:IsIndividual', namespaces={'ns': nr_xml_namespace}).text == 'true',
-        'is_current': xmldoc.find('//ns:IsCurrent', namespaces={'ns': nr_xml_namespace}).text == 'true',
-        'is_valid': xmldoc.find('//ns:IsValid', namespaces={'ns': nr_xml_namespace}).text == 'true',
+        'is_individual': xmldoc.find('.//ns:IsIndividual', namespaces={'ns': nr_xml_namespace}).text == 'true',
+        'is_current': xmldoc.find('.//ns:IsCurrent', namespaces={'ns': nr_xml_namespace}).text == 'true',
+        'is_valid': xmldoc.find('.//ns:IsValid', namespaces={'ns': nr_xml_namespace}).text == 'true',
     }
 
     if result['is_valid']:
         result.update({
-            'name': xmldoc.find('//ns:FullName', namespaces={'ns': nr_xml_namespace}).text,
-            'legal_address': xmldoc.find('//ns:LegalAddress', namespaces={'ns': nr_xml_namespace}).text,
-            'legal_zip_code': xmldoc.find('//ns:LegalZipCode', namespaces={'ns': nr_xml_namespace}).text,
-            'legal_zone': xmldoc.find('//ns:LegalZone', namespaces={'ns': nr_xml_namespace}).text,
+            'name': xmldoc.find('.//ns:FullName', namespaces={'ns': nr_xml_namespace}).text,
+            'legal_address': xmldoc.find('.//ns:LegalAddress', namespaces={'ns': nr_xml_namespace}).text,
+            'legal_zip_code': xmldoc.find('.//ns:LegalZipCode', namespaces={'ns': nr_xml_namespace}).text,
+            'legal_zone': xmldoc.find('.//ns:LegalZone', namespaces={'ns': nr_xml_namespace}).text,
             'legal_municipality_code': None
         })
 
@@ -163,7 +163,7 @@ def lookup_national_registry_ferli(ssn):
     nr_password = settings.NATIONAL_REGISTRY['password']
     nr_xml_namespace = settings.NATIONAL_REGISTRY['xml_namespace']
 
-    nr_data = urllib.urlencode({
+    nr_data = urlencode({
         'str_Ktala': unicode(ssn).replace('-', ''),
         'str_Password': nr_password
     })
@@ -173,15 +173,15 @@ def lookup_national_registry_ferli(ssn):
         content = response.read()
         #sys.stderr.write('%s => %s\n' % (ssn, content.decode('utf-8')))
         found_in_nr = True
-    except urllib2.HTTPError:
+    except HTTPError:
         found_in_nr = False
-    except IOError, e:
+    except IOError as e:
         quit(1)
 
     # Parse the XML. Yes, it's painful to look at, and it should be, it's XML.
     nsp = {'ns': nr_xml_namespace}
     if found_in_nr:
-        xmldoc = etree.parse(StringIO(content))
+        xmldoc = etree.fromstring(content)
         tegrec = xmldoc.find('//ns:TegRec', namespaces=nsp)
         kynkodi = xmldoc.find('//ns:KynKodi', namespaces=nsp)
         retkod = xmldoc.find('//ns:Retkod', namespaces=nsp)
@@ -258,7 +258,7 @@ def wasa2il_url(member, data=None, verified=False, shorten=False):
     except:
         pass
 
-    url = '%s?%s' % (url, urllib.urlencode(data))
+    url = '%s?%s' % (url, urlencode(data))
     if shorten:
         from message.models import ShortURL
         return str(ShortURL(url=url).save())

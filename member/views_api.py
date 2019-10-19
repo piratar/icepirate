@@ -21,7 +21,7 @@ from member.models import MemberGroup
 
 
 def require_login_or_key(request):
-    return request.user.is_authenticated() or request.POST.get('json_api_key') == settings.JSON_API_KEY
+    return request.user.is_authenticated or request.POST.get('json_api_key') == settings.JSON_API_KEY
 
 
 def access_denied():

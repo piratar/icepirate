@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models
+from django.db.models import CASCADE
 
 from member.models import Member
 
@@ -16,7 +17,7 @@ class ActionEvent(models.Model):
     )
 
     # The user performing the action.
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='access_events')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='access_events', on_delete=CASCADE)
 
     # When the action was performed.
     timing = models.DateTimeField(auto_now_add=True)

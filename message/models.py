@@ -7,6 +7,8 @@ from markdown import markdown
 
 from django.conf import settings
 from django.db import models
+from django.db.models import CASCADE
+from django.db.models import PROTECT
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -44,7 +46,7 @@ class Message(models.Model):
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
-    author = models.ForeignKey(User) # User, not Member
+    author = models.ForeignKey(User, on_delete=PROTECT)
 
     generate_html_mail = models.BooleanField(default=False)
 
@@ -142,7 +144,7 @@ class Message(models.Model):
                 'ssn', 'name', 'username', 'email', 'phone', 'added',
                 'legal_name', 'legal_address',
                 'legal_zip_code', 'legal_municipality_code'):
-            data = unicode(getattr(recipient, field))
+            data = str(getattr(recipient, field))
             body = body.replace('{{%s}}' % field, data)
 
         # When embedding the following URLs into e-mails, we force them to
@@ -201,8 +203,8 @@ class Message(models.Model):
 
 
 class MessageDelivery(models.Model):
-    message = models.ForeignKey(Message)
-    member = models.ForeignKey(Member)
+    message = models.ForeignKey(Message, on_delete=CASCADE)
+    member = models.ForeignKey(Member, on_delete=CASCADE)
     timing_start = models.DateTimeField(default=timezone.now)
     timing_end = models.DateTimeField(null=True)
 
@@ -239,7 +241,7 @@ class InteractiveMessage(models.Model):
     body = models.TextField()
 
     deliveries = models.ManyToManyField(Member, related_name='interactive_deliveries', through='InteractiveMessageDelivery')
-    author = models.ForeignKey(User) # User, not member
+    author = models.ForeignKey(User, on_delete=PROTECT)
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
 
@@ -279,7 +281,7 @@ class InteractiveMessage(models.Model):
 
 
 class InteractiveMessageDelivery(models.Model):
-    interactive_message = models.ForeignKey('InteractiveMessage')
+    interactive_message = models.ForeignKey('InteractiveMessage', on_delete=CASCADE)
     member = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL)
     email = models.CharField(max_length=75)
     timing_start = models.DateTimeField(default=timezone.now)
@@ -302,7 +304,8 @@ class ShortURL(models.Model):
     def _set_code(self):
         if self.code is None and self.url:
             self.code = hashlib.sha1(
-                '%s%s' % (time.time(), self.url)).hexdigest()[:16]
+                str('%s%s' % (time.time(), self.url)).encode('utf-8')
+            ).hexdigest()[:16]
 
     def __repr__(self):
         return '<ShortURL(%s): %s>' % (self.code, self.url)

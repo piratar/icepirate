@@ -1,5 +1,4 @@
-Django
-MySQL-python
+django==2.0.13
 django-registration-redux
 lxml
 python-dateutil

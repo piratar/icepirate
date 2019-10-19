@@ -3,6 +3,7 @@ from django.conf.urls import include
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
 from django.contrib.auth.views import logout
+from django.urls import path
 
 from member import views as member_views
 
@@ -15,7 +16,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
 
     url(r'^accounts/logout/$', logout, { 'next_page': '/accounts/login' }),
     url(r'^accounts/', include('registration.backends.default.urls')),

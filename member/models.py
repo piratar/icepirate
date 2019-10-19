@@ -58,7 +58,7 @@ class Member(models.Model):
     class Meta:
         ordering = ['added', 'name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_location_codes(self):
@@ -129,7 +129,7 @@ class MemberGroup(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_members(self, subgroups=True, locations=True):

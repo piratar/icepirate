@@ -2,7 +2,7 @@ import os
 here = lambda x: os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), x))
 
 try:
-    from local_settings import *
+    from icepirate.local_settings import *
 except:
     raise Exception('You need to set up local_settings.py (see local_settings.py-example)')
 
@@ -66,7 +66,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

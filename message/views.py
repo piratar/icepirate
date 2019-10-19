@@ -111,13 +111,13 @@ def interactive_list(request):
 
     display_struct = {}
     for m in interactive_messages:
-        if not display_struct.has_key(m.interactive_type):
+        if not m.interactive_type in display_struct:
             display_struct[m.interactive_type] = {}
 
         display_struct[m.interactive_type]['active_message'] = m
 
     for i_type, i_display in InteractiveMessage.INTERACTIVE_TYPES:
-        if not display_struct.has_key(i_type):
+        if not i_type in display_struct:
             display_struct[i_type] = {}
 
         display_struct[i_type]['display'] = i_display
@@ -180,7 +180,7 @@ def interactive_view(request, interactive_type):
     # This example code is only to make the URLs seem more realistic when they are being viewed. It is not a secret.
     example_code = '0z7vW2lqAAnd1VoZp091Voa'
 
-    if InteractiveMessage.INTERACTIVE_TYPES_DETAILS.has_key(interactive_message.interactive_type):
+    if interactive_message.interactive_type in InteractiveMessage.INTERACTIVE_TYPES_DETAILS:
         links = InteractiveMessage.INTERACTIVE_TYPES_DETAILS[interactive_message.interactive_type]['links']
         for link in links:
             replacement = 'https://example.com/member/mailcommand/%s/%s/%s' % (

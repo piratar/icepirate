@@ -7,7 +7,7 @@ class LocationCode(models.Model):
 
     auto_location_codes = models.ManyToManyField('LocationCode')
 
-    def __unicode__(self):
+    def __str__(self):
         if self.location_name:
             text = u'%s (%s)' % (self.location_name, self.location_code)
         else:
