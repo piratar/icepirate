@@ -136,8 +136,11 @@ def update(request, ssn):
         if len(updated_fields) > 0:
             member.save()
 
-    except Exception as e:
-        raise IcePirateException(e)
+    except IntegrityError as e:
+        return json_error('Data integrity error')
+
+    except:
+        return json_error('Unknown error')
 
     response_data = {
         'success': True,
@@ -190,8 +193,12 @@ def add(request):
             except MemberGroup.DoesNotExist:
                 # Nothing to see here. Move along.
                 pass
-    except Exception as e:
-        raise IcePirateException(e)
+
+    except IntegrityError as e:
+        return json_error('Data integrity error')
+
+    except:
+        return json_error('Unknown error')
 
     response_data = {
         'success': True,
