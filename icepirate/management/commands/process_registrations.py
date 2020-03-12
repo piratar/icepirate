@@ -171,9 +171,6 @@ class Command(BaseCommand):
         input_name = reg['name']
         national_name = reg['national']['name']
 
-        if not isinstance(national_name, unicode):
-            national_name = national_name.decode('utf-8')
-
         input_name = input_name.translate(self.character_translation_table)
         national_name = national_name.translate(self.character_translation_table)
 
@@ -545,7 +542,7 @@ class Command(BaseCommand):
             try:
                 # Get the data in its basic form
                 result, data = M.fetch(num, '(RFC822)') #fetch message number num
-                raw_email = data[0][1]
+                raw_email = data[0][1].decode('utf-8')
                 email_message = email.message_from_string(raw_email)
 
                 if email_message.is_multipart(): # We have nothing to do with multipart messages
