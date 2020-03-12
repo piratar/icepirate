@@ -536,7 +536,7 @@ class Command(BaseCommand):
 
         # Iterate through received email messages
         for num in data[0].split():
-            stdout.write('Parsing message %s: ' % num)
+            stdout.write('Parsing message %s: ' % num.decode('utf-8'))
             stdout.flush()
 
             try:
