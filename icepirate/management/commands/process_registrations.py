@@ -385,6 +385,7 @@ class Command(BaseCommand):
         member.ssn = reg['ssn']
         member.name = reg['name']
         member.email = reg['email']
+        member.email_wanted = reg['email_ok']
         merge_national_registry_info(member, reg['national'], timezone.now())
         member.temporary_web_id = random_string
         member.temporary_web_id_timing = timezone.now()
