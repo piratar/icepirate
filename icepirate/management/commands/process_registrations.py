@@ -480,7 +480,7 @@ class Command(BaseCommand):
         # Make sure we have the registration configuration
         if hasattr(settings, 'NEW_REGISTRATIONS_IMAP'):
             for imap_variable in ['server', 'username', 'password', 'inbox', 'filter-to-address', 'filter-last-days']:
-                if not settings.NEW_REGISTRATIONS_IMAP.has_key(imap_variable):
+                if not imap_variable in settings.NEW_REGISTRATIONS_IMAP:
                     stderr.write('Error: Missing configuration for %s in NEW_REGISTRATIONS_IMAP\n' % imap_variable)
                     quit(2)
         else:
