@@ -1,0 +1,3 @@
+[submodule "icepirate/static/prosearea"]
+	path = icepirate/static/prosearea
+	url = https://github.com/binary-is/prosearea
