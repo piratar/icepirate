@@ -1,4 +1,4 @@
-Django==2.2.9
+Django==2.2.11
 django-registration-redux==2.6
 lxml==4.4.1
 Markdown==3.1.1
