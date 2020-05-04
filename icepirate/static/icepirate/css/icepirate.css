@@ -53,11 +53,14 @@ form ul li label { float: left; text-align: left; min-width: 0px; padding: 0px; 
 form textarea, form input { font-family: inherit; font-size: inherit; }
 
 /* Big form classes */
-form.bigform input[type='text'] { width: 360px; }
-form.bigform input[type='email'] { width: 360px; }
-form.bigform textarea { width: 360px; }
-form.bigform select { width: 360px; }
-form.bigform ul { min-width: 360px; }
+form.bigform input[type='text'] { width: 435px; }
+form.bigform input[type='email'] { width: 435px; }
+form.bigform textarea { width: 435px; }
+form.bigform select { width: 435px; }
+form.bigform ul { min-width: 435px; }
+
+/* ProseArea web-specific */
+.prosearea-instance { float: left; width: 435px; border: 1px solid #808080; border-radius: 3px; }
 
 /* General formats */
 .warning { font-size: 16px; color: #880000; }

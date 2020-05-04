@@ -32,7 +32,7 @@ class Message(models.Model):
 
     from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
-    body = models.TextField()
+    body = models.TextField(null=True, blank=True)
 
     send_to_all = models.BooleanField(default=True)
     membergroups = models.ManyToManyField('member.MemberGroup')

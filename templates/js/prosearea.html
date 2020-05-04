@@ -1,0 +1,11 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'prosearea/public/css/editor.css' %}" />
+<script src="{% static 'prosearea/public/js/ProseArea.js' %}"></script>
+<script src="{% static 'prosearea/public/js/ProseArea-dev.js' %}"></script>
+<script language="javascript" type="text/javascript">
+
+$(document).ready(function() {
+    markdownify(document.querySelectorAll('textarea'), 'wysiwyg', {}, false, true);
+});
+
+</script>
