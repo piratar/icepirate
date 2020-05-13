@@ -73,6 +73,7 @@ DATABASES = {
         # This might be needed for MySQL.
         #'OPTIONS': {
         #    'sql_mode': 'traditional',
+        #    'charset': 'utf8mb4',
         #}
 	}
 }
