@@ -238,7 +238,7 @@ class InteractiveMessage(models.Model):
 
     from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
-    body = models.TextField()
+    body = models.TextField(null=True, blank=True)
 
     deliveries = models.ManyToManyField(Member, related_name='interactive_deliveries', through='InteractiveMessageDelivery')
     author = models.ForeignKey(User, on_delete=PROTECT)

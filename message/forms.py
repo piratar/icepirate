@@ -11,6 +11,8 @@ from member.models import MemberGroup
 from message.models import InteractiveMessage
 from message.models import Message
 
+from urllib.parse import unquote
+
 class MessageForm(ModelForm):
 
     user = None
@@ -78,7 +80,7 @@ class MessageForm(ModelForm):
 class InteractiveMessageForm(ModelForm):
 
     def clean_body(self):
-        data = self.cleaned_data['body']
+        data = unquote(self.cleaned_data['body'])
         if self.instance.interactive_type in InteractiveMessage.INTERACTIVE_TYPES_DETAILS:
             missing_links = ''
             for link in InteractiveMessage.INTERACTIVE_TYPES_DETAILS[self.instance.interactive_type]['links']:
