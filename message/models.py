@@ -14,7 +14,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from icepirate.models import SafetyManager
-from icepirate.utils import generate_unique_random_string, wasa2il_url
+from icepirate.utils import generate_random_string
+from icepirate.utils import wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
 
@@ -166,7 +167,7 @@ class Message(models.Model):
                 interactive_type='reject_email_messages')
 
             if not recipient.temporary_web_id:
-                random_string = generate_unique_random_string()
+                random_string = generate_random_string()
                 recipient.temporary_web_id = random_string
                 recipient.save()
 

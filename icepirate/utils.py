@@ -78,9 +78,8 @@ def quick_mail(to, subject, body,
         html_message=html_body)
 
 def generate_random_string():
-    return hashlib.sha1(os.urandom(128)).hexdigest()[:40]
+    some_random = hashlib.sha1(os.urandom(128)).hexdigest()[:40]
 
-def generate_unique_random_string():
     # Technically, this could repeat every 16 years or so. But it's
     # so unlikely that we just don't really care. The SHA1 above
     # really should be enough on its own, this is all overkill.
@@ -90,7 +89,7 @@ def generate_unique_random_string():
     #
     now = int(time.time() * 0x7f01f) & 0xffffffffffff
     return (
-        '%x%x%s' % (os.getpid(), now, generate_random_string())
+        '%x%x%s' % (os.getpid(), now, some_random)
         ).replace('.', '')[:40]
 
 def json_error(exception):
