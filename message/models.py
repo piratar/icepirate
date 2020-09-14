@@ -132,12 +132,6 @@ class Message(models.Model):
     class Meta:
         ordering = ['added']
 
-    def get_text_body(message, recipient):
-        return message.get_bodies(recipient, with_html=False)[0]
-
-    def get_html_body(message, recipient):
-        return message.get_bodies(recipient, with_html=True)[1]
-
     def get_bodies(message, recipient, with_html=True):
         body, html_body = message.body, None
 
