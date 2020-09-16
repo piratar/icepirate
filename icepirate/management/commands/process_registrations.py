@@ -560,6 +560,8 @@ class Command(BaseCommand):
                         subject = subject + ' ' + element[0].decode('utf-8')
                     except UnicodeDecodeError:
                         subject = subject + ' ' + element[0].decode('iso-8859-1')
+                    except AttributeError:
+                        subject = subject + ' ' + str(element[0])
                     subject = subject.strip()
 
                 if subject[:19] != u'Skráning í Pírata: ':
