@@ -7,9 +7,6 @@ from django.utils import timezone
 
 from icepirate.utils import quick_mail
 
-from member.models import Member
-from member.models import MemberGroup
-from message.models import InteractiveMessage
 from message.models import Message
 from message.models import MessageDelivery
 
