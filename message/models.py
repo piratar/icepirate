@@ -50,8 +50,6 @@ class Message(models.Model):
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
     author = models.ForeignKey(User, on_delete=PROTECT)
 
-    generate_html_mail = models.BooleanField(default=False)
-
     ready_to_send = models.BooleanField(default=False) # Should this message be processed?
 
     sending_started = models.DateTimeField(null=True) # Marked when processing beings
@@ -133,8 +131,8 @@ class Message(models.Model):
     class Meta:
         ordering = ['added']
 
-    def get_bodies(message, recipient, with_html=True):
-        body, html_body = message.body, None
+    def get_bodies(message, recipient):
+        body = message.body
 
         for field in (
                 'ssn', 'name', 'username', 'email', 'phone', 'added',
@@ -152,9 +150,6 @@ class Message(models.Model):
         if '{{wasa2il_url_short}}' in body:
             data = wasa2il_url(recipient, verified=True, shorten=True)
             body = body.replace('{{wasa2il_url_short}}', data)
-
-        if message.generate_html_mail and with_html:
-            html_body = markdown(body)
 
         rejection_body = None
         try:
@@ -175,27 +170,7 @@ class Message(models.Model):
         except InteractiveMessage.DoesNotExist:
             pass
 
-        if html_body:
-            try:
-                html_template = InteractiveMessage.objects.get(
-                    interactive_type='email_html_template')
-
-                html_body = html_template.render_body(
-                    recipient.temporary_web_id,
-                    message_content=html_body,
-                    footer_content=rejection_body)
-
-            except InteractiveMessage.DoesNotExist:
-                # If we have no HTML template, hard-code the basics.
-                html_body += (
-                    '\n<div class="icepirate_footer"><hr>\n%s\n</div>\n'
-                    % markdown(rejection_body))
-
-            html_body = (
-                '<html><body>\n%s\n</body></html>' % html_body
-                ).replace('\r', '').replace('\n', '\r\n')
-
-        return body, html_body or None
+        return body
 
 
 class MessageDelivery(models.Model):
@@ -212,7 +187,6 @@ class InteractiveMessage(models.Model):
         ('registration_received', 'Registration received'),
         ('registration_confirmed', 'Registration confirmed'),
         ('reject_email_messages', 'Reject mail messages'),
-        ('email_html_template', 'Email HTML template'),
         ('mailinglist_confirmation', 'Mailing list confirmation'),
         ('remind_membership', 'Reminder of existing membership'),
     )
@@ -224,10 +198,6 @@ class InteractiveMessage(models.Model):
         },
         'reject_email_messages': {
             'description': 'Use the string {{reject_link}} to place\nthe rejection link.',
-            'links': ('reject_link',),
-        },
-        'email_html_template': {
-            'description': 'Use the strings {{message_content}} and {{footer_content}} to place\nthe actual message content and rejection links.',
             'links': ('reject_link',),
         },
         'mailinglist_confirmation': {
@@ -305,8 +275,8 @@ class InteractiveMessage(models.Model):
         delivery.save()
 
 
-    def produce_links(self, random_string, body=None, raw=False):
-        result = body or self.body
+    def produce_links(self, random_string):
+        result = self.body
 
         for link_name in InteractiveMessage.INTERACTIVE_TYPES_DETAILS[
                 self.interactive_type]['links']:
@@ -317,24 +287,10 @@ class InteractiveMessage(models.Model):
                 random_string))
             short_link.save()
             link = str(short_link)
-            if not raw:
-                link = '<%s>' % link
+            link = '<%s>' % link
             result = result.replace('{{%s}}' % link_name, link)
 
         return result
-
-    def render_body(self, random_string, **data):
-        result = self.body
-
-        assert('message_content' in data)
-        for data_name in data:
-            result = result.replace(
-                '{{%s}}' % data_name, data[data_name] or '')
-
-        if random_string:
-            return self.produce_links(random_string, body=result, raw=True)
-        else:
-            return result
 
     class Meta:
         ordering = ['interactive_type', 'added']

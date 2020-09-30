@@ -54,7 +54,7 @@ class Command(BaseCommand):
 
                 # Note: This may have the side effect of setting the
                 #       recipient's temporary_web_id attribute.
-                body, html_body = message.get_bodies(recipient)
+                body = message.get_bodies(recipient)
                 stdout.write('.')
 
                 delivery = MessageDelivery()
@@ -67,7 +67,6 @@ class Command(BaseCommand):
                     to=recipient.email,
                     subject=message.subject,
                     body=body,
-                    html_body=html_body,
                     from_email=message.from_address,
                     subject_prefix=None)
                 stdout.write('.')

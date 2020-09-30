@@ -60,10 +60,7 @@ def techify(input_string):
 
     return result
 
-def quick_mail(to, subject, body,
-        from_email=None,
-        subject_prefix=settings.EMAIL_SUBJECT_PREFIX,
-        html_body=None):
+def quick_mail(to, subject, body, from_email=None, subject_prefix=settings.EMAIL_SUBJECT_PREFIX):
 
     real_subject = subject
     if subject_prefix:
@@ -74,8 +71,8 @@ def quick_mail(to, subject, body,
         body,
         from_email=from_email or settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to,],
-        fail_silently=False,
-        html_message=html_body)
+        fail_silently=False
+    )
 
 def generate_random_string():
     some_random = hashlib.sha1(os.urandom(128)).hexdigest()[:40]
