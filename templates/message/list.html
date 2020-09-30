@@ -29,7 +29,6 @@
                     {% trans 'Everyone' %}
                 {% else %}
                     {% include 'group/stubs/shortlist.html' with membergroups=message.membergroups.all nolinebr=True %}
-                    {% include 'locationcode/stubs/shortlist.html' with locationcodes=message.locations.all nolinebr=True %}
                 {% endif %}
             </td>
             <td>{{ message.author|printadmin }}</td>

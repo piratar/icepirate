@@ -70,8 +70,6 @@ class MessageForm(ModelForm):
             'send_to_all',
             'membergroups',
             'groups_include_subgroups',
-            #'groups_include_locations',
-            #'locations',
         ]
 
 

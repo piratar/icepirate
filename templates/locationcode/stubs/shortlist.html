@@ -1,4 +1,0 @@
-{% for lc in locationcodes %}
-    <span class="group"><a href="/member/list/in/{{ lc.location_code }}">{{ lc }}</a></span>{% if not forloop.last %},{% endif %}{% if not nolinebr %}<br />{% endif %}
-{% endfor %}
-

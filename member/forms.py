@@ -6,8 +6,6 @@ from django.forms import ModelForm
 from django.forms import ModelMultipleChoiceField
 from django.forms import ValidationError
 
-from locationcode.models import LocationCode
-
 from member.models import Member
 from member.models import MemberGroup
 
@@ -95,7 +93,6 @@ class MemberForm(ModelForm):
 
 class MemberGroupForm(ModelForm):
     auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
-    #auto_locations = ModelMultipleChoiceField(required=False, queryset=LocationCode.objects.all())
 
     class Meta:
         model = MemberGroup
@@ -104,8 +101,6 @@ class MemberGroupForm(ModelForm):
             'email',
             'added',
             'auto_subgroups',
-            #'auto_locations',
-            #'combination_method',
         ]
 
 

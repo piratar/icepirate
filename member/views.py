@@ -19,7 +19,6 @@ from core.models import ActionEvent
 
 from member.models import Member
 from member.models import MemberGroup
-from locationcode.models import LocationCode
 from member.forms import MemberForm
 from member.forms import MemberGroupForm
 from member.forms import SearchForm
@@ -93,29 +92,6 @@ def list(request, membergroup_techname=None):
     }
     return render(request, 'member/list.html', context)
 
-
-'''
-# Disabled because this mechanism doesn't give correct numbers. This way of
-# counting members assumes that no one has ever left the organization. The
-# proper way to create this statistic is to collect numbers every month and
-# write them down somewhere.
-@login_required
-def count(request, grep=None):
-    members_by_month = Member.objects.all().extra(select={'month': 'extract( month from added )','year':'extract(year from added)'}).values('month', 'year')
-    results = {}
-    for entry in members_by_month:
-        added = str(entry['year'])+'-'+str(entry['month']).zfill(2)
-        if (not grep) or grep in added:
-            if added in results:
-                results[added] += 1
-            else:
-                results[added] = 1
-    context = {
-        'grouping': 'Year-Month',
-        'data': sorted(results.iteritems())
-    }
-    return render(request, 'member/count.html', context)
-'''
 
 @login_required
 def add(request):

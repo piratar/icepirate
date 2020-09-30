@@ -16,7 +16,6 @@ from django.utils import timezone
 from icepirate.models import SafetyManager
 from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
-from locationcode.models import LocationCode
 from member.models import Member
 
 
@@ -30,8 +29,6 @@ class Message(models.Model):
     send_to_all = models.BooleanField(default=True)
     membergroups = models.ManyToManyField('member.MemberGroup')
     groups_include_subgroups = models.BooleanField(default=True)
-    groups_include_locations = models.BooleanField(default=False)
-    locations = models.ManyToManyField(LocationCode, blank=True)
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
@@ -90,11 +87,8 @@ class Message(models.Model):
         else:
             for membergroup in message.membergroups.all():
                 recipients.extend(rcpt_filter(membergroup.get_members(
-                    subgroups=message.groups_include_subgroups,
-                    locations=message.groups_include_locations)))
-
-            for location in message.locations.all():
-                recipients.extend(rcpt_filter(location.get_members()))
+                    subgroups=message.groups_include_subgroups
+                )))
 
         return list(set(recipients))
 

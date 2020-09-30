@@ -85,8 +85,7 @@ def list(request):
     ).select_related(
         'author'
     ).prefetch_related(
-        'membergroups',
-        'locations'
+        'membergroups'
     ).all()
 
     return render(request, 'message/list.html', { 'messages': messages })

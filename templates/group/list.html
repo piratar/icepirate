@@ -12,11 +12,6 @@
 			<th>{% trans 'Added' %}</th>
 			<th>{% trans 'Members' %}</th>
 			<th>{% trans 'Subgroups' %}</th>
-            {% comment %}
-			<th>{% trans 'Locations' %}</th>
-            <!-- Disabled since data is old and unreliable, but might be fixed later. -->
-			<th>{% trans 'Combined' %}</th>
-            {% endcomment %}
 		</tr>
 	</thead>
 	<tbody>
@@ -28,14 +23,6 @@
 			<td>{{ membergroup.added }}</td>
 			<td><a href="/member/list/{{ membergroup.techname }}">{{ membergroup.members.count }}</a></td>
 			<td>{% include 'group/stubs/shortlist.html' with membergroups=membergroup.auto_subgroups.all nolinebr=True %}</td>
-            {% comment %}
-			<td>{% if membergroup.auto_locations.count %}
-                          {{ membergroup.combination_method }} with:
-                          {% include 'locationcode/stubs/shortlist.html' with locationcodes=membergroup.auto_locations.all nolinebr=True %}
-                        {% endif %}</td>
-            <!-- Disabled since data is old and unreliable, but might be fixed later. -->
-            <td><a href="/member/list/{{ membergroup.techname }}/combined">{{ membergroup.get_members.count }}</a></td>
-            {% endcomment %}
 		</tr>
 	{% endfor %}
 	</tbody>
