@@ -72,7 +72,6 @@ class MessageForm(ModelForm):
             'groups_include_subgroups',
             #'groups_include_locations',
             #'locations',
-            'wasa2il_usage',
         ]
 
 

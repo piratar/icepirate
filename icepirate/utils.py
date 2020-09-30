@@ -237,26 +237,3 @@ def merge_national_registry_info(member, nr_info, now):
 
     member.legal_lookup_timing = now
     return member
-
-
-def wasa2il_url(member, data=None, verified=False, shorten=False):
-    url = settings.WASA2IL_HOME_URL
-    data = copy.copy(data or {})
-    try:
-        if member.username:
-            url = settings.WASA2IL_LOGIN_URL
-            data['username'] = member.username
-        elif member.email:
-            url = settings.WASA2IL_REGISTRATION_URL
-            data['email'] = member.email
-            if verified or member.email_verified:
-                 data['email_sig'] = member.email_sig()
-    except:
-        pass
-
-    url = '%s?%s' % (url, urlencode(data))
-    if shorten:
-        from message.models import ShortURL
-        return str(ShortURL(url=url).save())
-    else:
-        return url

@@ -16,21 +16,12 @@ from django.utils import timezone
 from icepirate.models import SafetyManager
 from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
-from icepirate.utils import wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
 
 
 class Message(models.Model):
     objects = SafetyManager()
-
-    WASA2IL_ANY = 'any'
-    WASA2IL_USERS = 'are_users'
-    WASA2IL_NON_USERS = 'not_users'
-    WASA2IL_MEMBERSHIP_TYPES = (
-        (WASA2IL_ANY, 'Does not matter'),
-        (WASA2IL_USERS, 'Recipients are wasa2il users'),
-        (WASA2IL_NON_USERS, 'Recipients are not wasa2il users'))
 
     from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
@@ -41,10 +32,6 @@ class Message(models.Model):
     groups_include_subgroups = models.BooleanField(default=True)
     groups_include_locations = models.BooleanField(default=False)
     locations = models.ManyToManyField(LocationCode, blank=True)
-
-    wasa2il_usage = models.CharField(max_length=12,
-        choices=WASA2IL_MEMBERSHIP_TYPES,
-        default=WASA2IL_ANY)
 
     recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
     deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
@@ -95,10 +82,6 @@ class Message(models.Model):
         def rcpt_filter(q):
             if message.sending_started:
                 q = q.filter(added__lt=message.sending_started)
-            if message.wasa2il_usage == message.WASA2IL_USERS:
-                q = q.filter(username__isnull=False)
-            elif message.wasa2il_usage == message.WASA2IL_NON_USERS:
-                q = q.filter(username__isnull=True)
             return q.filter(Q(email_wanted=True) | Q(email_wanted=None, email_unwanted=False))
 
         recipients = []
@@ -140,16 +123,6 @@ class Message(models.Model):
                 'legal_zip_code', 'legal_municipality_code'):
             data = str(getattr(recipient, field))
             body = body.replace('{{%s}}' % field, data)
-
-        # When embedding the following URLs into e-mails, we force them to
-        # count as verified; this e-mail effectively becomes a verification
-        # mail in disguise.
-        if '{{wasa2il_url}}' in body:
-            data = wasa2il_url(recipient, verified=True)
-            body = body.replace('{{wasa2il_url}}', data)
-        if '{{wasa2il_url_short}}' in body:
-            data = wasa2il_url(recipient, verified=True, shorten=True)
-            body = body.replace('{{wasa2il_url_short}}', data)
 
         rejection_body = None
         try:

@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load wasa2il_url %}
 
 <div class="infosheet">
     <div class="header">
@@ -17,7 +16,6 @@
         <p class="label">{% trans 'Username' %}:</p>
         <p class="value">
             {% if member.username %}{{ member.username }}{% endif %}
-            (<a href="{{ member|wasa2il_url }}">url</a>)
         </p>
     </div>
     <div class="line">

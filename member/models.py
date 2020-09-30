@@ -90,10 +90,6 @@ class Member(models.Model):
              settings.JSON_API_KEY, ts, self.email, settings.JSON_API_KEY
              )).hexdigest()
 
-    def wasa2il_url(self, *args, **kwargs):
-        from icepirate.utils import wasa2il_url
-        return wasa2il_url(self, *args, **kwargs)
-
 
 class MemberGroup(models.Model):
     objects = SafetyManager()
