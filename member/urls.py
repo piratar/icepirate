@@ -4,6 +4,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.utils.http import urlencode
+from django.urls import path
 
 from member import views
 from member import views_api
@@ -47,5 +48,5 @@ urlpatterns = [
     url(r'^api/add/$', views_api.add, name='api_add'),
     url(r'^api/update/ssn/(?P<ssn>[^/]+)/$', views_api.update, name='api_update'),
     url(r'^api/count/$', views_api.count, name='api_count'),
-
+    path('api/subscribe-to-mailinglist/', views_api.subscribe_to_mailinglist),
 ]

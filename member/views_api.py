@@ -4,6 +4,8 @@ import time
 import traceback
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -15,9 +17,12 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from icepirate.utils import json_error
+from icepirate.utils import generate_random_string
 
 from member.models import Member
 from member.models import MemberGroup
+from member.models import Subscriber
+from message.models import InteractiveMessage
 
 
 def require_login_or_key(request):
@@ -203,6 +208,69 @@ def add(request):
     response_data = {
         'success': True,
         'data': member_to_dict(member)
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+
+@csrf_exempt
+def subscribe_to_mailinglist(request):
+
+    # Make sure incoming data makes sense.
+    email = request.GET.get('email')
+    try:
+        validate_email(email)
+    except ValidationError:
+        return json_error('Invalid email address')
+
+    # Check if all the interactive messages we need for this function to work
+    # have been configured.
+    InteractiveMessage.require_types([
+        'mailinglist_confirmation',
+        'remind_membership'
+    ])
+
+    # If the potential subscriber is already a Member, they have presumably
+    # forgotten about it, and will receive a friendly reminder in an email,
+    # hopefully with some instructions.
+    try:
+        member = Member.objects.get(email=email)
+
+        im = InteractiveMessage.objects.get(
+            interactive_type='remind_membership',
+            active=True
+        )
+        im.send(member.email)
+
+    except Member.DoesNotExist:
+
+        # Get existing Subscriber or prepare a new one.
+        try:
+            subscriber = Subscriber.objects.get(email=email)
+        except Subscriber.DoesNotExist:
+            subscriber = Subscriber(email=email)
+
+        if not subscriber.email_verified:
+            # Create a temporary web ID for us to identify the recipient if
+            # they communicate something back.
+            subscriber.temporary_web_id = generate_random_string()
+            subscriber.temporary_web_id_timing = timezone.now()
+            subscriber.save()
+
+            # Send the interactive message.
+            im = InteractiveMessage.objects.get(
+                interactive_type='mailinglist_confirmation',
+                active=True
+            )
+            im.send(subscriber.email, subscriber.temporary_web_id)
+
+    # If the response data indicates what happened, i.e. whether the email
+    # address was already registered or such, a phishing attack is possible
+    # indicating which email addresses are already registered. Therefore, we
+    # don't communicate anything here except that no error occurred. Further
+    # communication with the member only takes place through email.
+    response_data = {
+        'success': True,
     }
 
     return HttpResponse(json.dumps(response_data), content_type='application/json')

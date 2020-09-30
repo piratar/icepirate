@@ -7,8 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.template import RequestContext
+from django.utils import timezone
 
 from member.models import Member
+from member.models import Subscriber
 
 from message.forms import InteractiveMessageForm
 from message.forms import MessageForm
@@ -256,6 +258,41 @@ def mailcommand(request, interactive_type, link, random_string):
                 'member': member,
                 'organization_email': settings.ORGANIZATION_EMAIL,
             })
+    elif interactive_type == 'mailinglist_confirmation':
+        if link == 'confirm':
+            try:
+                subscriber = Subscriber.objects.get(temporary_web_id=random_string)
+            except Subscriber.DoesNotExist:
+                return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+
+            subscriber.email_verified = True
+            subscriber.email_verified_timing = timezone.now()
+            subscriber.temporary_web_id = None
+            subscriber.temporary_web_id_timing = None
+            subscriber.save()
+
+            return render(request, 'message/mailcommand.html', {
+                'interactive_type': interactive_type,
+                'link': link,
+                'redirect_countdown': 30,
+                'redirect_url': settings.ORGANIZATION_MAIN_URL,
+                'subscriber': subscriber,
+                'organization_email': settings.ORGANIZATION_EMAIL,
+            })
+        elif link == 'reject':
+            try:
+                Subscriber.objects.get(temporary_web_id=random_string).delete()
+            except Subscriber.DoesNotExist:
+                return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+
+            return render(request, 'message/mailcommand.html', {
+                'interactive_type': interactive_type,
+                'link': link,
+                'redirect_countdown': 30,
+                'redirect_url': settings.ORGANIZATION_MAIN_URL,
+                'organization_email': settings.ORGANIZATION_EMAIL,
+            })
+
     else:
         return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 

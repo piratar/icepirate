@@ -15,6 +15,7 @@ from django.utils import timezone
 
 from icepirate.models import SafetyManager
 from icepirate.utils import generate_random_string
+from icepirate.utils import quick_mail
 from icepirate.utils import wasa2il_url
 from locationcode.models import LocationCode
 from member.models import Member
@@ -199,7 +200,8 @@ class Message(models.Model):
 
 class MessageDelivery(models.Model):
     message = models.ForeignKey(Message, on_delete=CASCADE)
-    member = models.ForeignKey(Member, on_delete=CASCADE)
+    member = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL)
+    email = models.CharField(max_length=75)
     timing_start = models.DateTimeField(default=timezone.now)
     timing_end = models.DateTimeField(null=True)
 
@@ -211,6 +213,8 @@ class InteractiveMessage(models.Model):
         ('registration_confirmed', 'Registration confirmed'),
         ('reject_email_messages', 'Reject mail messages'),
         ('email_html_template', 'Email HTML template'),
+        ('mailinglist_confirmation', 'Mailing list confirmation'),
+        ('remind_membership', 'Reminder of existing membership'),
     )
 
     INTERACTIVE_TYPES_DETAILS = {
@@ -226,6 +230,10 @@ class InteractiveMessage(models.Model):
             'description': 'Use the strings {{message_content}} and {{footer_content}} to place\nthe actual message content and rejection links.',
             'links': ('reject_link',),
         },
+        'mailinglist_confirmation': {
+            'description': 'Use the strings {{confirm}} and {{reject}}\nto place confirmation and rejection links.',
+            'links': ('confirm', 'reject'),
+        },
     }
 
     interactive_type = models.CharField(max_length=60, choices=INTERACTIVE_TYPES)
@@ -239,6 +247,63 @@ class InteractiveMessage(models.Model):
     author = models.ForeignKey(User, on_delete=PROTECT)
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
+
+    '''
+    Takes a list of required interactive message types, to make sure that the
+    administrator has configured them when they are required.
+    '''
+    @staticmethod
+    def require_types(required_types):
+
+        if not type(required_types) is list:
+            raise Exception(
+                'Function InteractiveMessage.required_types needs one list of strings'
+            )
+
+        interactive_types_found = InteractiveMessage.objects.filter(
+            interactive_type__in=required_types,
+            active=True
+        ).distinct().count()
+        if len(required_types) != interactive_types_found:
+            raise Exception(
+                'Some of required interactive message types not configured yet: %s' % required_types
+            )
+
+    '''
+    Sends the interactive message to the designated email with a given random
+    string for the recipient to communicate back, while handling delivery
+    logging. The calling function is responsible for database management of
+    the random string.
+    '''
+    def send(self, email, random_string=None):
+        # Fill the message template with the appropriate links if requested.
+        if type(random_string) is str:
+            body = self.produce_links(random_string)
+        else:
+            body = self.body
+
+        # Check if the email belongs to a Member.
+        try:
+            member = Member.objects.get(email=email)
+        except Member.DoesNotExist:
+            member = None
+
+        # Save the delivery message before sending.
+        delivery = InteractiveMessageDelivery(
+            interactive_message=self,
+            member=member,
+            email=email,
+            timing_start=timezone.now()
+        )
+        delivery.save()
+
+        # Actually send the prepared message.
+        quick_mail(email, self.subject, body)
+
+        # Note in the message delivery that the message was successfully sent.
+        delivery.timing_end = timezone.now()
+        delivery.save()
+
 
     def produce_links(self, random_string, body=None, raw=False):
         result = body or self.body

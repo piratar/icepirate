@@ -147,3 +147,43 @@ class MemberGroup(models.Model):
                     mQs |= locCode.get_member_model_Qs()
 
         return Member.objects.filter(mQs).distinct()
+
+
+class Subscriber(models.Model):
+    '''
+    A Subscriber is only subscribed to email announcements but is not a
+    Member. It is implemented as a separate model from Member, even though it
+    contains similar basic info, because when using the Member table, a
+    developer/user should be able to assume that they are dealing with an
+    actual Member. Requiring developers and users to make a distinction
+    between Members and Subscribers at all times when dealing with the data
+    has more cons and pros.
+
+    When someone with a Subscriber's email address becomes a full Member, they
+    should be deleted as a Subscriber and added as a Member.
+
+    Note that Subscriber should never become a feature-rich object.
+    Subscribers are expected to become Members in order to cutomize anything,
+    since keeping track of two different notions of Members only offers
+    unnecessary complications. Subscribers are not Members in any way and
+    should never be considered half-Members or a different type of Member,
+    they simply receive announcements and have no control or options other
+    than upgrading to a full Member, or quitting their subscriptions.
+    '''
+
+    email = models.CharField(max_length=75, unique=True)
+    email_verified = models.BooleanField(default=False)
+    email_verified_timing = models.DateTimeField(null=True)
+    temporary_web_id = models.CharField(max_length=40, unique=True, null=True)
+    temporary_web_id_timing = models.DateTimeField(null=True)
+
+    # Database creation timing, NOT reflecting Member.added, which indicates
+    # when the Member joined and may be copied from other sources, whereas
+    # this is strictly for database housekeeping.
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '%s (%s)' % (
+            self.email,
+            'verified' if self.email_verified else 'unverified'
+        )

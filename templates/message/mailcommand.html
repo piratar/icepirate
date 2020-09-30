@@ -19,6 +19,14 @@
             <p>Athugið að skráning í flokkinn er ennþá til staðar en ekki verður sendur frekari póstur á ofangreint netfang þegar sendur er póstur á allt félagatalið, hvort sem um er að ræða mikilvægar tilkynningar, fundarboð eða annað.</p>
             <p>Ef þú hefur spurningar eða athugasemdir eða vilt byrja að taka aftur við pósti frá okkur, vinsamlegast hafðu samband með því að senda póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.
         {% endif %}
+    {% elif interactive_type == 'mailinglist_confirmation' %}
+        {% if link == 'confirm' %}
+            <p>Netfangið <a href="mailto:{{ subscriber.email}}">{{ subscriber.email }}</a> hefur verið staðfest.</p>
+            <p>Takk fyrir að skrá þig á póstlistann okkar!</p>
+        {% elif link == 'reject' %}
+            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá þig á póstlista Pírata án þíns leyfis. Skráningunni hefur verið eytt.</p>
+            <p>Ef slíkt gerist ítrekað eða þú hefur einhverju að koma á framfæri til okkar, endilega sendu okkur póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.</p>
+        {% endif %}
     {% endif %}
 
     {% if redirect_countdown and redirect_url %}
