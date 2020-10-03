@@ -78,7 +78,6 @@ class Command(BaseCommand):
             except:
                 stdout.write(" FAILED!\n")
                 traceback.print_exc(file=stderr)
-                time.sleep(10)
 
         message.sending_complete = timezone.now()
         message.save()
