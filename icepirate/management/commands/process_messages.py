@@ -2,6 +2,8 @@ import time
 import traceback
 from sys import stdout, stderr
 
+from core.loggers import log_mail
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -74,8 +76,15 @@ class Command(BaseCommand):
                 delivery.timing_end = timezone.now()
                 delivery.save()
 
+                # Log the success.
+                log_mail(recipient.email, message)
+
                 stdout.write(" done.\n")
-            except:
+
+            except Exception as ex:
+                # Log the failure.
+                log_mail(recipient.email, message, ex)
+
                 stdout.write(" FAILED!\n")
                 traceback.print_exc(file=stderr)
 
