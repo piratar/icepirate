@@ -15,7 +15,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
-from core.models import ActionEvent
+from core.loggers import log_action
 
 from member.models import Member
 from member.models import MemberGroup
@@ -71,12 +71,12 @@ def list(request, membergroup_techname=None):
                 ))
 
             # Log the action.
-            ActionEvent(
+            log_action(
                 user=request.user,
                 action='member_search',
                 action_details=search,
                 affected_members=found_members
-            ).save()
+            )
 
     else:
         form = SearchForm()
@@ -103,11 +103,11 @@ def add(request):
             member = form.save()
 
             # Log the action.
-            ActionEvent(
+            log_action(
                 user=request.user,
                 action='member_add',
                 affected_members=[member]
-            ).save()
+            )
 
             return HttpResponseRedirect('/member/view/%s' % member.ssn)
 
@@ -131,11 +131,11 @@ def edit(request, ssn):
             member = form.save()
 
             # Log the action.
-            ActionEvent(
+            log_action(
                 user=request.user,
                 action='member_edit',
                 affected_members=[member]
-            ).save()
+            )
 
             return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 
@@ -156,11 +156,11 @@ def delete(request, ssn):
         member_id = member.id
 
         # Log the action.
-        ActionEvent(
+        log_action(
             user=request.user,
             action='member_delete',
             affected_members=[member]
-        ).save()
+        )
 
         member.delete()
 
@@ -177,11 +177,11 @@ def view(request, ssn):
         raise Http404
 
     # Log the action.
-    ActionEvent(
+    log_action(
         user=request.user,
         action='member_view',
         affected_members=[member]
-    ).save()
+    )
 
     return render(request, 'member/view.html', { 'member': member })
 

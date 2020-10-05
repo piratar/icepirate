@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
-from core.models import ActionEvent
+from core.loggers import log_action
 
 from member.models import Member
 from member.models import MemberGroup
@@ -56,12 +56,12 @@ def list(request, group_techname=None):
     else:
         filename = 'Members.%s.csv' % timing
 
-    ActionEvent(
+    log_action(
         user=request.user,
         action='csv_export',
         action_details=group_techname if group_techname else _('All members'),
         affected_members=members
-    ).save()
+    )
 
     response = HttpResponse("\n".join(lines), content_type='text/css; charset: utf-8')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
