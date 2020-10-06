@@ -114,7 +114,7 @@ class Subscriber(models.Model):
     developer/user should be able to assume that they are dealing with an
     actual Member. Requiring developers and users to make a distinction
     between Members and Subscribers at all times when dealing with the data
-    has more cons and pros.
+    has more cons than pros.
 
     When someone with a Subscriber's email address becomes a full Member, they
     should be deleted as a Subscriber and added as a Member.
