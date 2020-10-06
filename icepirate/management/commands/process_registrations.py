@@ -19,23 +19,20 @@ if SSN checksum is OK
                 note or revoke consent
 
     else
-        if user has not recently rejected membership
-            if SSN is in national registry
-                if names do not match (first and last)
-                    notify admins
-                    (continue)
+        if SSN is in national registry
+            if names do not match (first and last)
+                notify admins
+                (continue)
 
-                send confirmation email
+            send confirmation email
 
-                (confirmation mechanism not contained in script, see message/urls.py)
-                if confirmed
-                    register to local database
-                    redirect user to confirmation page
-                else if rejected
-                    delete registration from database
-                    redirect user to rejection page
-            else
-                do nothing
+            (confirmation mechanism not contained in script, see message/urls.py)
+            if confirmed
+                register to local database
+                redirect user to confirmation page
+            else if rejected
+                delete registration from database
+                redirect user to rejection page
         else
             do nothing
 else
@@ -122,16 +119,12 @@ class Command(BaseCommand):
                             if not added_to_groups and not emails_differ and not email_consent_changed:
                                 stdout.write('* Registration ignored.\n')
                         else:
-                            if not self.check_if_recently_rejected(reg):
-                                if self.check_national_registry(reg):
-                                    if not self.check_names(reg):
-                                        if not self.recently_mailed_about(reg):
-                                            self.notify_name_mismatch(reg)
+                            if self.check_national_registry(reg):
+                                if not self.check_names(reg):
+                                    if not self.recently_mailed_about(reg):
+                                        self.notify_name_mismatch(reg)
 
-                                    self.register_member(reg)
-
-                                else:
-                                    stdout.write('* Registration ignored.\n')
+                                self.register_member(reg)
 
                             else:
                                 stdout.write('* Registration ignored.\n')
@@ -326,36 +319,6 @@ class Command(BaseCommand):
         stdout.write(' done\n')
 
 
-    def check_if_recently_rejected(self, reg):
-        # If a registration confirmation email has been sent to the given email address recently,
-        # but there is no user registered, then the user has rejected the registration and the
-        # user has been deleted. This means that if an InteractiveMessageDelivery object exists
-        # for the given email address, but no one exists with that email address, then the user
-        # must have rejected the registration, since otherwise they would be on record.
-        #
-        # In order to prevent the same registration being processed again and again if the script
-        # is run repeatedly, we check if a confirmation message was sent to the email of the user
-        # requesting registration. A proper time limit for a user to change their mind and
-        # start receiving registration confirmations again is somewhat arbitrarily defined as
-        # the number of days the script checks for registration (typically 1-2 days) plus 5 days.
-        stdout.write('- Checking if recipient of email address has recently rejected registration...')
-        stdout.flush()
-        recent_date = timezone.now() - timedelta(days=settings.NEW_REGISTRATIONS_IMAP['filter-last-days'] + 5)
-        reg_check = InteractiveMessageDelivery.objects.filter(
-            email=reg['email'],
-            timing_end__gt=recent_date,
-            interactive_message__interactive_type='registration_received'
-        )
-        if reg_check.count() == 0:
-            stdout.write(' no\n')
-
-            return False
-        else:
-            stdout.write(' yes\n')
-
-            return True
-
-
     # Put member in appropriate groups
     def process_groups(self, reg, member):
         added_to_groups = False
@@ -529,10 +492,11 @@ class Command(BaseCommand):
             self.imap_dateformat(filter_since)
         )
 
-        # Search by previously constructed filter
+        # Search by previously constructed filter. Emails that are marked as
+        # unread will be processed, others ignored.
         stdout.write('Searching by filter...')
         stdout.flush()
-        result, data = M.search(None, search_string.encode('utf-8'))
+        result, data = M.search(None, search_string.encode('utf-8'), '(UNSEEN)')
         stdout.write(' done\n')
 
         # Iterate through received email messages
