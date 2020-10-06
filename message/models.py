@@ -18,6 +18,8 @@ from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
 from member.models import Member
 
+from core.loggers import log_mail
+
 
 class Message(models.Model):
     objects = SafetyManager()
@@ -180,7 +182,6 @@ class InteractiveMessage(models.Model):
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
     body = models.TextField(null=True, blank=True)
 
-    deliveries = models.ManyToManyField(Member, related_name='interactive_deliveries', through='InteractiveMessageDelivery')
     author = models.ForeignKey(User, on_delete=PROTECT)
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
@@ -213,33 +214,28 @@ class InteractiveMessage(models.Model):
     the random string.
     '''
     def send(self, email, random_string=None):
-        # Fill the message template with the appropriate links if requested.
-        if type(random_string) is str:
-            body = self.produce_links(random_string)
-        else:
-            body = self.body
-
-        # Check if the email belongs to a Member.
         try:
-            member = Member.objects.get(email=email)
-        except Member.DoesNotExist:
-            member = None
+            # Fill the message template with appropriate links if requested.
+            if type(random_string) is str:
+                body = self.produce_links(random_string)
+            else:
+                body = self.body
 
-        # Save the delivery message before sending.
-        delivery = InteractiveMessageDelivery(
-            interactive_message=self,
-            member=member,
-            email=email,
-            timing_start=timezone.now()
-        )
-        delivery.save()
+            # Check if the email belongs to a Member.
+            try:
+                member = Member.objects.get(email=email)
+            except Member.DoesNotExist:
+                member = None
 
-        # Actually send the prepared message.
-        quick_mail(email, self.subject, body)
+            # Actually send the prepared message.
+            quick_mail(email, self.subject, body)
 
-        # Note in the message delivery that the message was successfully sent.
-        delivery.timing_end = timezone.now()
-        delivery.save()
+            # Log the success.
+            log_mail(email, self)
+
+        except Exception as ex:
+            # Log the failure.
+            log_mail(email, self, ex)
 
 
     def produce_links(self, random_string):
@@ -261,14 +257,6 @@ class InteractiveMessage(models.Model):
 
     class Meta:
         ordering = ['interactive_type', 'added']
-
-
-class InteractiveMessageDelivery(models.Model):
-    interactive_message = models.ForeignKey('InteractiveMessage', on_delete=CASCADE)
-    member = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL)
-    email = models.CharField(max_length=75)
-    timing_start = models.DateTimeField(default=timezone.now)
-    timing_end = models.DateTimeField(null=True)
 
 
 class ShortURL(models.Model):

@@ -67,7 +67,6 @@ from icepirate.utils import merge_national_registry_info
 from member.models import Member
 from member.models import MemberGroup
 from message.models import InteractiveMessage
-from message.models import InteractiveMessageDelivery
 
 
 class Command(BaseCommand):
@@ -362,26 +361,11 @@ class Command(BaseCommand):
         self.process_groups(reg, member)
 
         # Send confirmation message
-        message = InteractiveMessage.objects.get(interactive_type='registration_received', active=True)
-        body = message.produce_links(member.temporary_web_id)
-
-        # Save the start of the delivery attempt
-        delivery = InteractiveMessageDelivery()
-        delivery.interactive_message = message
-        delivery.member = member
-        delivery.email = member.email
-        delivery.timing_start = timezone.now()
-        delivery.save()
-
-        # Actually send the message
         stdout.write('* Sending confirmation email...')
         stdout.flush()
-        quick_mail(member.email, message.subject, body)
+        message = InteractiveMessage.objects.get(interactive_type='registration_received', active=True)
+        message.send(member.email, member.temporary_web_id)
         stdout.write(' done\n')
-
-        # Update the delivery
-        delivery.timing_end = timezone.now()
-        delivery.save()
 
 
     # A bit of a hack to make sure we get US English formatted search date for the IMAP
