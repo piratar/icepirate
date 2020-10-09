@@ -37,6 +37,9 @@
             {% if message.send_to_all %}
                 {% trans 'Everyone' %}
             {% else %}
+                {% if message.include_mailing_list %}
+                    {% trans 'Mailing list' %}{% if message.membergroups.count %},{% endif %}<br />
+                {% endif %}
                 {% include 'group/stubs/shortlist.html' with membergroups=message.membergroups.all %}
             {% endif %}
         </p>
@@ -44,7 +47,11 @@
     <div class="line">
         <p class="label">{% trans 'Recipients' %}:</p>
         <p class="value">
-            {{ message.get_recipients|length }}
+            {% if message.sending_started %}
+                {{ message.recipient_count_complete }} / {{ message.recipient_count }} {% trans 'complete' %}
+            {% else %}
+                {{ message.get_recipients|length }}
+            {% endif %}
         </p>
     </div>
     <div class="line">

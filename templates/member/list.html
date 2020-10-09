@@ -43,11 +43,11 @@ $(document).ready(function() {
 
 <div class="list-top-stats">
     <span class="stats-field">
-        <span class="stats-label">{% trans 'Count' %}:</span>
-        <span class="stats-value">{{ member_count }}</span>
+        <span class="stats-label">{% trans 'Member count' %}:</span>
+        <span class="stats-value">{{ member_count }} ({{ have_username_count }} with usernames)</span>
         &nbsp; &nbsp;
-        <span class="stats-label">{% trans 'Have username' %}:</span>
-        <span class="stats-value">{{ have_username_count }}</span>
+        <span class="stats-label">{% trans 'Non-members on mailing list' %}:</span>
+        <span class="stats-value">{{ subscriber_count }}</span>
     </span>
 </div>
 

@@ -19,6 +19,7 @@ from core.loggers import log_action
 
 from member.models import Member
 from member.models import MemberGroup
+from member.models import Subscriber
 from member.forms import MemberForm
 from member.forms import MemberGroupForm
 from member.forms import SearchForm
@@ -81,11 +82,16 @@ def list(request, membergroup_techname=None):
     else:
         form = SearchForm()
 
+    # Get subscriber count. Subscribers are unsearchable and not listed in the
+    # interface, as there is no known reason for administrators to see them.
+    subscriber_count = Subscriber.objects.filter(email_verified=True).count()
+
     context = {
         'form': form,
         'found_members': found_members,
         'member_count': members.count(),
         'have_username_count': members.filter(username__isnull=False).count(),
+        'subscriber_count': subscriber_count,
         'membergroups': membergroups,
         'membergroup_techname': membergroup_techname,
         'membergroup': membergroup,

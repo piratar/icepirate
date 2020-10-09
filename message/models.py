@@ -7,6 +7,7 @@ from markdown import markdown
 
 from django.conf import settings
 from django.db import models
+from django.db import transaction
 from django.db.models import CASCADE
 from django.db.models import PROTECT
 from django.db.models import Q
@@ -17,6 +18,8 @@ from icepirate.models import SafetyManager
 from icepirate.utils import generate_random_string
 from icepirate.utils import quick_mail
 from member.models import Member
+from member.models import MemberGroup
+from member.models import Subscriber
 
 from core.loggers import log_mail
 
@@ -29,17 +32,22 @@ class Message(models.Model):
     body = models.TextField(null=True, blank=True)
 
     send_to_all = models.BooleanField(default=True)
-    membergroups = models.ManyToManyField('member.MemberGroup')
+    include_mailing_list = models.BooleanField(default=True)
+    membergroups = models.ManyToManyField('member.MemberGroup', related_name='messages')
     groups_include_subgroups = models.BooleanField(default=True)
 
-    recipient_list = models.ManyToManyField(Member, related_name='recipient_list') # Constructed at time of processing
-    deliveries = models.ManyToManyField(Member, related_name='deliveries', through='MessageDelivery') # Members already sent to
     author = models.ForeignKey(User, on_delete=PROTECT)
 
     ready_to_send = models.BooleanField(default=False) # Should this message be processed?
 
     sending_started = models.DateTimeField(null=True) # Marked when processing beings
     sending_complete = models.DateTimeField(null=True) # Marked when processing ends
+
+    # Number of intended recipients, before bulk send.
+    recipient_count = models.IntegerField(default=0)
+    # Number of recipients that message has already been sent to. When bulk
+    # send is complete, this number should match `recipient_count`.
+    recipient_count_complete = models.IntegerField(default=0)
 
     added = models.DateTimeField(default=timezone.now) # Automatic, un-editable field
 
@@ -77,77 +85,214 @@ class Message(models.Model):
         return self.full_administration
 
 
-    def get_recipients(message):
-        def rcpt_filter(q):
-            if message.sending_started:
-                q = q.filter(added__lt=message.sending_started)
-            return q.filter(Q(email_wanted=True) | Q(email_wanted=None, email_unwanted=False))
-
+    '''
+    Returns a list of Member and Subscriber objects, collectively called
+    "recipients". Recipients are expected to have the fields `email` and
+    `temporary_web_id`.
+    '''
+    def get_recipients(self):
+        # List to be returned.
         recipients = []
-        if message.send_to_all:
-            recipients = rcpt_filter(Member.objects)
-        else:
-            for membergroup in message.membergroups.all():
-                recipients.extend(rcpt_filter(membergroup.get_members(
-                    subgroups=message.groups_include_subgroups
-                )))
 
-        return list(set(recipients))
+        ################
+        # Get members. #
+        ################
 
-    def get_undelivered_recipients(message):
-        recipients = message.get_recipients()
+        members = Member.objects.filter(
+            # NOTE: `email_wanted` is the post-GDPR field that should become
+            # the only one at some point. The `email_unwanted` field is from
+            # the pre-GDPR days when we only explicitly recorded those who had
+            # rejected email communication. The post-GDPR mindset is that
+            # people should preferably explicitly state their will to receive
+            # mail. When `email_wanted` (post-GDPR) is None, however, the
+            # member has not stated anything at all, and we include them in
+            # email communication on the grounds that it is to protect their
+            # right as members to have knowledge of and access to the various
+            # democratic processes that membership grants. In fact, it could
+            # be argued that receiving email communication is the most basic
+            # function of being a member in the first place, and in many cases
+            # the only point.
+            #
+            # Still, all registration mechanisms should ask the member about
+            # this, so the state of email_wanted=None should become ever-more
+            # rare as more members answer the question explicitly at some
+            # point, since no new members are registered without being asked
+            # about this.
+            Q(email_wanted=True)
+            | Q(email_wanted=None, email_unwanted=False)
+        )
 
-        # NOTE: If a MessageDelivery exists for a user but timing_end=None,
-        #       then previous sending must have failed.
-        already_delivered = [d.member for d in
-            message.messagedelivery_set.select_related(
-                'member').exclude(timing_end=None)]
+        if not self.send_to_all:
+            if self.groups_include_subgroups:
+                # Find not only the groups that the message is intended to,
+                # but also the subgroups of those groups.
+                groups = MemberGroup.objects.filter(
+                    Q(messages=self)
+                    | Q(auto_parent_membergroups__messages=self)
+                ).distinct()
+            else:
+                groups = MemberGroup.objects.filter(messages=self)
 
-        # Remove duplicates (member may be in several groups) and those
-        # already delivered to.
-        return list(set(recipients) - set(already_delivered))
+            members = members.filter(membergroups__in=groups).distinct()
+
+        recipients += members
+
+        ####################
+        # Get Subscribers. #
+        ####################
+
+        # Add subscribers if requested.
+        if self.include_mailing_list:
+            recipients += Subscriber.objects.filter(email_verified=True)
+
+        return recipients
+
+
+    '''
+    Sends the message to all intended recipients, keeping track of those
+    already sent to, so that sending can be stopped and resumed at will and
+    continued on failure. Also makes sure that every target has a
+    `temporary_web_id` for identification when communicating back.
+    '''
+    def send_bulk(self):
+
+        # Get the Member and Subscriber objects we'll be sending to.
+        recipients = self.get_recipients()
+
+        # We'll be reporting this back to the calling function so that an
+        # iterating caller may know how much is left. This must figured out
+        # before we remove recipients already delievered to.
+        self.recipient_count = len(recipients)
+
+        # Declare that we've started the show.
+        self.sending_started = timezone.now()
+        self.save()
+
+        # Remove recipients that have already received the message, which may
+        # happen if a bulk sending is cancelled or fails before completing.
+        for delivery in self.deliveries.select_related('member', 'subscriber'):
+            if delivery.member is not None:
+                recipients.remove(delivery.member)
+            elif delivery.subscriber is not None:
+                recipients.remove(delivery.subscriber)
+
+        # Make sure that any Member and Subscriber have `temporary_web_id`
+        # values for communicating back. It is very rare that they are lacking
+        # and basically might only affect very old memberships or if someone
+        # is registered manually by an administrator. Recipients are either
+        # Member or Subscriber models and are expected to have both an `email`
+        # and `temporary_web_id` field.
+        for recipient in recipients:
+            if recipient.temporary_web_id is None:
+                recipient.temporary_web_id = generate_random_string()
+                recipient.save()
+
+        # Number of recipients left. This is different from `recipient_count`,
+        # which describes the total number of recipients intended altogether.
+        # Some recipients may already have been sent to in a previous run and
+        # this number takes that into account. This and `recipient_count` will
+        # be the same if this is the first attempt at running the bulk send.
+        recipient_count_remaining = len(recipients)
+
+        # If sending to any recipient fails, this will be switched to True and
+        # the message will not be marked as complete. On future runs of this
+        # function, an attempt will be made to send to those recipients who we
+        # previously failed sending to. Only when we've successfully sent to
+        # the entire list of recipients with this still remaining False
+        # afterwards, do we mark the processing of the message as complete,
+        # then applying clean-up measures.
+        something_failed = False
+
+        for i, recipient in enumerate(recipients):
+
+            # Attempt to send the message.
+            success = self.send(recipient)
+
+            # Note the results for determining when the message has been
+            # successfully processed.
+            if success:
+                with transaction.atomic():
+                    delivery = MessageDelivery(message=self)
+                    if type(recipient) is Member:
+                        delivery.member = recipient
+                    elif type(recipient) is Subscriber:
+                        delivery.subscriber = recipient
+                    delivery.save()
+
+                    # We'll also keep track of this so that the web interface
+                    # can keep track of progress. Heavier on the script, but
+                    # easier on the interface, and we care more about the user
+                    # experience than making sure that emails get completed
+                    # some microseconds sooner. Bulk sending must be assumed
+                    # to take a while anyway.
+                    self.recipient_count_complete += 1
+                    self.save()
+            else:
+                something_failed = True
+
+            # Report back the status to a calling function.
+            yield i+1, recipient_count_remaining, recipient.email, success
+
+        # Clean up, if everything seems to have worked.
+        if not something_failed:
+            self.sending_complete = timezone.now()
+            self.save()
+
+            # No more need for delivery objects.
+            MessageDelivery.objects.filter(message=self).delete()
+
+
+    '''
+    Sends the message to a single email address, taking care of
+    unsubscribe-links and logging. Bulk sending is managed by `send_bulk()`.
+
+    Takes the single argument `recipient`, which is expected to have `email`
+    and `temporary_web_id` fields, like Member or Subscriber objects.
+    '''
+    def send(self, recipient):
+        body = self.body
+
+        # Append the portion of the email that offers the user to unsubscribe,
+        # if that message ("reject_email_messages") has been configured and a
+        # temporary web ID is provided to fill the link.
+        if recipient.temporary_web_id is not None:
+            unsubscription = InteractiveMessage.objects.filter(
+                interactive_type='reject_email_messages',
+                active=True
+            ).first()
+
+            if unsubscription:
+                body += '\n\n---\n'
+                body += unsubscription.produce_links(recipient.temporary_web_id)
+
+        try:
+            # Actually send.
+            quick_mail(
+                to=recipient.email,
+                subject=self.subject,
+                body=body,
+                from_email=self.from_address,
+                subject_prefix=None
+            )
+
+            # Log and notify calling function of success.
+            log_mail(recipient.email, self)
+            return True
+
+        except Exception as ex:
+            # Log and notify calling function of failure.
+            log_mail(recipient.email, self, ex)
+            return False
 
     class Meta:
         ordering = ['added']
 
-    def get_bodies(message, recipient):
-        body = message.body
-
-        for field in (
-                'ssn', 'name', 'username', 'email', 'phone', 'added',
-                'legal_name', 'legal_address',
-                'legal_zip_code', 'legal_municipality_code'):
-            data = str(getattr(recipient, field))
-            body = body.replace('{{%s}}' % field, data)
-
-        rejection_body = None
-        try:
-            rejection_message = InteractiveMessage.objects.get(
-                interactive_type='reject_email_messages')
-
-            if not recipient.temporary_web_id:
-                random_string = generate_random_string()
-                recipient.temporary_web_id = random_string
-                recipient.save()
-
-            rejection_body = rejection_message.produce_links(
-                recipient.temporary_web_id)
-
-            body += '\n\n------------------------------\n'
-            body += rejection_body
-
-        except InteractiveMessage.DoesNotExist:
-            pass
-
-        return body
-
 
 class MessageDelivery(models.Model):
-    message = models.ForeignKey(Message, on_delete=CASCADE)
-    member = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL)
-    email = models.CharField(max_length=75)
-    timing_start = models.DateTimeField(default=timezone.now)
-    timing_end = models.DateTimeField(null=True)
+    message = models.ForeignKey(Message, on_delete=CASCADE, related_name='deliveries')
+    member = models.ForeignKey('member.Member', null=True, on_delete=CASCADE)
+    subscriber = models.ForeignKey('member.Subscriber', null=True, on_delete=CASCADE)
+    timing = models.DateTimeField(default=timezone.now)
 
 
 class InteractiveMessage(models.Model):

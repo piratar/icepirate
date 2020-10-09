@@ -1,37 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
 
 {% block content %}
 
 {% include 'js/prosearea.html' %}
 
-<script language="javascript" type="text/javascript">
-
-function check_send_to_all() {
-    var checked = $('#id_send_to_all').is(':checked');
-
-    $boxes = $('#id_membergroups input[type="checkbox"]')
-
-    if (!checked) {
-        $boxes.removeAttr('disabled');
-    }
-    else {
-        $boxes.attr('checked', false);
-        $boxes.attr('disabled', true);
-    }
-}
-
-$(function() {
-    $('#id_send_to_all').click(function() {
-        check_send_to_all();
-    });
-
-    check_send_to_all();
-
-    $('#id_subject').focusEnd();
-});
-
-</script>
+<script language="javascript" type="text/javascript" src="{% static 'message/js/message.js' %}"></script>
 
 <form action="/message/add/" method="POST" class="bigform">
 {% csrf_token %}

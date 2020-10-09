@@ -31,9 +31,10 @@ class MessageForm(ModelForm):
 
         super(MessageForm, self).__init__(*args, **kwargs)
 
-        # Only superuser can send to all.
+        # Only superuser can send to all and to mailing list.
         if not user.is_superuser:
             self.fields['send_to_all'].widget = HiddenInput()
+            self.fields['include_mailing_list'].widget = HiddenInput()
 
         # Save the user for later.
         self.user = user
@@ -53,6 +54,15 @@ class MessageForm(ModelForm):
 
         return send_to_all
 
+    def clean_include_mailing_list(self):
+        include_mailing_list = self.cleaned_data['include_mailing_list']
+
+        # Only superuser can send to mailing list.
+        if not self.user.is_superuser:
+            return False
+
+        return include_mailing_list
+
     def clean_membergroups(self):
         membergroups = self.cleaned_data['membergroups']
 
@@ -61,6 +71,11 @@ class MessageForm(ModelForm):
 
         return membergroups
 
+    def clean(self):
+        # If sending to all, then mailing list must be included.
+        if self.cleaned_data['send_to_all']:
+            self.cleaned_data['include_mailing_list'] = True
+
     class Meta:
         model = Message
         fields = [
@@ -68,6 +83,7 @@ class MessageForm(ModelForm):
             'subject',
             'body',
             'send_to_all',
+            'include_mailing_list',
             'membergroups',
             'groups_include_subgroups',
         ]
