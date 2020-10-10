@@ -406,14 +406,6 @@ class ShortURL(models.Model):
     code = models.CharField(max_length=20, unique=True, null=True)
     url = models.CharField(max_length=1024)
 
-    @classmethod
-    def Expired(cls):
-        return timezone.now() - datetime.timedelta(days=20)
-
-    @classmethod
-    def DeleteExpired(cls):
-        ShortURL.objects.filter(added__lt=cls.Expired()).delete()
-
     def _set_code(self):
         if self.code is None and self.url:
             self.code = hashlib.sha1(

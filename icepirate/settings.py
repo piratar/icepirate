@@ -153,6 +153,10 @@ LOGGING = {
     }
 }
 
+# Certain data should be cleaned regularly, like ShortURL and Subscriber
+# objects. `EXPIRY_DAYS` dictates how old things have to get to expire.
+EXPIRY_DAYS = 30
+
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 
 REGISTRATION_OPEN = False

@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from django.conf import settings
 from django.http import Http404
@@ -185,13 +186,12 @@ def interactive_view(request, interactive_type):
     return render(request, 'message/interactive_view.html', { 'interactive_message': interactive_message })
 
 
-def short_url_redirect(request, code=None):
+def short_url_redirect(request, code):
     try:
-        return HttpResponseRedirect(
-            ShortURL.objects.get(code=code, added__gte=ShortURL.Expired()
-            ).url)
+        expiry_date = timezone.now() - timedelta(days=settings.EXPIRY_DAYS)
+        url = ShortURL.objects.get(code=code, added__gte=expiry_date).url
+        return HttpResponseRedirect(url)
     except ShortURL.DoesNotExist:
-        ShortURL.DeleteExpired()
         return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
 
