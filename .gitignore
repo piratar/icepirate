@@ -7,5 +7,5 @@
 *.mo
 
 # Log files.
-/log/mailing.log
+/log/mailing.log*
 /log/actions.log
