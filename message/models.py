@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db.models import CASCADE
 from django.db.models import PROTECT
 from django.db.models import Q
+from django.db.utils import OperationalError
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -20,6 +21,7 @@ from icepirate.utils import quick_mail
 from member.models import Member
 from member.models import MemberGroup
 from member.models import Subscriber
+from message.exceptions import MessageBeingProcessedException
 
 from core.loggers import log_mail
 
@@ -42,6 +44,10 @@ class Message(models.Model):
 
     sending_started = models.DateTimeField(null=True) # Marked when processing beings
     sending_complete = models.DateTimeField(null=True) # Marked when processing ends
+
+    # Indicates that mechanisms for bulk sending (`process_messages` script)
+    # should not process this message, because it is already being processed.
+    being_processed = models.BooleanField(default=False)
 
     # Number of intended recipients, before bulk send.
     recipient_count = models.IntegerField(default=0)
@@ -156,90 +162,133 @@ class Message(models.Model):
     '''
     def send_bulk(self):
 
-        # Get the Member and Subscriber objects we'll be sending to.
-        recipients = self.get_recipients()
+        # Receive a lock on the message processing by setting
+        # `being_processed` to True. In order to prevent a race condition,
+        # where a check for being_processed=False might be read just before it
+        # is updated to True in another process, we update the value using a
+        # filter that tells us whether the row was found in the state of
+        # being_processed=False at the exact time of updating. If no such row
+        # was found, it means that the being_processed field was already set
+        # to True, and we should skip this bulk send. If the row to be updated
+        # was found, it means that it was indeed at False when we updated,
+        # meaning we should have an exclusive lock.
+        try:
+            rows_found = Message.objects.filter(
+                id=self.id,
+                being_processed=False
+            ).update(
+                being_processed=True
+            )
+            if rows_found == 0:
+                raise MessageBeingProcessedException()
+        except OperationalError:
+            # This will occasionally happen because of a database deadlock
+            # resulting from the constant saving of new information into the
+            # message below (`self.save()`). This is a symptom of another
+            # script working on the same message, so it will also induce a
+            # `MessageBeingProcessedException`.
+            raise MessageBeingProcessedException()
 
-        # We'll be reporting this back to the calling function so that an
-        # iterating caller may know how much is left. This must figured out
-        # before we remove recipients already delievered to.
-        self.recipient_count = len(recipients)
+        try:
+            # Needed because otherwise the `being_processed=False` state will
+            # be resubmitted to database on `Message.save`.
+            self.refresh_from_db()
 
-        # Declare that we've started the show.
-        self.sending_started = timezone.now()
-        self.save()
+            # Get the Member and Subscriber objects we'll be sending to.
+            recipients = self.get_recipients()
 
-        # Remove recipients that have already received the message, which may
-        # happen if a bulk sending is cancelled or fails before completing.
-        for delivery in self.deliveries.select_related('member', 'subscriber'):
-            if delivery.member is not None:
-                recipients.remove(delivery.member)
-            elif delivery.subscriber is not None:
-                recipients.remove(delivery.subscriber)
+            # We'll be reporting this back to the calling function so that an
+            # iterating caller may know how much is left. This must figured
+            # out before we remove recipients already delievered to.
+            self.recipient_count = len(recipients)
 
-        # Make sure that any Member and Subscriber have `temporary_web_id`
-        # values for communicating back. It is very rare that they are lacking
-        # and basically might only affect very old memberships or if someone
-        # is registered manually by an administrator. Recipients are either
-        # Member or Subscriber models and are expected to have both an `email`
-        # and `temporary_web_id` field.
-        for recipient in recipients:
-            if recipient.temporary_web_id is None:
-                recipient.temporary_web_id = generate_random_string()
-                recipient.save()
-
-        # Number of recipients left. This is different from `recipient_count`,
-        # which describes the total number of recipients intended altogether.
-        # Some recipients may already have been sent to in a previous run and
-        # this number takes that into account. This and `recipient_count` will
-        # be the same if this is the first attempt at running the bulk send.
-        recipient_count_remaining = len(recipients)
-
-        # If sending to any recipient fails, this will be switched to True and
-        # the message will not be marked as complete. On future runs of this
-        # function, an attempt will be made to send to those recipients who we
-        # previously failed sending to. Only when we've successfully sent to
-        # the entire list of recipients with this still remaining False
-        # afterwards, do we mark the processing of the message as complete,
-        # then applying clean-up measures.
-        something_failed = False
-
-        for i, recipient in enumerate(recipients):
-
-            # Attempt to send the message.
-            success = self.send(recipient)
-
-            # Note the results for determining when the message has been
-            # successfully processed.
-            if success:
-                with transaction.atomic():
-                    delivery = MessageDelivery(message=self)
-                    if type(recipient) is Member:
-                        delivery.member = recipient
-                    elif type(recipient) is Subscriber:
-                        delivery.subscriber = recipient
-                    delivery.save()
-
-                    # We'll also keep track of this so that the web interface
-                    # can keep track of progress. Heavier on the script, but
-                    # easier on the interface, and we care more about the user
-                    # experience than making sure that emails get completed
-                    # some microseconds sooner. Bulk sending must be assumed
-                    # to take a while anyway.
-                    self.recipient_count_complete += 1
-                    self.save()
-            else:
-                something_failed = True
-
-            # Report back the status to a calling function.
-            yield i+1, recipient_count_remaining, recipient.email, success
-
-        # Clean up, if everything seems to have worked.
-        if not something_failed:
-            self.sending_complete = timezone.now()
+            # Declare that we've started the show.
+            self.sending_started = timezone.now()
             self.save()
 
-            # No more need for delivery objects.
-            MessageDelivery.objects.filter(message=self).delete()
+            # Remove recipients that have already received the message, which
+            # may happen if a bulk sending is cancelled or fails before completing.
+            for delivery in self.deliveries.select_related('member', 'subscriber'):
+                if delivery.member is not None:
+                    recipients.remove(delivery.member)
+                elif delivery.subscriber is not None:
+                    recipients.remove(delivery.subscriber)
+
+            # Make sure that any Member and Subscriber have `temporary_web_id`
+            # values for communicating back. It is very rare that they are
+            # lacking and basically might only affect very old memberships or
+            # if someone is registered manually by an administrator.
+            # Recipients are either Member or Subscriber models and are
+            # expected to have both an `email` and `temporary_web_id` field.
+            for recipient in recipients:
+                if recipient.temporary_web_id is None:
+                    recipient.temporary_web_id = generate_random_string()
+                    recipient.save()
+
+            # Number of recipients left. This is different from
+            # `recipient_count`, which describes the total number of
+            # recipients intended altogether. Some recipients may already have
+            # been sent to in a previous run and this number takes that into
+            # account. This and `recipient_count` will be the same if this is
+            # the first attempt at running the bulk send.
+            recipient_count_remaining = len(recipients)
+
+            # If sending to any recipient fails, this will be switched to True
+            # and the message will not be marked as complete. On future runs
+            # of this function, an attempt will be made to send to those
+            # recipients who we previously failed sending to. Only when we've
+            # successfully sent to the entire list of recipients with this
+            # still remaining False afterwards, do we mark the processing of
+            # the message as complete, then applying clean-up measures.
+            something_failed = False
+
+            for i, recipient in enumerate(recipients):
+
+                # Attempt to send the message.
+                success = self.send(recipient)
+
+                # Note the results for determining when the message has been
+                # successfully processed.
+                if success:
+                    with transaction.atomic():
+                        delivery = MessageDelivery(message=self)
+                        if type(recipient) is Member:
+                            delivery.member = recipient
+                        elif type(recipient) is Subscriber:
+                            delivery.subscriber = recipient
+                        delivery.save()
+
+                        # We'll also keep track of this so that the web
+                        # interface can keep track of progress. Heavier on the
+                        # script, but easier on the interface, and we care
+                        # more about the user experience than making sure that
+                        # emails get completed some microseconds sooner. Bulk
+                        # sending must be assumed to take a while anyway.
+                        self.recipient_count_complete += 1
+                        self.save()
+                else:
+                    something_failed = True
+
+                # Report back the status to a calling function.
+                yield i+1, recipient_count_remaining, recipient.email, success
+
+            # Clean up, if everything seems to have worked.
+            if not something_failed:
+                self.sending_complete = timezone.now()
+
+                # No more need for delivery objects.
+                MessageDelivery.objects.filter(message=self).delete()
+
+            self.save()
+
+        finally:
+            # Release lock we received in beginning of function.
+            Message.objects.filter(
+                id=self.id,
+                being_processed=True
+            ).update(
+                being_processed=False
+            )
 
 
     '''

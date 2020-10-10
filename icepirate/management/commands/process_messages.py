@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from icepirate.utils import quick_mail
 
+from message.exceptions import MessageBeingProcessedException
 from message.models import Message
 from message.models import MessageDelivery
 
@@ -31,14 +32,17 @@ class Command(BaseCommand):
         for i, message in enumerate(messages):
             print('Processing message %d/%d (ID %d)' % (i+1, message_count, message.id))
 
-            for num, recipient_count, recipient, success in message.send_bulk():
-                print('  %d/%d: %s sending to %s' % (
-                    num,
-                    recipient_count,
-                    'Success' if success else 'Failed',
-                    recipient
-                ))
+            try:
+                for num, recipient_count, recipient, success in message.send_bulk():
+                    print('  %d/%d: %s sending to %s' % (
+                        num,
+                        recipient_count,
+                        'Success' if success else 'Failed',
+                        recipient
+                    ))
 
-            print('Message %d/%d (ID %d) processed.' % (i+1, message_count, message.id))
+                print('Message %d/%d (ID %d) processed.' % (i+1, message_count, message.id))
+            except MessageBeingProcessedException:
+                print('- Already being processed - skipping.')
 
         print('--- Script complete. ---')
