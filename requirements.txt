@@ -1,4 +1,5 @@
 django
+django-mathfilters
 django-registration-redux
 lxml
 python-dateutil

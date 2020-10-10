@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     'registration',
+    'mathfilters',
 
     'icepirate',
     'core',

@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load printadmin %}
+{% load mathfilters %}
 
 <div class="infosheet">
     <div class="header">
@@ -48,7 +49,17 @@
         <p class="label">{% trans 'Recipients' %}:</p>
         <p class="value">
             {% if message.sending_started %}
-                {{ message.recipient_count_complete }} / {{ message.recipient_count }} {% trans 'complete' %}
+                {% if message.recipient_count < 0 %}
+                    {% comment %}
+                    A negative recipient count indicates that the data is old
+                    and potentially incomplete due to bugs in how the number
+                    was recorded before. This only applies to old messages, as
+                    new ones will record the proper number.
+                    {% endcomment %}
+                    {{ 0|sub:message.recipient_count }}{% trans ', based on potentially imperfect data.' %}
+                {% else %}
+                    {{ message.recipient_count_complete }} / {{ message.recipient_count }} {% trans 'complete' %}
+                {% endif %}
             {% else %}
                 {{ message.get_recipients|length }}
             {% endif %}
