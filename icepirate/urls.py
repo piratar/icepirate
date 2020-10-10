@@ -25,8 +25,6 @@ urlpatterns = [
 
     url(r'^member/', include('member.urls')),
     url(r'^group/list/', member_views.membergroup_list, name='membergroup_list'),
-    url(r'^group/stats/(?P<as_csv>csv)/', member_views.membergroup_stats, name='membergroup_stats'),
-    url(r'^group/stats/', member_views.membergroup_stats, name='membergroup_stats'),
     url(r'^group/add/', member_views.membergroup_add, name='membergroup_add'),
     url(r'^group/edit/(?P<techname>[^/]+)', member_views.membergroup_edit, name='membergroup_edit'),
     url(r'^group/delete/(?P<techname>[^/]+)', member_views.membergroup_delete, name='membergroup_delete'),

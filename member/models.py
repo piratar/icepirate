@@ -96,15 +96,6 @@ class MemberGroup(models.Model):
     def __str__(self):
         return self.name
 
-    def get_members(self, subgroups=True):
-
-        membergroup_ids = set([self.id])
-        if subgroups:
-            membergroup_ids |= set(self.auto_subgroups.values_list('id', flat=True))
-        mQs = models.Q(membergroups__id__in = membergroup_ids)
-
-        return Member.objects.filter(mQs).distinct()
-
 
 class Subscriber(models.Model):
     '''

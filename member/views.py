@@ -199,56 +199,6 @@ def membergroup_list(request):
 
     return render(request, 'group/list.html', { 'membergroups': membergroups})
 
-@login_required
-def membergroup_stats(request, as_csv=False):
-    from member.models import Member
-
-    # This finds the most recent "end of week" date
-    week = datetime.now(pytz.utc).replace(
-        hour=0, minute=0, second=0)
-    week = week - timedelta(days=week.weekday())
-
-    # Calculate our date ranges.
-    # There are 27 slots, which gives 26 ranges in total.
-    dates = [(week - timedelta(weeks=n))
-             for n in reversed(range(0, 27))]
-
-    # Grab per-group stats
-    stats = []
-    for membergroup in MemberGroup.objects.all().order_by('name'):
-        joined = []
-        for i, date in enumerate(dates[1:]):
-            joined.append(membergroup.get_members().filter(
-                added__gte=dates[i], added__lt=date).count())
-        stats.append({
-            'group': membergroup,
-            'joined': joined,
-            'total': membergroup.get_members().count()})
-
-    # Grab totals (not everyone joins a group)
-    joined = []
-    for i, date in enumerate(dates[1:]):
-        joined.append(Member.objects.filter(
-            added__gte=dates[i], added__lt=date).count())
-    stats.append({
-        'joined': joined,
-        'total': Member.objects.count()})
-
-    if as_csv:
-        lines = ['#"Group","%s","Total"' % '","'.join(
-                 unicode(d) for d in dates[1:])]
-        for stat in stats:
-            lines.append('"%s"' % '","'.join(
-                [unicode(stat.get('group', 'TOTAL'))] +
-                ['%s' % j for j in stat['joined']] +
-                ['%s' % stat['total']]))
-
-        response = HttpResponse(
-            "\n".join(lines), content_type='text/csv; charset: utf-8')
-        response['Content-Disposition'] = 'attachment; filename="stats.csv"'
-        return response
-    else:
-        return render(request, 'group/stats.html', { 'dates': dates, 'stats': stats })
 
 @login_required
 def membergroup_add(request):
