@@ -257,8 +257,7 @@ class Message(models.Model):
         # temporary web ID is provided to fill the link.
         if recipient.temporary_web_id is not None:
             unsubscription = InteractiveMessage.objects.filter(
-                interactive_type='reject_email_messages',
-                active=True
+                interactive_type='reject_email_messages'
             ).first()
 
             if unsubscription:
@@ -321,7 +320,6 @@ class InteractiveMessage(models.Model):
     }
 
     interactive_type = models.CharField(max_length=60, choices=INTERACTIVE_TYPES)
-    active = models.BooleanField(default=True)
 
     from_address = models.EmailField(default=settings.DEFAULT_FROM_EMAIL)
     subject = models.CharField(max_length=300, default='[%s] ' % settings.EMAIL_SUBJECT_PREFIX)
@@ -344,8 +342,7 @@ class InteractiveMessage(models.Model):
             )
 
         interactive_types_found = InteractiveMessage.objects.filter(
-            interactive_type__in=required_types,
-            active=True
+            interactive_type__in=required_types
         ).distinct().count()
         if len(required_types) != interactive_types_found:
             raise Exception(

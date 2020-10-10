@@ -237,8 +237,7 @@ def subscribe_to_mailinglist(request):
         member = Member.objects.get(email=email)
 
         im = InteractiveMessage.objects.get(
-            interactive_type='remind_membership',
-            active=True
+            interactive_type='remind_membership'
         )
         im.send(member.email)
 
@@ -259,8 +258,7 @@ def subscribe_to_mailinglist(request):
 
             # Send the interactive message.
             im = InteractiveMessage.objects.get(
-                interactive_type='mailinglist_confirmation',
-                active=True
+                interactive_type='mailinglist_confirmation'
             )
             im.send(subscriber.email, subscriber.temporary_web_id)
 

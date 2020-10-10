@@ -37,17 +37,30 @@ mail_logger.addHandler(mail_logger_handler)
 def log_mail(email, message, exception=None):
     class_type = message.__class__.__name__
 
+    # Make sure that only objects of supported types are provided.
     if class_type not in ['Message', 'InteractiveMessage']:
         raise Exception('log_mail function does not support message type %s' % class_type)
 
+    # Determine which slightly more detailed information on the object in
+    # question we might want to report.
+    detail = ''
+    if class_type == 'Message':
+        detail = str(message.id)
+    elif class_type == 'InteractiveMessage':
+        detail = message.interactive_type
+
+    # Main message, includes the basics that all mail log entries have in
+    # common.
+    msg = '%s:%s - %s' % (class_type, detail, email)
+
+    # Actually log info or error, depending on circumstances.
     if exception is None:
-        mail_logger.info('%s:%d - %s' % (class_type, message.id, email))
+        mail_logger.info(msg)
     else:
-        mail_logger.error('%s:%d - %s: (%s) %s' % (
-            class_type,
-            message.id,
-            email,
-            type(exception).__name__, exception.__str__()
+        mail_logger.error('%s: (%s) %s' % (
+            msg,
+            type(exception).__name__,
+            exception.__str__()
         ))
 
 # Logging of user actions, for auditing purposes.

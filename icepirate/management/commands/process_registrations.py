@@ -94,7 +94,7 @@ class Command(BaseCommand):
             # First we make sure that the registration_received email (interactive message)
             # has been configured in the web app.
             try:
-                InteractiveMessage.objects.get(interactive_type='registration_received', active=True)
+                InteractiveMessage.objects.get(interactive_type='registration_received')
             except InteractiveMessage.DoesNotExist:
                 raise Exception('Interactive message "Registration received" must be configured before running this script.')
 
@@ -363,7 +363,7 @@ class Command(BaseCommand):
         # Send confirmation message
         stdout.write('* Sending confirmation email...')
         stdout.flush()
-        message = InteractiveMessage.objects.get(interactive_type='registration_received', active=True)
+        message = InteractiveMessage.objects.get(interactive_type='registration_received')
         message.send(member.email, member.temporary_web_id)
         stdout.write(' done\n')
 

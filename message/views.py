@@ -108,7 +108,7 @@ def interactive_list(request):
     if not request.user.is_superuser:
         raise Http404
 
-    interactive_messages = InteractiveMessage.objects.filter(active=True)
+    interactive_messages = InteractiveMessage.objects.all()
 
     display_struct = {}
     for m in interactive_messages:
@@ -135,7 +135,7 @@ def interactive_edit(request, interactive_type):
         raise Exception('Interactive type "%s" not recognized' % interactive_type)
 
     try:
-        interactive_message = InteractiveMessage.objects.get(interactive_type=interactive_type, active=True)
+        interactive_message = InteractiveMessage.objects.get(interactive_type=interactive_type)
     except InteractiveMessage.DoesNotExist:
         interactive_message = InteractiveMessage(interactive_type=interactive_type)
 
@@ -143,15 +143,6 @@ def interactive_edit(request, interactive_type):
         form = InteractiveMessageForm(request.POST, instance=interactive_message)
 
         if form.is_valid():
-            # If the previous message has already been sent to a user, we make a new one and make the old one inactive
-            if form.instance.pk != None and form.instance.deliveries.count() > 0:
-                # Inactivate the previous message
-                InteractiveMessage.objects.filter(pk=form.instance.pk).update(active=False)
-
-                # Make a new copy
-                form.instance.added = datetime.now()
-                form.instance.pk = None
-
             form.instance.interactive_type = interactive_type
             form.instance.author = request.user
             interactive_message = form.save()
@@ -176,7 +167,7 @@ def interactive_view(request, interactive_type):
     if not request.user.is_superuser:
         raise Http404
 
-    interactive_message = get_object_or_404(InteractiveMessage, interactive_type=interactive_type, active=True)
+    interactive_message = get_object_or_404(InteractiveMessage, interactive_type=interactive_type)
 
     # This example code is only to make the URLs seem more realistic when they are being viewed. It is not a secret.
     example_code = '0z7vW2lqAAnd1VoZp091Voa'
