@@ -15,7 +15,7 @@
         {% endif %}
     {% elif interactive_type == 'reject_email_messages' %}
         {% if link == 'reject_link' %}
-            <p>Tölvupóstsamskipti hafa verið afþökkuð á netfangið <a href="mailto:{{ member.email }}">{{ member.email }}</a>.<p>
+            <p>Tölvupóstsamskipti hafa verið afþökkuð á netfangið <a href="mailto:{{ email }}">{{ email }}</a>.<p>
             <p>Athugið að skráning í flokkinn er ennþá til staðar en ekki verður sendur frekari póstur á ofangreint netfang þegar sendur er póstur á allt félagatalið, hvort sem um er að ræða mikilvægar tilkynningar, fundarboð eða annað.</p>
             <p>Ef þú hefur spurningar eða athugasemdir eða vilt byrja að taka aftur við pósti frá okkur, vinsamlegast hafðu samband með því að senda póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.
         {% endif %}

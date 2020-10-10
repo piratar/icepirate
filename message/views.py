@@ -234,18 +234,31 @@ def mailcommand(request, interactive_type, link, random_string):
         if link == 'reject_link':
             try:
                 member = Member.objects.get(temporary_web_id=random_string)
-            except Member.DoesNotExist:
-                return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+                member.email_wanted = False
+                member.save()
 
-            member.email_wanted = False
-            member.save()
+                # For final reporting on the web page.
+                email = member.email
+
+            except Member.DoesNotExist:
+                # Alright, so no member. Let's try Subscriber.
+                try:
+                    subscriber = Subscriber.objects.get(temporary_web_id=random_string)
+
+                    # For final reporting on the web page.
+                    email = subscriber.email
+
+                    subscriber.delete()
+
+                except Subscriber.DoesNotExist:
+                    return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
             return render(request, 'message/mailcommand.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
-                'member': member,
+                'email': email,
                 'organization_email': settings.ORGANIZATION_EMAIL,
             })
     elif interactive_type == 'mailinglist_confirmation':
