@@ -48,6 +48,7 @@ import json
 import locale
 import os
 import pytz
+from core import jaapi
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -62,8 +63,6 @@ from icepirate.utils import quick_mail
 from icepirate.utils import generate_random_string
 from icepirate.utils import techify
 from icepirate.utils import validate_ssn
-from icepirate.utils import lookup_national_registry
-from icepirate.utils import merge_national_registry_info
 from member.models import Member
 from member.models import MemberGroup
 from message.models import InteractiveMessage
@@ -268,9 +267,9 @@ class Command(BaseCommand):
         stdout.write('- Checking if %s is an individual in the national registry...' % reg['ssn'])
         stdout.flush()
 
-        national = lookup_national_registry(reg['ssn'])
+        national = jaapi.get_person(reg['ssn'])
 
-        if national['is_valid'] and national['is_individual']:
+        if national['type'] == 'person':
             reg['national'] = national
 
             stdout.write(' yes\n')
@@ -348,9 +347,9 @@ class Command(BaseCommand):
         member.name = reg['name']
         member.email = reg['email']
         member.email_wanted = reg['email_ok']
-        merge_national_registry_info(member, reg['national'], timezone.now())
         member.temporary_web_id = random_string
         member.temporary_web_id_timing = timezone.now()
+        member.update_from_national_registry(reg['national'])
 
         # Save member to database
         stdout.write('* Registering member...')

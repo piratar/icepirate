@@ -32,6 +32,10 @@ SECRET_KEY = '1234567890abcdefghijklm9876543210nopqrstuvwxyz1234567890'
 # For example: https://some-site/member/api/get/ssn/1234567890/?json_api_key=some-random-string
 JSON_API_KEY = 'some-random-string'
 
+# Settings for national registry lookup (já.is)
+NATIONAL_REGISTRY_KEY = 'some-random-string'
+NATIONAL_REGISTRY_LOOKUP_COST = '11 ISK'
+
 # IMAP account for receiving new registrations
 NEW_REGISTRATIONS_IMAP = {
     'server': 'mail.example.com', # IMAP server
@@ -41,16 +45,6 @@ NEW_REGISTRATIONS_IMAP = {
 
     'filter-to-address': 'whatever-sent-to@example.com', # Email address to which new registrations are addressed
     'filter-last-days': 3, # How far back we want to look, in days
-}
-
-# National registry lookup configuration
-# This assumes that the service is provided as is from CreditInfo (https://creditinfo.is)
-# CreditInfo provides XML via HTML form POST
-NATIONAL_REGISTRY = {
-    'url': 'https://ws.lt.is/NationalRegistryExtra/NationalRegistryExtraservice.asmx/LookupRegno',
-    'username': 'creditinfo_username',
-    'password': 'creditinfo_password',
-    'xml_namespace': 'http://ws.lt.is/NationalRegistryPlus',
 }
 
 DEBUG = True

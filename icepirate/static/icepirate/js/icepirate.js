@@ -2,8 +2,13 @@
 $(document).ready(function() {
 
     // Buttons with a 'href' attribute becomes pseudo-links. Mostly for forms.
+    // Supports a `data-warning` attribute that can be used to warn the user
+    // before proceeding.
     $('button[href]').click(function(thing) {
-        location.href = $(this).attr('href');
+        var warning = $(this).attr('data-warning');
+        if (!warning || confirm(warning)) {
+            location.href = $(this).attr('href');
+        }
     });
 
 });

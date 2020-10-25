@@ -17,6 +17,9 @@
 
 <div class="formbuttons">
     <button type="button" href="/member/edit/{{ member.ssn }}">{% trans 'Edit' %}</button>
+    <button type="button" href="{% url 'national_registry_lookup' member.ssn %}" data-warning="{% blocktrans %}A lookup from the national registry incurs a cost of {{ NATIONAL_REGISTRY_LOOKUP_COST }}. Are you sure want to continue?{% endblocktrans %}">
+        {% trans 'Update from national registry' %}
+    </button>
 </div>
 
 </form>

@@ -178,7 +178,7 @@ def delete(request, ssn):
 def view(request, ssn):
 
     try:
-        member = Member.objects.safe(request.user).get(ssn=ssn)
+        member = Member.objects.safe(request.user).select_related('legal_municipality').get(ssn=ssn)
     except Member.DoesNotExist:
         raise Http404
 
@@ -189,7 +189,31 @@ def view(request, ssn):
         affected_members=[member]
     )
 
-    return render(request, 'member/view.html', { 'member': member })
+    ctx = {
+        'member': member,
+        'NATIONAL_REGISTRY_LOOKUP_COST': settings.NATIONAL_REGISTRY_LOOKUP_COST,
+    }
+    return render(request, 'member/view.html', ctx)
+
+
+@login_required
+def national_registry_lookup(request, ssn):
+    try:
+        member = Member.objects.safe(request.user).get(ssn=ssn)
+    except Member.DoesNotExist:
+        raise Http404
+
+    # Log the action.
+    log_action(
+        user=request.user,
+        action='member_national_registry_lookup',
+        affected_members=[member]
+    )
+
+    member.update_from_national_registry()
+    member.save()
+
+    return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 
 
 @login_required

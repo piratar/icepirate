@@ -51,5 +51,38 @@
         </p>
     </div>
     {% endif %}
+    <div class="line">
+        <p class="section">{% trans 'National registry information' %}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Name' %}:</p>
+        <p class="value">{{ member.legal_name|default:'' }}</p>
+    </div>
+    <div class="line">
+        <p class="label">{% trans 'Address' %}:</p>
+        <p class="value">
+            {% if member.legal_country_code != None %}
+                {% if member.legal_country_code == 'IS' %}
+                    {% if member.legal_address %}
+                        {{ member.legal_address }},
+                        {{ member.legal_zip_code }}
+                        {{ member.legal_zone }}
+                    {% endif %}
+                {% else %}
+                    {% trans 'Foreign residence' %} ({{ member.legal_country_code }})
+                {% endif %}
+            {% endif %}
+        </p>
+    </div>
+    {% if member.legal_municipality_code %}
+        <div class="line">
+            <p class="label">{% trans 'Municipality' %}:</p>
+            <p class="value">{{ member.legal_municipality|default:'' }}</p>
+        </div>
+    {% endif %}
+    <div class="line">
+        <p class="label">{% trans 'Lookup timing' %}:</p>
+        <p class="value">{{ member.legal_lookup_timing|default:'' }}</p>
+    </div>
 </div>
 

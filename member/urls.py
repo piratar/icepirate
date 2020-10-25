@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
     url(r'^delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
     url(r'^view/(?P<ssn>[^/]+)', views.view, name='view'),
+    path('national-registry-lookup/<str:ssn>/', views.national_registry_lookup, name='national_registry_lookup'),
 
     # Verification
     # Commented because not in use, seems incomplete and isn't documented.

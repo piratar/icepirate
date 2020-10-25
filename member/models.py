@@ -1,8 +1,10 @@
 import hashlib
 import time
 
+from core import jaapi
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from datetime import datetime
 
 from icepirate.models import SafetyManager
@@ -40,10 +42,12 @@ class Member(models.Model):
     auth_timing = models.DateTimeField(null=True)
 
     legal_name = models.CharField(max_length=63)
-    legal_address = models.CharField(max_length=63)
+    legal_address = models.CharField(max_length=63, null=True)
     legal_zip_code = models.CharField(max_length=3, null=True)
     legal_municipality_code = models.CharField(max_length=5, null=True)
+    legal_municipality = models.ForeignKey('Municipality', null=True, on_delete=models.SET_NULL)
     legal_zone = models.CharField(max_length=63, null=True)
+    legal_country_code = models.CharField(max_length=2, null=True)
     legal_lookup_timing = models.DateTimeField(null=True)
 
     temporary_web_id = models.CharField(max_length=40, unique=True, null=True)
@@ -56,6 +60,26 @@ class Member(models.Model):
 
     def __str__(self):
         return self.name
+
+    def update_from_national_registry(self, person_data=None):
+        if person_data is None:
+            person_data = jaapi.get_person(self.ssn)
+
+        addr = person_data['permanent_address']
+
+        try:
+            municipality = Municipality.objects.get(code=addr['municipality'])
+        except Municipality.DoesNotExist:
+            municipality = None
+
+        self.legal_name = person_data['name']
+        self.legal_address = addr['street']['dative'] if addr['street'] else None
+        self.legal_zip_code = addr['postal_code']
+        self.legal_municipality_code = addr['municipality']
+        self.legal_municipality = municipality
+        self.legal_zone = addr['town']['dative'] if addr['town'] else None
+        self.legal_country_code = addr['country']['code']
+        self.legal_lookup_timing = timezone.now()
 
     def get_membergroups(self, parent_membergroups=True):
         membergroups = set([])
@@ -72,6 +96,17 @@ class Member(models.Model):
         return ts + hashlib.sha1('%s:%s%s:%s' % (
              settings.JSON_API_KEY, ts, self.email, settings.JSON_API_KEY
              )).hexdigest()
+
+
+class Municipality(models.Model):
+    code = models.CharField(max_length=4, unique=True)
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['code']
 
 
 class MemberGroup(models.Model):
