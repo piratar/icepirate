@@ -61,6 +61,13 @@ class Member(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(Member, self).save(*args, **kwargs)
+
+        # The mailing list is just a stepping stone toward membership, so when
+        # someone becomes a member, they no longer need the mailing list.
+        Subscriber.objects.filter(email=self.email).delete()
+
     def update_from_national_registry(self, person_data=None):
         if person_data is None:
             person_data = jaapi.get_person(self.ssn)
