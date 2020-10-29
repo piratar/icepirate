@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
 from core.loggers import log_action
+from core.jaapi import PersonNotFoundException
 
 from member.models import Member
 from member.models import MemberGroup
@@ -210,8 +211,17 @@ def national_registry_lookup(request, ssn):
         affected_members=[member]
     )
 
-    member.update_from_national_registry()
-    member.save()
+    try:
+        member.update_from_national_registry()
+        member.save()
+    except PersonNotFoundException:
+        ctx = {
+            'errors': [_('National registry lookup failed')],
+            'member': member,
+            'NATIONAL_REGISTRY_LOOKUP_COST': settings.NATIONAL_REGISTRY_LOOKUP_COST,
+        }
+        return render(request, 'member/view.html', ctx)
+
 
     return HttpResponseRedirect('/member/view/%s/' % member.ssn)
 

@@ -4,6 +4,7 @@
 {% block content %}
 
 <form action="/member/view/{{ member.ssn }}" method="POST">
+{% include 'core/errorlist.html' %}
 
 {% if user.is_superuser %}
     <div class="formbuttons-top">

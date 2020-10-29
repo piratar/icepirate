@@ -7,10 +7,16 @@ from django.conf import settings
 
 BASE_URL = 'https://api.ja.is/skra/v1/'
 
+class PersonNotFoundException(Exception):
+    pass
+
 def parse_json(url):
     response = requests.get(url, headers={ 'Authorization': settings.NATIONAL_REGISTRY_KEY })
     return json.loads(response.text)
 
 def get_person(kt):
     url = '%s%s/%s' % (BASE_URL, 'people', kt)
-    return parse_json(url)
+    result = parse_json(url)
+    if 'type' not in result or result['type'] != 'person':
+        raise PersonNotFoundException()
+    return result
