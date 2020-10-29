@@ -37,5 +37,17 @@
         </p>
     </div>
     {% endif %}
+    {% if membergroup.admins.count %}
+    <div class="line">
+        <p class="label">{% trans 'Admins' %}:</p>
+        <p class="value">
+            {% for admin in membergroup.admins.all %}
+                <span style="white-space: nowrap;">
+                {{ admin.first_name }} {{ admin.last_name }}{% if not forloop.last %},{% endif %}
+                </span>
+            {% endfor %}
+        </p>
+    </div>
+    {% endif %}
 </div>
 

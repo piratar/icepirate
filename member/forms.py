@@ -9,6 +9,12 @@ from django.forms import ValidationError
 from member.models import Member
 from member.models import MemberGroup
 
+# We want to display users' names, not their usernames.
+class MemberGroupAdminField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return '%s %s' % (obj.first_name, obj.last_name)
+
+
 class MemberForm(ModelForm):
 
     user = None
@@ -92,7 +98,21 @@ class MemberForm(ModelForm):
 
 
 class MemberGroupForm(ModelForm):
-    auto_subgroups = ModelMultipleChoiceField(required=False, widget=CheckboxSelectMultiple(), queryset=MemberGroup.objects.all())
+    admins = MemberGroupAdminField(
+        required=False,
+        widget=CheckboxSelectMultiple(),
+        queryset=User.objects.filter(
+            is_superuser=False
+        ).order_by(
+            'first_name',
+            'last_name'
+        )
+    )
+    auto_subgroups = ModelMultipleChoiceField(
+        required=False,
+        widget=CheckboxSelectMultiple(),
+        queryset=MemberGroup.objects.all()
+    )
 
     class Meta:
         model = MemberGroup
@@ -100,6 +120,7 @@ class MemberGroupForm(ModelForm):
             'name',
             'email',
             'added',
+            'admins',
             'auto_subgroups',
         ]
 
