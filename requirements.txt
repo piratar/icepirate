@@ -1,6 +1,7 @@
 django
 django-mathfilters
 django-registration-redux
+django-jsonview
 lxml
 python-dateutil
 pytz

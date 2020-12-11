@@ -69,13 +69,17 @@ form.bigform ul { min-width: 435px; }
 .mailbody { float: left; width: 300px; text-align: justify; }
 
 /* General controls */
-div.formbuttons { text-align: center; float: left; width: 100%; padding: 0px 0px 0px 0px; }
+div.formbuttons { text-align: center; width: 100%; padding: 0px 0px 0px 0px; }
 div.formbuttons button { margin-top: 8px; margin-bottom: 8px; }
 div.formbuttons label { float: none; }
 div.formbuttons input[type='checkbox'] { }
 div.formbuttons-top button { float: right; padding-top: 0px; margin-top: 0px; }
 div.list-top-buttons button { margin-top: 8px; margin-bottom: 8px; }
 div.list-top-stats { margin-bottom: 6px; }
+
+/* Send-testing */
+div#testsend-stage { display: none; }
+div#testsend-stage #testsend-to-email { width: 180px; }
 
 /* Errors */
 ul.errorlist { margin-bottom: 0px; margin-top: 0px; padding-left: 0px; max-width: 100% !important; width: 100%; }

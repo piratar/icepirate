@@ -1,7 +1,9 @@
 from django.conf.urls import include
 from django.conf.urls import url
+from django.urls import path
 
 from message import views
+from message import views_api
 
 urlpatterns = [
     url(r'^list/', views.list, name='list'),
@@ -15,4 +17,6 @@ urlpatterns = [
     url(r'^interactive/view/(?P<interactive_type>.+)/$', views.interactive_view, name='interactive_view'),
 
     url(r'^mailcommand/(?P<interactive_type>.+)/(?P<link>.+)/(?P<random_string>.+)/$', views.mailcommand, name='mailcommand'),
+
+    path('api/testsend/<int:message_id>/', views_api.testsend, name='api_testsend'),
 ]

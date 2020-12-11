@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block javascript %}
+<script language="javascript" type="text/javascript">
+
+MESSAGE_ID = {{ message.id }};
+MSG_SENDING = "{% trans 'Sending test message...' %}";
+MSG_SUCCESS = "{% trans 'Test message successfully sent.' %}";
+MSG_FAILURE = "{% trans 'Sending failed on server side!' %}";
+
+$(document).ready(function() {
+    $('#testsend-start').click(function() {
+        $('#testsend-stage').toggle();
+    });
+
+    $('#testsend-send').click(function() {
+        var to_email = $('#testsend-to-email').val();
+
+        $('#testsend-status').html(MSG_SENDING);
+
+        $.ajax({
+            type: 'POST',
+            url: '/message/api/testsend/' + MESSAGE_ID + '/',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'},
+            data: {'to_email': to_email},
+            dataType: 'json'
+        }).done(function(data) {
+            $('#testsend-status').html(data.success ? MSG_SUCCESS : MSG_FAILURE);
+        }).fail(function(data) {
+            $('#testsend-status').html('Failed calling JSON API for unknown reasons.');
+        });
+    });
+});
+
+</script>
+{% endblock %}
+
 {% block content %}
 
 <form action="/message/view/{{ message.id }}" method="POST">
@@ -15,6 +50,26 @@
 
 <div class="formbuttons">
     <button type="button" href="/message/edit/{{ message.id }}/" {% if message.sending_started or not message.full_administration %}disabled="disabled"{% endif %}>{% trans 'Edit' %}</button>
+    <button type="button" id="testsend-start">{% trans 'Test' %}</button>
+</div>
+
+<div class="infosheet-container" id="testsend-stage">
+    <div class="infosheet">
+        <div class="header">{% trans 'Send test' %}</div>
+        <div class="line">
+            <p class="label">{% trans 'Email' %}:</p>
+            <p class="value">
+                <input type="email" id="testsend-to-email" value="{{ user.email }}" />
+                <button type="button" id="testsend-send">{% trans 'Send' %}</button>
+            </p>
+        </div>
+        <div class="line">
+            <p class="label">{% trans 'Status' %}:</p>
+            <p class="value" id="testsend-status">
+                {% trans 'Ready to test' %}
+            </p>
+        </div>
+    </div>
 </div>
 
 </form>

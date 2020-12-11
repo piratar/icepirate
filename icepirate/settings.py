@@ -115,6 +115,7 @@ INSTALLED_APPS = (
 
     'registration',
     'mathfilters',
+    'jsonview',
 
     'icepirate',
     'core',

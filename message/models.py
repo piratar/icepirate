@@ -298,7 +298,7 @@ class Message(models.Model):
     Takes the single argument `recipient`, which is expected to have `email`
     and `temporary_web_id` fields, like Member or Subscriber objects.
     '''
-    def send(self, recipient):
+    def send(self, recipient, testsend=False):
         body = self.body
 
         # Append the portion of the email that offers the user to unsubscribe,
@@ -324,12 +324,12 @@ class Message(models.Model):
             )
 
             # Log and notify calling function of success.
-            log_mail(recipient.email, self)
+            log_mail(recipient.email, self, testsend=testsend)
             return True
 
         except Exception as ex:
             # Log and notify calling function of failure.
-            log_mail(recipient.email, self, ex)
+            log_mail(recipient.email, self, ex, testsend=testsend)
             return False
 
     class Meta:

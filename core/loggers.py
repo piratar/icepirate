@@ -34,7 +34,7 @@ mail_logger.addHandler(mail_logger_handler)
 
 # Logging of sent mail, successful when no exception is given, unsuccessful
 # if one is provided.
-def log_mail(email, message, exception=None):
+def log_mail(email, message, exception=None, testsend=False):
     class_type = message.__class__.__name__
 
     # Make sure that only objects of supported types are provided.
@@ -48,6 +48,12 @@ def log_mail(email, message, exception=None):
         detail = str(message.id)
     elif class_type == 'InteractiveMessage':
         detail = message.interactive_type
+
+    # If this is a testsend, include that information in the logging. This
+    # means that the content may differ radically from what eventually gets
+    # sent out to members and subscribers.
+    if testsend:
+        detail += '(TESTING)'
 
     # Main message, includes the basics that all mail log entries have in
     # common.
