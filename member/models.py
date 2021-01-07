@@ -6,6 +6,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from datetime import datetime
+from datetime import timedelta
 
 from icepirate.models import SafetyManager
 
@@ -67,6 +68,20 @@ class Member(models.Model):
         # The mailing list is just a stepping stone toward membership, so when
         # someone becomes a member, they no longer need the mailing list.
         Subscriber.objects.filter(email=self.email).delete()
+
+    # Updates the national registry information if, and only if it is outdated
+    # according to settings.
+    def ensure_national_registration_updated(self):
+        updated = False
+
+        threshold = timezone.now() - timedelta(
+            days=settings.NATIONAL_REGISTRY_EXPIRATION_DAYS
+        )
+        if self.legal_lookup_timing is None or self.legal_lookup_timing < threshold:
+            self.update_from_national_registry()
+            updated = True
+
+        return updated
 
     def update_from_national_registry(self, person_data=None):
         if person_data is None:

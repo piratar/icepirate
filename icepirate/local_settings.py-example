@@ -35,6 +35,7 @@ JSON_API_KEY = 'some-random-string'
 # Settings for national registry lookup (já.is)
 NATIONAL_REGISTRY_KEY = 'some-random-string'
 NATIONAL_REGISTRY_LOOKUP_COST = '11 ISK'
+NATIONAL_REGISTRY_EXPIRATION_DAYS = 30
 
 # IMAP account for receiving new registrations
 NEW_REGISTRATIONS_IMAP = {

@@ -82,6 +82,10 @@ def get(request, field, searchstring):
     except Member.DoesNotExist as e:
         return json_error('No such member')
 
+    # Update the national registry information if necessary.
+    if member.ensure_national_registration_updated():
+        member.save()
+
     response_data = {
         'success': True,
         'data': member_to_dict(member)
