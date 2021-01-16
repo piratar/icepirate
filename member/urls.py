@@ -23,13 +23,20 @@ urlpatterns = [
 
     # ------------------------------------------------------------------#
 
-    # General stuff.
-    url(r'^list/(?P<membergroup_techname>.*)', views.list, name='list'),
-    url(r'^add/', views.add, name='add'),
-    url(r'^edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
-    url(r'^delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
-    url(r'^view/(?P<ssn>[^/]+)', views.view, name='view'),
-    path('national-registry-lookup/<str:ssn>/', views.national_registry_lookup, name='national_registry_lookup'),
+    # General member stuff.
+    url(r'^member/list/(?P<membergroup_techname>.*)', views.list, name='list'),
+    url(r'^member/add/', views.add, name='add'),
+    url(r'^member/edit/(?P<ssn>[^/]+)', views.edit, name='edit'),
+    url(r'^member/delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
+    url(r'^member/view/(?P<ssn>[^/]+)', views.view, name='view'),
+    path('member/national-registry-lookup/<str:ssn>/', views.national_registry_lookup, name='national_registry_lookup'),
+
+    # MemberGroup stuff.
+    url(r'^group/list/', views.membergroup_list, name='membergroup_list'),
+    url(r'^group/add/', views.membergroup_add, name='membergroup_add'),
+    url(r'^group/edit/(?P<techname>[^/]+)', views.membergroup_edit, name='membergroup_edit'),
+    url(r'^group/delete/(?P<techname>[^/]+)', views.membergroup_delete, name='membergroup_delete'),
+    url(r'^group/view/(?P<techname>[^/]+)', views.membergroup_view, name='membergroup_view'),
 
     # Verification
     # Commented because not in use, seems incomplete and isn't documented.
@@ -39,9 +46,9 @@ urlpatterns = [
     url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
 
     # API pages (JSON)
-    url(r'^api/get/(?P<field>.*)/(?P<searchstring>.+)/', views_api.get, name='api_get'),
-    url(r'^api/add/$', views_api.add, name='api_add'),
-    url(r'^api/update/ssn/(?P<ssn>[^/]+)/$', views_api.update, name='api_update'),
-    url(r'^api/count/$', views_api.count, name='api_count'),
-    path('api/subscribe-to-mailinglist/', views_api.subscribe_to_mailinglist),
+    url(r'^member/api/get/(?P<field>.*)/(?P<searchstring>.+)/', views_api.get, name='api_get'),
+    url(r'^member/api/add/$', views_api.add, name='api_add'),
+    url(r'^member/api/update/ssn/(?P<ssn>[^/]+)/$', views_api.update, name='api_update'),
+    url(r'^member/api/count/$', views_api.count, name='api_count'),
+    path('member/api/subscribe-to-mailinglist/', views_api.subscribe_to_mailinglist),
 ]
