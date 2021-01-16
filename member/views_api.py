@@ -56,10 +56,12 @@ def member_to_dict(member):
 
     all_membergroups = member.get_membergroups()
     main_membergroups = member.membergroups.all()
+    eligible_membergroups = MemberGroup.objects.filter(condition_municipalities=member.legal_municipality)
 
     result['groups'] = dict([(g.techname, g.name) for g in all_membergroups])
     result['main_groups'] = dict([(g.techname, g.name) for g in main_membergroups])
     result['auto_groups'] = dict([(g.techname, g.name) for g in (set(all_membergroups) - set(main_membergroups))])
+    result['eligible_groups'] = dict([(g.techname, g.name) for g in (set(eligible_membergroups) - set(main_membergroups))])
 
     return result
 
