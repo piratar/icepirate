@@ -142,6 +142,8 @@ class MemberGroup(models.Model):
 
     admins = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='membergroup_administrations')
 
+    condition_municipalities = models.ManyToManyField('Municipality', related_name='membergroup_conditions')
+
     auto_subgroups = models.ManyToManyField(
         'MemberGroup',
         related_name='auto_parent_membergroups'

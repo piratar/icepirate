@@ -28,6 +28,16 @@
             <i>{% trans 'none' %}</i>
         {% endif %}</p>
     </div>
+    {% if membergroup.condition_municipalities.count %}
+    <div class="line">
+        <p class="label">{% trans 'Municipalities' %}:</p>
+        <p class="value">
+            {% for muni in membergroup.condition_municipalities.all %}
+                {{ muni }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </p>
+    </div>
+    {% endif %}
     {% if membergroup.members.count %}
     <div class="line">
         <p class="label">{% trans 'Members' %}:</p>

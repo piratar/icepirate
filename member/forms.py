@@ -8,6 +8,7 @@ from django.forms import ValidationError
 
 from member.models import Member
 from member.models import MemberGroup
+from member.models import Municipality
 
 # We want to display users' names, not their usernames.
 class MemberGroupAdminField(ModelMultipleChoiceField):
@@ -114,6 +115,12 @@ class MemberGroupForm(ModelForm):
         queryset=MemberGroup.objects.all()
     )
 
+    condition_municipalities = ModelMultipleChoiceField(
+        required=False,
+        widget=CheckboxSelectMultiple(),
+        queryset=Municipality.objects.all()
+    )
+
     class Meta:
         model = MemberGroup
         fields = [
@@ -122,6 +129,7 @@ class MemberGroupForm(ModelForm):
             'added',
             'admins',
             'auto_subgroups',
+            'condition_municipalities',
         ]
 
 
