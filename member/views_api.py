@@ -220,6 +220,36 @@ def add(request):
 
 
 @csrf_exempt
+def add_to_membergroup(request, ssn):
+
+    if not require_login_or_key(request):
+        return access_denied()
+
+    input_vars = request.POST
+    if settings.DEBUG and request.method == 'GET':
+        input_vars = request.GET
+
+    if 'membergroup_techname' not in input_vars:
+        return json_error('Membergroup techname must be provided')
+
+    try:
+        member = Member.objects.get(ssn=ssn)
+        group = MemberGroup.objects.get(techname=input_vars['membergroup_techname'])
+    except Member.DoesNotExist:
+        return json_error('No such member')
+    except MemberGroup.DoesNotExist:
+        return json_error('No such membergroup')
+
+    group.members.add(member)
+
+    response_data = {
+        'success': True,
+        'data': member_to_dict(member)
+    }
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
+
+@csrf_exempt
 def subscribe_to_mailinglist(request):
 
     # Make sure incoming data makes sense.

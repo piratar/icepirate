@@ -50,5 +50,6 @@ urlpatterns = [
     url(r'^member/api/add/$', views_api.add, name='api_add'),
     url(r'^member/api/update/ssn/(?P<ssn>[^/]+)/$', views_api.update, name='api_update'),
     url(r'^member/api/count/$', views_api.count, name='api_count'),
+    path('member/api/add-to-membergroup/<str:ssn>/', views_api.add_to_membergroup),
     path('member/api/subscribe-to-mailinglist/', views_api.subscribe_to_mailinglist),
 ]
