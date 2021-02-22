@@ -56,7 +56,9 @@ def member_to_dict(member):
 
     all_membergroups = member.get_membergroups()
     main_membergroups = member.membergroups.all()
-    eligible_membergroups = MemberGroup.objects.filter(condition_municipalities=member.legal_municipality)
+    eligible_membergroups = []
+    if member.legal_municipality is not None:
+        eligible_membergroups = MemberGroup.objects.filter(condition_municipalities=member.legal_municipality)
 
     result['groups'] = dict([(g.techname, g.name) for g in all_membergroups])
     result['main_groups'] = dict([(g.techname, g.name) for g in main_membergroups])
