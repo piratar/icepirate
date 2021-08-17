@@ -43,7 +43,7 @@ urlpatterns = [
     #url(r'^verify-start/$', lambda r: redirect(settings.AUTH_URL)),
     #url(r'^verify/', views.verify, name='verify'),
 
-    url(r'^csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
+    url(r'^member/csv/list/(?P<group_techname>[^/]*)', views_csv.list, name='csv_list'),
 
     # API pages (JSON)
     url(r'^member/api/get/(?P<field>.*)/(?P<searchstring>.+)/', views_api.get, name='api_get'),
