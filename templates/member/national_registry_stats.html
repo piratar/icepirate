@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% trans 'Counts' %}</h2>
+<table>
+    <tr>
+        <th>{% trans 'Total' %}</th>
+        <td style="text-align: right;">{{ member_count }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'With municipality' %}</th>
+        <td style="text-align: right;">{{ with_municipality }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Without municipality' %}</th>
+        <td style="text-align: right;">{{ without_municipality }}</td>
+    </tr>
+</table>
+
+<h2>{% trans 'Update costs' %} ({{ currency }})</h2>
+<table>
+    <tr>
+        <th>{% trans 'Individual' %}</th>
+        <td style="text-align: right;">{{ cost_individual }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'All' %}</th>
+        <td style="text-align: right;">{{ cost_all }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Without municipality' %}</th>
+        <td style="text-align: right;">{{ cost_without_municipality }}</td>
+    </tr>
+</table>
+
+<h2>{% trans 'Constituences' %}</h2>
+<p><em>{% trans 'These numbers are almost meaningless until the number "Without municipality" above reaches zero.' %}</em></p>
+<table>
+{% for constituency in constituencies %}
+    <tr>
+        <th>{{ constituency.name }}</th>
+        <td>{{ constituency.resident_count }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

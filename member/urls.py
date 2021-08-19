@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^member/delete/(?P<ssn>[^/]+)', views.delete, name='delete'),
     url(r'^member/view/(?P<ssn>[^/]+)', views.view, name='view'),
     path('member/national-registry-lookup/<str:ssn>/', views.national_registry_lookup, name='national_registry_lookup'),
+    path('member/national-registry-stats/', views.national_registry_stats, name='national_registry_stats'),
 
     # MemberGroup stuff.
     url(r'^group/list/', views.membergroup_list, name='membergroup_list'),
