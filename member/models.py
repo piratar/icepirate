@@ -7,12 +7,14 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import datetime
 from datetime import timedelta
+from model_utils import FieldTracker
 
 from icepirate.models import SafetyManager
 
 
 class Member(models.Model):
     objects = SafetyManager()
+    tracker = FieldTracker()
 
     ssn = models.CharField(max_length=30, unique=True)
     name = models.CharField(max_length=63)
@@ -35,6 +37,10 @@ class Member(models.Model):
 
     # Null means question unanswered. True/False dictate consent.
     email_wanted = models.NullBooleanField(default=None)
+    # Automatically set by save-method when `email_wanted` is changed.
+    email_wanted_timing = models.DateTimeField(null=True)
+    # If available, provided by end-user.
+    email_wanted_reason = models.TextField(null=True)
 
     phone = models.CharField(max_length=30, blank=True)
     added = models.DateTimeField(default=datetime.now)
@@ -63,6 +69,9 @@ class Member(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.tracker.has_changed('email_wanted'):
+            self.email_wanted_timing = timezone.now()
+
         super(Member, self).save(*args, **kwargs)
 
         # The mailing list is just a stepping stone toward membership, so when
