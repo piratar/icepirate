@@ -5,6 +5,7 @@
 /static
 /env
 *.mo
+/.vscode
 
 # Log files.
 /log/mailing.log*
