@@ -1,5 +1,10 @@
 import os
+from pathlib import Path
+
 here = lambda x: os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), x))
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 try:
     from icepirate.local_settings import *

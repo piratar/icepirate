@@ -66,12 +66,18 @@ def quick_mail(to, subject, body, from_email=None, subject_prefix=settings.EMAIL
     if subject_prefix:
         real_subject = u'[%s] %s' % (subject_prefix, real_subject)
 
+    # Custom CSS to be used with email.
+    css_filename = os.path.join(settings.BASE_DIR, 'icepirate', 'static', 'icepirate', 'css', 'email.css')
+    with open(css_filename, 'r') as f:
+        css = f.read()
+
     return send_mail(
         real_subject,
         body,
         from_email=from_email or settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to,],
-        fail_silently=False
+        fail_silently=False,
+        css=css
     )
 
 def generate_random_string():
