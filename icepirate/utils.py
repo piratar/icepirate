@@ -67,7 +67,7 @@ def quick_mail(to, subject, body, from_email=None, subject_prefix=settings.EMAIL
         real_subject = u'[%s] %s' % (subject_prefix, real_subject)
 
     # Custom CSS to be used with email.
-    css_filename = os.path.join(settings.BASE_DIR, 'icepirate', 'static', 'icepirate', 'css', 'email.css')
+    css_filename = os.path.join(str(settings.BASE_DIR), 'icepirate', 'static', 'icepirate', 'css', 'email.css')
     with open(css_filename, 'r') as f:
         css = f.read()
 
