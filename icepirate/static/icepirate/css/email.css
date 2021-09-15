@@ -1,17 +1,112 @@
 body {
-    background: #f0f0f0;
-    color: #303030;
-    line-height: 1.5;
-    font-size: 12px;
+    font-family: Helvetica;
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
 }
 
-h1, h2 {
-    border-bottom: 1px solid #eaecef;
+h1 {
+    color: #7b68ee;
+    font-family: public sans, sans-serif;
+    font-size: 32px;
+    font-style: italic;
+    font-weight: normal;
+    line-height: 125%;
+    letter-spacing: normal;
+    text-align: center;
+    margin-bottom: 36px
+}
+
+h2 {
+    color: #222222;
+    font-family: Helvetica;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 150%;
+    letter-spacing: normal;
+    text-align: left;
+    padding-bottom: 0px;
+    padding-top: 12px;
+    margin-bottom: 0px;
+    margin-top: 12px;
+    vertical-align: bottom;
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+}
+
+h3 {
+    color: #444444;
+    font-family: Helvetica;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 150%;
+    letter-spacing: normal;
+    text-align: left;
+}
+
+h4 {
+    color: #949494;
+    font-family: Georgia;
+    font-size: 20px;
+    font-style: italic;
+    font-weight: normal;
+    line-height: 125%;
+    letter-spacing: normal;
+    text-align: center;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: rgb(224, 224, 224);
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+}
+
+p {
+    font-family: Helvetica;
+    line-height: 150%;
+    font-size: 16px;
+    color: rgb(105, 105, 105);
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
 }
 
 a {
-    color: #0366d6;
+    color: #7b68ee;
     text-decoration: none;
+}
+
+h6 {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+}
+h6 a {
+    font-family: "helvetica neue", "helvetica", "arial", "verdana", sans-serif;
+    background-color:rgb(120, 107, 238);
+    color: rgb(255, 255, 255) !important;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline;
+    padding: 12px 16px 12px 16px;
+    text-align: center;
+
+    margin-left: auto;
+    margin-right: auto;
 }
 
 a:hover {
