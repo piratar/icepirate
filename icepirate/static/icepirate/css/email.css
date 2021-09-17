@@ -108,7 +108,11 @@ h6 a, .MsgBody h6 a:visited, .MsgBody h6 a:link {
     font-size: 16px;
     font-weight: bold;
     display: inline;
-    padding: 12px 16px 12px 16px;
+    /* Border used instad of padding for compatibility with Windows Mail. */
+    border-top: 12px solid rgb(120, 107, 238);
+    border-right: 16px solid rgb(120, 107, 238);
+    border-bottom: 12px solid rgb(120, 107, 238);
+    border-left: 16px solid rgb(120, 107, 238);
     text-align: center;
 
     margin-left: auto;
