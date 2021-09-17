@@ -1,5 +1,5 @@
 body {
-    font-family: Helvetica;
+    font-family: Helvetica, Verdana, Geneva, Tahoma, sans-serif;
 
     margin-left: auto;
     margin-right: auto;
@@ -20,7 +20,7 @@ h1 {
 
 h2 {
     color: #222222;
-    font-family: Helvetica;
+    font-family: Helvetica, Verdana, Geneva, Tahoma, sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: bold;
@@ -40,7 +40,7 @@ h2 {
 
 h3 {
     color: #444444;
-    font-family: Helvetica;
+    font-family: Helvetica, Verdana, Geneva, Tahoma, sans-serif;
     font-size: 22px;
     font-style: normal;
     font-weight: bold;
@@ -71,7 +71,9 @@ hr {
 }
 
 p {
-    font-family: Helvetica;
+    text-align: justify;
+
+    font-family: Helvetica, Verdana, Geneva, Tahoma, sans-serif;
     line-height: 150%;
     font-size: 16px;
     color: rgb(105, 105, 105);
@@ -81,9 +83,13 @@ p {
     max-width: 600px;
 }
 
-a {
+a, .MsgBody a:visited, .MsgBody a:link {
     color: #7b68ee;
     text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 h6 {
@@ -95,7 +101,7 @@ h6 {
     margin-right: auto;
     max-width: 600px;
 }
-h6 a {
+h6 a, .MsgBody h6 a:visited, .MsgBody h6 a:link {
     font-family: "helvetica neue", "helvetica", "arial", "verdana", sans-serif;
     background-color:rgb(120, 107, 238);
     color: rgb(255, 255, 255) !important;
@@ -107,10 +113,6 @@ h6 a {
 
     margin-left: auto;
     margin-right: auto;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 img {
