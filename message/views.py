@@ -196,6 +196,36 @@ def short_url_redirect(request, code):
 
 
 def mailcommand(request, interactive_type, link, random_string):
+
+    # Get the email address from the given `random_string`, and otherwise
+    # redirect user to main URL. The email address here is only sought for
+    # displaying purposes.
+    email = ''
+    if len(random_string) == 40:
+        try:
+            email = Member.objects.get(temporary_web_id=random_string).email
+        except Member.DoesNotExist:
+            try:
+                email = Subscriber.objects.get(temporary_web_id=random_string).email
+            except Subscriber.DoesNotExist:
+                return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+    else:
+        return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
+
+    ctx = {
+        'interactive_type': interactive_type,
+        'link': link,
+        'random_string': random_string,
+        'email': email,
+    }
+    return render(request, 'message/mailcommand.html', ctx)
+
+
+def mailcommand_complete(request, interactive_type, link, random_string):
+
+    if request.method != 'POST':
+        return Http404
+
     if interactive_type == 'registration_received':
         if link == 'confirm':
             try:
@@ -206,12 +236,12 @@ def mailcommand(request, interactive_type, link, random_string):
             member.email_verified = True
             member.save()
 
-            return render(request, 'message/mailcommand.html', {
+            return render(request, 'message/mailcommand_complete.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 10,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
-                'member': member,
+                'email': member.email,
             })
         elif link == 'reject':
             try:
@@ -221,7 +251,7 @@ def mailcommand(request, interactive_type, link, random_string):
 
             member.delete()
 
-            return render(request, 'message/mailcommand.html', {
+            return render(request, 'message/mailcommand_complete.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
@@ -254,7 +284,7 @@ def mailcommand(request, interactive_type, link, random_string):
                 except Subscriber.DoesNotExist:
                     return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
-            return render(request, 'message/mailcommand.html', {
+            return render(request, 'message/mailcommand_complete.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
@@ -275,12 +305,12 @@ def mailcommand(request, interactive_type, link, random_string):
             subscriber.temporary_web_id_timing = None
             subscriber.save()
 
-            return render(request, 'message/mailcommand.html', {
+            return render(request, 'message/mailcommand_complete.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,
                 'redirect_url': settings.ORGANIZATION_MAIN_URL,
-                'subscriber': subscriber,
+                'email': subscriber.email,
                 'organization_email': settings.ORGANIZATION_EMAIL,
             })
         elif link == 'reject':
@@ -289,7 +319,7 @@ def mailcommand(request, interactive_type, link, random_string):
             except Subscriber.DoesNotExist:
                 return HttpResponseRedirect(settings.ORGANIZATION_MAIN_URL)
 
-            return render(request, 'message/mailcommand.html', {
+            return render(request, 'message/mailcommand_complete.html', {
                 'interactive_type': interactive_type,
                 'link': link,
                 'redirect_countdown': 30,

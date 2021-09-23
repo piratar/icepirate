@@ -3,53 +3,39 @@
 
 {% block content %}
 
-
     {% if interactive_type == 'registration_received' %}
 
         {% if link == 'confirm' %}
-            <p>Netfangið <a href="mailto:{{ member.email}}">{{ member.email }}</a> hefur verið staðfest.</p>
+            <p>Vinsamlegast staðfestu netfangið <a href="mailto:{{ email}}">{{ email }}</a> með því að smella á eftirfarandi takka.</p>
             <p>Takk fyrir skráninguna!</p>
         {% elif link == 'reject' %}
-            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá sig í Pírata án þíns leyfis. Skráningunni hefur verið eytt.</p>
+            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá sig í Pírata án þíns leyfis.</p>
+            <p>Vinsamlegast smelltu á takkann fyrir neðan til að staðfesta þetta.</p>
             <p>Ef slíkt gerist ítrekað eða þú hefur einhverju að koma á framfæri til okkar, endilega sendu okkur póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.</p>
         {% endif %}
     {% elif interactive_type == 'reject_email_messages' %}
         {% if link == 'reject_link' %}
-            <p>Tölvupóstsamskipti hafa verið afþökkuð á netfangið <a href="mailto:{{ email }}">{{ email }}</a>.<p>
-            <p>Athugið að skráning í flokkinn er ennþá til staðar en ekki verður sendur frekari póstur á ofangreint netfang þegar sendur er póstur á allt félagatalið, hvort sem um er að ræða mikilvægar tilkynningar, fundarboð eða annað.</p>
+            <p>Vinsamlegast smelltu á takkann hér fyrir neðan til að afþakka póst á netfangið <a href="mailto:{{ email }}">{{ email }}</a>.<p>
+            <p>Athugið að skráning í flokkinn verður ennþá til staðar.</p>
             <p>Ef þú hefur spurningar eða athugasemdir eða vilt byrja að taka aftur við pósti frá okkur, vinsamlegast hafðu samband með því að senda póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.
         {% endif %}
     {% elif interactive_type == 'mailinglist_confirmation' %}
         {% if link == 'confirm' %}
-            <p>Netfangið <a href="mailto:{{ subscriber.email}}">{{ subscriber.email }}</a> hefur verið staðfest.</p>
+            <p>Vinsamlegast smellið á takkann fyrir neðan til að staðfesta netfangið <a href="mailto:{{ email}}">{{ email }}</a> á póstlista.</p>
             <p>Takk fyrir að skrá þig á póstlistann okkar!</p>
         {% elif link == 'reject' %}
-            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá þig á póstlista Pírata án þíns leyfis. Skráningunni hefur verið eytt.</p>
+            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá þig á póstlista Pírata án þíns leyfis.</p>
+            <p>Vinsamlegast smelltu á takkann fyrir neðan til að staðfesta þetta.</p>
             <p>Ef slíkt gerist ítrekað eða þú hefur einhverju að koma á framfæri til okkar, endilega sendu okkur póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.</p>
         {% endif %}
     {% endif %}
 
-    {% if redirect_countdown and redirect_url %}
-        <script language="javascript" type="text/javascript">
-
-            $(document).ready(function() {
-                var seconds_left = {{ redirect_countdown }};
-                setInterval(function() {
-                    var $holder = $('span.second-holder');
-                    $holder.html(--seconds_left);
-                    if (seconds_left == 0) {
-                        location.href = '{{ redirect_url }}';
-                    }
-                }, 1000);
-            });
-
-        </script>
-
-        <hr />
-        <p>Vafra þínum verður beint aftur að vef Pírata eftir <span class="second-holder">{{ redirect_countdown }}</span> sekúndur.</p>
-        <p>Ef ekkert gerist eða biðin virðist eilífðin ein skaltu smella á tengilinn <a href="{{ redirect_url }}">{{ redirect_url }}</a>.
-
-    {% endif %}
+    <form action="{% url 'mailcommand_complete' interactive_type link random_string %}" method="post" style="text-align: center;">
+        {% csrf_token %}
+        <input type="hidden" name="interactive_type" value="{{ interactive_type }}" />
+        <input type="hidden" name="link" value="{{ link }}" />
+        <input type="hidden" name="random_string" value="{{ random_string }}" />
+        <button>Staðfesta</button>
+    </form>
 
 {% endblock %}
-

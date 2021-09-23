@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^interactive/edit/(?P<interactive_type>.+)/$', views.interactive_edit, name='interactive_edit'),
     url(r'^interactive/view/(?P<interactive_type>.+)/$', views.interactive_view, name='interactive_view'),
 
+    url(r'^mailcommand-complete/(?P<interactive_type>.+)/(?P<link>.+)/(?P<random_string>.+)/$', views.mailcommand_complete, name='mailcommand_complete'),
     url(r'^mailcommand/(?P<interactive_type>.+)/(?P<link>.+)/(?P<random_string>.+)/$', views.mailcommand, name='mailcommand'),
 
     path('api/testsend/<int:message_id>/', views_api.testsend, name='api_testsend'),

@@ -1,0 +1,53 @@
+{% extends "outsider.html" %}
+{% load i18n %}
+
+{% block content %}
+
+    {% if interactive_type == 'registration_received' %}
+
+        {% if link == 'confirm' %}
+            <p>Netfangið <a href="mailto:{{ email }}">{{ email }}</a> hefur verið staðfest.</p>
+            <p>Takk fyrir skráninguna!</p>
+        {% elif link == 'reject' %}
+            <p>Skráningunni hefur verið eytt.</p>
+            <p>Ef slíkt gerist ítrekað eða þú hefur einhverju að koma á framfæri til okkar, endilega sendu okkur póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.</p>
+        {% endif %}
+    {% elif interactive_type == 'reject_email_messages' %}
+        {% if link == 'reject_link' %}
+            <p>Tölvupóstsamskipti hafa verið afþökkuð á netfangið <a href="mailto:{{ email }}">{{ email }}</a>.<p>
+            <p>Ef þú hefur spurningar eða athugasemdir eða vilt byrja að taka aftur við pósti frá okkur, vinsamlegast hafðu samband með því að senda póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.
+        {% endif %}
+    {% elif interactive_type == 'mailinglist_confirmation' %}
+        {% if link == 'confirm' %}
+            <p>Netfangið <a href="mailto:{{ email }}">{{ email }}</a> hefur verið staðfest.</p>
+            <p>Takk fyrir að skrá þig á póstlistann okkar!</p>
+        {% elif link == 'reject' %}
+            <p>Það lítur út fyrir að einhver hafi notað netfangið þitt til að skrá þig á póstlista Pírata án þíns leyfis. Skráningunni hefur verið eytt.</p>
+            <p>Ef slíkt gerist ítrekað eða þú hefur einhverju að koma á framfæri til okkar, endilega sendu okkur póst á netfangið <a href="mailto:{{ organization_email }}">{{ organization_email }}</a>.</p>
+        {% endif %}
+    {% endif %}
+
+    {% if redirect_countdown and redirect_url %}
+        <script language="javascript" type="text/javascript">
+
+            $(document).ready(function() {
+                var seconds_left = {{ redirect_countdown }};
+                setInterval(function() {
+                    var $holder = $('span.second-holder');
+                    $holder.html(--seconds_left);
+                    if (seconds_left == 0) {
+                        location.href = '{{ redirect_url }}';
+                    }
+                }, 1000);
+            });
+
+        </script>
+
+        <hr />
+        <p>Vafra þínum verður beint aftur að vef Pírata eftir <span class="second-holder">{{ redirect_countdown }}</span> sekúndur.</p>
+        <p>Ef ekkert gerist eða biðin virðist eilífðin ein skaltu smella á tengilinn <a href="{{ redirect_url }}">{{ redirect_url }}</a>.
+
+    {% endif %}
+
+{% endblock %}
+
