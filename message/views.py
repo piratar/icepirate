@@ -235,6 +235,7 @@ def mailcommand(request, interactive_type, link, random_string):
             try:
                 member = Member.objects.get(temporary_web_id=random_string)
                 member.email_wanted = False
+                member.email_wanted_reason = '[Unsubscription via email link]'
                 member.save()
 
                 # For final reporting on the web page.

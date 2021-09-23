@@ -140,6 +140,7 @@ def update(request, ssn):
 
         if email_wanted is not None and member.email_wanted != email_wanted:
             member.email_wanted = email_wanted
+            member.email_wanted_reason = '[Changed through API]'
             updated_fields.append('email_wanted')
 
         if phone and member.phone != phone:
@@ -195,6 +196,7 @@ def add(request):
     member.name = name
     member.email = email
     member.email_wanted = email_wanted
+    member.email_wanted_reason = '[Set while adding member through API]'
     member.added = added
 
     try:

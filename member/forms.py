@@ -60,6 +60,18 @@ class MemberForm(ModelForm):
 
         return membergroups
 
+    def clean_email_wanted(self):
+        # Normally, `email_wanted_reason` will be put in my the member after
+        # having clicked the unsubscribe-link. This form is only available to
+        # an admin, so there is no reason, but we fill it for traceability.
+        if 'email_wanted' in self.changed_data:
+            if self.instance.id is None:
+                self.instance.email_wanted_reason = '[Set by admin when adding member in UI]'
+            else:
+                self.instance.email_wanted_reason = '[Updated by admin in UI]'
+
+        return self.cleaned_data['email_wanted']
+
     def save(self, commit=True):
 
         instance = super(MemberForm, self).save(commit=commit)
