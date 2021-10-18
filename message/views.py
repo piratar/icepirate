@@ -224,7 +224,7 @@ def mailcommand(request, interactive_type, link, random_string):
 def mailcommand_complete(request, interactive_type, link, random_string):
 
     if request.method != 'POST':
-        return Http404
+        raise Http404
 
     if interactive_type == 'registration_received':
         if link == 'confirm':
