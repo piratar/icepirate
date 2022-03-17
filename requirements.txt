@@ -1,4 +1,4 @@
-django==2.2.24
+django==2.2.27
 django-mathfilters
 django-mdmail
 django-model-utils
