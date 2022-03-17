@@ -15,6 +15,7 @@
         <ul class="control">
             <li><a href="/member/list">{% trans 'Member List' %}</a></li>
             <li><a href="/member/add">{% trans 'Add Member' %}</a></li>
+            <li><a href="{% url 'member_stats' %}">{% trans 'Member Stats' %}</a></li>
         </ul>
         <ul class="control">
             <li><a href="/group/list">{% trans 'Group List' %}</a></li>
@@ -40,7 +41,6 @@
         <ul class="control-control">
             <li><a href="/accounts/logout/">{% trans 'Logout' %} {{ user }}</a></li>
             <li><a href="{% url 'user_management' %}">{% trans 'User Management' %}</a></li>
-            <li><a href="{% url 'national_registry_stats' %}">{% trans 'National Registry Stats' %}</a></li>
         </ul>
     </div>
 </div>

@@ -3,12 +3,24 @@
 
 {% block content %}
 
-<h2>{% trans 'Counts' %}</h2>
+<h1>{% trans 'General member statistics' %}</h1>
+
 <table>
     <tr>
-        <th>{% trans 'Total' %}</th>
-        <td style="text-align: right;">{{ member_count }}</td>
+        <th>{% trans 'Current total' %}</th>
+        <td style="text-align: right;">{{ current_member_count }}</td>
     </tr>
+    {% for stat in member_stats reversed %}
+    <tr>
+        <th>{{ stat.timing|date }}</th>
+        <td>{{ stat.member_count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h1>{% trans 'National registry' %}</h1>
+
+<table>
     <tr>
         <th>{% trans 'With municipality' %}</th>
         <td style="text-align: right;">{{ with_municipality }}</td>

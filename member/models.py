@@ -203,3 +203,14 @@ class Subscriber(models.Model):
             self.email,
             'verified' if self.email_verified else 'unverified'
         )
+
+
+class MemberStat(models.Model):
+    timing = models.DateTimeField(auto_now_add=True)
+    member_count = models.IntegerField()
+
+    def __str__(self):
+        return '%s: %d' % (self.timing, self.member_count)
+
+    class Meta:
+        ordering = ['timing']

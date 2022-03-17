@@ -21,6 +21,7 @@ from core.jaapi import PersonNotFoundException
 
 from member.models import Member
 from member.models import MemberGroup
+from member.models import MemberStat
 from member.models import Subscriber
 from member.forms import MemberForm
 from member.forms import MemberGroupForm
@@ -234,14 +235,23 @@ def national_registry_lookup(request, ssn):
 
 
 @login_required
-def national_registry_stats(request):
+def member_stats(request):
 
-    member_count = Member.objects.all().count()
+    #############################
+    # General member statistics #
+    #############################
+
+    current_member_count = Member.objects.all().count()
+    member_stats = MemberStat.objects.all()
+
+    ################################
+    # National registry statistics #
+    ################################
     with_municipality = Member.objects.exclude(legal_municipality=None).count()
-    without_municipality = member_count - with_municipality
+    without_municipality = current_member_count - with_municipality
 
     cost_individual = settings.NATIONAL_REGISTRY_LOOKUP_COST
-    cost_all = member_count * cost_individual
+    cost_all = current_member_count * cost_individual
     cost_without_municipality = without_municipality * cost_individual
 
     # We are not going to treat these as MemberGroup items but rather as
@@ -259,7 +269,9 @@ def national_registry_stats(request):
         constituency.resident_count = Member.objects.filter(legal_municipality__in=munis).count()
 
     ctx = {
-        'member_count': member_count,
+        'current_member_count': current_member_count,
+        'member_stats': member_stats,
+
         'with_municipality': with_municipality,
         'without_municipality': without_municipality,
 
@@ -270,7 +282,7 @@ def national_registry_stats(request):
 
         'constituencies': constituencies,
     }
-    return render(request, 'member/national_registry_stats.html', ctx)
+    return render(request, 'member/stats.html', ctx)
 
 
 @login_required

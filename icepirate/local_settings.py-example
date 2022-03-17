@@ -17,6 +17,9 @@ ORGANIZATION_EMAIL = 'example@example.com'
 # of personal data. Leave at -1 if no limit should be set.
 MAX_MEMBERS_SHOWN = 5
 
+# Localization.
+DATE_FORMAT = 'd.m.Y'
+
 # Authentication URL (Icekey)
 # Commented because not in use, seems incomplete and isn't documented.
 #AUTH_URL = 'https://innskraning.island.is/?id=audkenni.piratar.is'
