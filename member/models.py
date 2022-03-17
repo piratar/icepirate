@@ -206,7 +206,7 @@ class Subscriber(models.Model):
 
 
 class MemberStat(models.Model):
-    timing = models.DateTimeField(auto_now_add=True)
+    timing = models.DateTimeField()
     member_count = models.IntegerField()
 
     def __str__(self):
