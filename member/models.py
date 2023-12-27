@@ -36,7 +36,7 @@ class Member(models.Model):
     email_unwanted = models.BooleanField(default=False)
 
     # Null means question unanswered. True/False dictate consent.
-    email_wanted = models.NullBooleanField(default=None)
+    email_wanted = models.BooleanField(default=None, null=True)
     # Automatically set by save-method when `email_wanted` is changed.
     email_wanted_timing = models.DateTimeField(null=True)
     # If available, provided by end-user.
