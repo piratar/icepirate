@@ -209,9 +209,9 @@ class Message(models.Model):
             # Remove recipients that have already received the message, which
             # may happen if a bulk sending is cancelled or fails before completing.
             for delivery in self.deliveries.select_related('member', 'subscriber'):
-                if delivery.member is not None:
+                if delivery.member is not None and delivery.member in recipients:
                     recipients.remove(delivery.member)
-                elif delivery.subscriber is not None:
+                elif delivery.subscriber is not None and delivery.subscriber in recipients:
                     recipients.remove(delivery.subscriber)
 
             # Make sure that any Member and Subscriber have `temporary_web_id`
