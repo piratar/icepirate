@@ -198,8 +198,8 @@ class Message(models.Model):
             recipients = self.get_recipients()
 
             # We'll be reporting this back to the calling function so that an
-            # iterating caller may know how much is left. This must figured
-            # out before we remove recipients already delievered to.
+            # iterating caller may know how much is left. This must be figured
+            # out before we remove recipients already delivered to.
             self.recipient_count = len(recipients)
 
             # Declare that we've started the show.
@@ -330,6 +330,24 @@ class Message(models.Model):
         except Exception as ex:
             # Log and notify calling function of failure.
             log_mail(recipient.email, self, ex, testsend=testsend)
+
+            # Okay, this is not glorious. The @piratar.is mail server is the
+            # only one that will notify us if the email address does not
+            # exist, presumably because we are ourselves logged into that SMTP
+            # server when sending the email.
+            #
+            # It is the member's responsibility to have a valid email address.
+            # If they don't, we still count the sending of the email as
+            # successful. In order to not distinguish between @piratar.is
+            # addresses that don't work, and other addresses, we will
+            # interpret a non-existent @piratar.is email address as a success,
+            # to conform with the overall functionality.
+            #
+            # This is done by checking for the very specific error that
+            # communicates this scenario.
+            if 'Recipient address rejected: piratar.is' in str(ex.args):
+                return True
+
             return False
 
     class Meta:
