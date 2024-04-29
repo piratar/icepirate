@@ -159,6 +159,10 @@ LOGGING = {
     }
 }
 
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
 # Certain data should be cleaned regularly, like ShortURL and Subscriber
 # objects. `EXPIRY_DAYS` dictates how old things have to get to expire.
 EXPIRY_DAYS = 30
@@ -168,18 +172,3 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 REGISTRATION_OPEN = False
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
-if DEBUG:
-    import imp
-    try:
-        imp.find_module('debug_toolbar')
-
-        INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)
-        MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-        INTERNAL_IPS = ('127.0.0.1',)
-        DEBUG_TOOLBAR_CONFIG = {
-            'JQUERY_URL': ''
-        }
-    except ImportError:
-        # Silently continue if django-debug-toolbar isn't installed
-        pass

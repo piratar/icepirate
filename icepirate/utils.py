@@ -1,19 +1,10 @@
 # -*- coding: utf-8 -*-
-import copy
 import hashlib
 import json
 import os
-import sys
 import time
-from lxml import etree
-from io import StringIO
-from urllib.error import HTTPError
-from urllib.parse import urlencode
-from urllib.request import urlopen
 from django.conf import settings
 from django.http import HttpResponse
-from django.utils.encoding import force_bytes
-from django.utils.translation import ugettext as _
 from django_mdmail import send_mail
 
 import re
