@@ -28,7 +28,7 @@ def list(request, group_techname=None):
         _('SSN'),
         #_('Name'),
         #_('Username'),
-        #_('Email'),
+        ('Email'),
         #_('Email wanted'),
         #_('Phone'),
         #_('Added'),
@@ -41,7 +41,7 @@ def list(request, group_techname=None):
             m.ssn,
             #m.name,
             #m.username,
-            #m.email,
+            m.email,
             #m.email_wanted,
             #m.phone,
             #m.added,
@@ -63,7 +63,7 @@ def list(request, group_techname=None):
         affected_members=members
     )
 
-    response = HttpResponse("\n".join(lines), content_type='text/css; charset: utf-8')
+    response = HttpResponse("\n".join(lines), content_type='text/csv; charset: utf-8')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     return response
