@@ -6,7 +6,7 @@ chardet==5.2.0
 charset-normalizer==3.3.2
 cssselect==1.2.0
 cssutils==2.10.2
-Django==4.2.15
+Django==4.2.16
 django-jsonview==2.0.0
 django-mathfilters==1.0.0
 django-model-utils==4.5.0
